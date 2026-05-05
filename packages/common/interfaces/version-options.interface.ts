@@ -1,7 +1,7 @@
 import { VersioningType } from '../enums/version-type.enum';
 
 /**
- * Indicates that this will work for any version passed in the request, or no version.
+ * 表示此配置将适用于请求中传递的任何版本或不传递版本。
  *
  * @publicApi
  */
@@ -20,13 +20,12 @@ export type VersionValue =
  */
 export interface VersionOptions {
   /**
-   * Specifies an optional API Version. When configured, methods
-   * within the controller will only be routed if the request version
-   * matches the specified value.
+   * 指定可选的 API 版本。配置后，只有当请求版本与指定值匹配时，
+   * 控制器内的方法才会被路由。
    *
-   * Supported only by HTTP-based applications (does not apply to non-HTTP microservices).
+   * 仅由基于 HTTP 的应用程序支持(不适用于非 HTTP 微服务)。
    *
-   * @see [Versioning](https://docs.nestjs.com/techniques/versioning)
+   * @see [版本控制](https://docs.nestjs.cn/techniques/versioning)
    */
   version?: VersionValue;
 }
@@ -37,7 +36,7 @@ export interface VersionOptions {
 export interface HeaderVersioningOptions {
   type: VersioningType.HEADER;
   /**
-   * The name of the Request Header that contains the version.
+   * 包含版本的请求头的名称。
    */
   header: string;
 }
@@ -48,11 +47,11 @@ export interface HeaderVersioningOptions {
 export interface UriVersioningOptions {
   type: VersioningType.URI;
   /**
-   * Optional prefix that will prepend the version within the URI.
+   * 将预置在 URI 中的版本前缀。
    *
-   * Defaults to `v`.
+   * 默认为 `v`。
    *
-   * Ex. Assuming a version of `1`, for `/api/v1/route`, `v` is the prefix.
+   * 例如。假设版本为 `1`，对于 `/api/v1/route`，`v` 是前缀。
    */
   prefix?: string | false;
 }
@@ -63,9 +62,9 @@ export interface UriVersioningOptions {
 export interface MediaTypeVersioningOptions {
   type: VersioningType.MEDIA_TYPE;
   /**
-   * The key within the Media Type Header to determine the version from.
+   * Media Type Header 中用于确定版本的键。
    *
-   * Ex. For `application/json;v=1`, the key is `v=`.
+   * 例如。对于 `application/json;v=1`，键是 `v=`。
    */
   key: string;
 }
@@ -77,12 +76,12 @@ export interface CustomVersioningOptions {
   type: VersioningType.CUSTOM;
 
   /**
-   * A function that accepts a request object (specific to the underlying platform, ie Express or Fastify)
-   * and returns a single version value or an ordered array of versions, in order from HIGHEST to LOWEST.
+   * 一个接受请求对象的函数(特定于底层平台，即 Express 或 Fastify)，
+   * 并返回单个版本值或有序版本数组，按从高到低的顺序排列。
    *
-   * Ex. Returned version array = ['3.1', '3.0', '2.5', '2', '1.9']
+   * 例如。返回的版本数组 = ['3.1', '3.0', '2.5', '2', '1.9']
    *
-   * Use type assertion or narrowing to identify the specific request type.
+   * 使用类型断言或类型收窄来识别特定的请求类型。
    */
   extractor: (request: unknown) => string | string[];
 }
@@ -92,8 +91,8 @@ export interface CustomVersioningOptions {
  */
 interface VersioningCommonOptions {
   /**
-   * The default version to be used as a fallback when you did not provide some
-   * version to `@Controller()` nor `@Version()`.
+   * 当你没有向 `@Controller()` 或 `@Version()` 提供某些版本时，
+   * 用作回退的默认版本。
    */
   defaultVersion?: VersionOptions['version'];
 }

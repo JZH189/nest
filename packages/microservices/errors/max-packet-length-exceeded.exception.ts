@@ -3,6 +3,6 @@
  */
 export class MaxPacketLengthExceededException extends Error {
   constructor(length: number) {
-    super(`The packet length (${length}) exceeds the maximum allowed length`);
+    super(`数据包长度（${length}）超过允许的最大长度`);
   }
 }

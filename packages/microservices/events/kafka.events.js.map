@@ -1,0 +1,1 @@
+{"version":3,"file":"kafka.events.js","sourceRoot":"","sources":["kafka.events.ts"],"names":[],"mappings":"","sourcesContent":["export const enum KafkaStatus {\n  DISCONNECTED = 'disconnected',\n  CONNECTED = 'connected',\n  CRASHED = 'crashed',\n  STOPPED = 'stopped',\n  REBALANCING = 'rebalancing',\n}\n"]}

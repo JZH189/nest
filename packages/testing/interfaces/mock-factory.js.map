@@ -1,0 +1,1 @@
+{"version":3,"file":"mock-factory.js","sourceRoot":"","sources":["mock-factory.ts"],"names":[],"mappings":"","sourcesContent":["import { InjectionToken } from '@nestjs/common';\n\nexport type MockFactory = (token?: InjectionToken) => any;\n"]}

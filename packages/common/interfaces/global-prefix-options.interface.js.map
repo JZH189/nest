@@ -1,0 +1,1 @@
+{"version":3,"file":"global-prefix-options.interface.js","sourceRoot":"","sources":["global-prefix-options.interface.ts"],"names":[],"mappings":"","sourcesContent":["import { RouteInfo } from './middleware';\n\n/**\n * @publicApi\n */\nexport interface GlobalPrefixOptions<T = string | RouteInfo> {\n  exclude?: T[];\n}\n"]}

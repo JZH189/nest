@@ -1,0 +1,1 @@
+{"version":3,"file":"intrinsic.exception.js","sourceRoot":"","sources":["intrinsic.exception.ts"],"names":[],"mappings":";;;AAAA;;;;;GAKG;AACH,MAAa,kBAAmB,SAAQ,KAAK;CAAG;AAAhD,gDAAgD","sourcesContent":["/**\n * 表示应用程序内在错误的异常。\n * 当抛出时，默认异常过滤器不会记录错误消息。\n *\n * @publicApi\n */\nexport class IntrinsicException extends Error {}\n"]}

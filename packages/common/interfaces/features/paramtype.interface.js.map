@@ -1,0 +1,1 @@
+{"version":3,"file":"paramtype.interface.js","sourceRoot":"","sources":["paramtype.interface.ts"],"names":[],"mappings":"","sourcesContent":["/**\n * @publicApi\n */\nexport type Paramtype = 'body' | 'query' | 'param' | 'custom';\n"]}

@@ -1,0 +1,1 @@
+{"version":3,"file":"nest-express-body-parser.interface.js","sourceRoot":"","sources":["nest-express-body-parser.interface.ts"],"names":[],"mappings":"","sourcesContent":["/**\n * Interface defining possible body parser types, to be used with `NestExpressApplication.useBodyParser()`.\n */\nexport type NestExpressBodyParserType = 'json' | 'urlencoded' | 'text' | 'raw';\n"]}

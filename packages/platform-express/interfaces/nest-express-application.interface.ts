@@ -11,9 +11,9 @@ import { NestExpressBodyParserType } from './nest-express-body-parser.interface'
 import { ServeStaticOptions } from './serve-static-options.interface';
 
 /**
- * Interface describing methods on NestExpressApplication.
+ * 描述 NestExpressApplication 上方法的接口。
  *
- * @see [Platform](https://docs.nestjs.com/first-steps#platform)
+ * @see [平台](https://docs.nestjs.cn/first-steps#platform)
  *
  * @publicApi
  */
@@ -21,19 +21,19 @@ export interface NestExpressApplication<
   TServer extends CoreHttpServer | CoreHttpsServer = CoreHttpServer,
 > extends INestApplication<TServer> {
   /**
-   * Returns the underlying HTTP adapter bounded to the Express.js app.
+   * 返回绑定到 Express.js 应用程序的底层 HTTP 适配器。
    *
    * @returns {HttpServer}
    */
   getHttpAdapter(): HttpServer<Express.Request, Express.Response, Express>;
 
   /**
-   * Starts the application.
+   * 启动应用程序。
    *
    * @param {number|string} port
    * @param {string} [hostname]
-   * @param {Function} [callback] Optional callback
-   * @returns {Promise} A Promise that, when resolved, is a reference to the underlying HttpServer.
+   * @param {Function} [callback] 可选回调函数
+   * @returns {Promise} 一个 Promise，解析后是对底层 HttpServer 的引用。
    */
   listen(port: number | string, callback?: () => void): Promise<TServer>;
   listen(
@@ -43,7 +43,7 @@ export interface NestExpressApplication<
   ): Promise<TServer>;
 
   /**
-   * A wrapper function around native `express.set()` method.
+   * 原生 `express.set()` 方法的包装函数。
    *
    * @example
    * app.set('trust proxy', 'loopback')
@@ -53,7 +53,7 @@ export interface NestExpressApplication<
   set(...args: any[]): this;
 
   /**
-   * A wrapper function around native `express.engine()` method.
+   * 原生 `express.engine()` 方法的包装函数。
    * @example
    * app.engine('mustache', mustacheExpress())
    *
@@ -62,7 +62,7 @@ export interface NestExpressApplication<
   engine(...args: any[]): this;
 
   /**
-   * A wrapper function around native `express.enable()` method.
+   * 原生 `express.enable()` 方法的包装函数。
    * @example
    * app.enable('x-powered-by')
    *
@@ -71,7 +71,7 @@ export interface NestExpressApplication<
   enable(...args: any[]): this;
 
   /**
-   * A wrapper function around native `express.disable()` method.
+   * 原生 `express.disable()` 方法的包装函数。
    *
    * @example
    * app.disable('x-powered-by')
@@ -82,7 +82,7 @@ export interface NestExpressApplication<
 
   useStaticAssets(options: ServeStaticOptions): this;
   /**
-   * Sets a base directory for public assets.
+   * 设置公共资源的基本目录。
    * @example
    * app.useStaticAssets('public')
    *
@@ -93,8 +93,7 @@ export interface NestExpressApplication<
   enableCors(options?: CorsOptions | CorsOptionsDelegate<any>): void;
 
   /**
-   * Register Express body parsers on the fly. Will respect
-   * the application's `rawBody` option.
+   * 动态注册 Express body 解析器。将遵守应用程序的 `rawBody` 选项。
    *
    * @example
    * const app = await NestFactory.create<NestExpressApplication>(
@@ -111,7 +110,7 @@ export interface NestExpressApplication<
   ): this;
 
   /**
-   * Sets one or multiple base directories for templates (views).
+   * 为模板（视图）设置一个或多个基本目录。
    *
    * @example
    * app.setBaseViewsDir('views')
@@ -121,7 +120,7 @@ export interface NestExpressApplication<
   setBaseViewsDir(path: string | string[]): this;
 
   /**
-   * Sets a view engine for templates (views).
+   * 为模板（视图）设置视图引擎。
    * @example
    * app.setViewEngine('pug')
    *
@@ -130,7 +129,7 @@ export interface NestExpressApplication<
   setViewEngine(engine: string): this;
 
   /**
-   * Sets app-level globals for view templates.
+   * 为视图模板设置应用程序级全局变量。
    *
    * @example
    * app.setLocal('title', 'My Site')

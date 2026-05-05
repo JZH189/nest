@@ -1,0 +1,1 @@
+{"version":3,"file":"params-metadata.interface.js","sourceRoot":"","sources":["params-metadata.interface.ts"],"names":[],"mappings":"","sourcesContent":["import { ParamData } from '@nestjs/common';\n\nexport type ParamsMetadata = Record<number, ParamMetadata>;\nexport interface ParamMetadata {\n  index: number;\n  data?: ParamData;\n}\n"]}

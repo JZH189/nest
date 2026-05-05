@@ -1,0 +1,1 @@
+{"version":3,"file":"controller-metadata.interface.js","sourceRoot":"","sources":["controller-metadata.interface.ts"],"names":[],"mappings":"","sourcesContent":["export interface ControllerMetadata {\n  path?: string;\n}\n"]}

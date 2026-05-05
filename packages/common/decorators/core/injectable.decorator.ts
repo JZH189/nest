@@ -4,39 +4,34 @@ import { ScopeOptions } from '../../interfaces/scope-options.interface';
 import { Type } from '../../interfaces/type.interface';
 
 /**
- * Defines the injection scope.
+ * 定义注入作用域。
  *
- * @see [Injection Scopes](https://docs.nestjs.com/fundamentals/injection-scopes)
+ * @see [依赖注入作用域](https://docs.nestjs.cn/fundamentals/injection-scopes)
  *
  * @publicApi
  */
 export type InjectableOptions = ScopeOptions;
 
 /**
- * Decorator that marks a class as a [provider](https://docs.nestjs.com/providers).
- * Providers can be injected into other classes via constructor parameter injection
- * using Nest's built-in [Dependency Injection (DI)](https://docs.nestjs.com/providers#dependency-injection)
- * system.
+ * 将类标记为[提供者](https://docs.nestjs.cn/providers)的装饰器。
+ * 提供者可以通过 Nest 内置的[依赖注入 (DI)](https://docs.nestjs.cn/providers#dependency-injection)
+ * 系统，通过构造函数参数注入到其他类中。
  *
- * When injecting a provider, it must be visible within the module scope (loosely
- * speaking, the containing module) of the class it is being injected into. This
- * can be done by:
+ * 注入提供者时，它必须在被注入类的模块范围内可见（广义上讲，即包含该类的模块）。
+ * 可以通过以下方式实现：
  *
- * - defining the provider in the same module scope
- * - exporting the provider from one module scope and importing that module into the
- *   module scope of the class being injected into
- * - exporting the provider from a module that is marked as global using the
- *   `@Global()` decorator
+ * - 在同一模块范围内定义提供者
+ * - 从一个模块范围导出提供者，并将其导入到被注入类的模块范围中
+ * - 从使用 `@Global()` 装饰器标记为全局的模块中导出提供者
  *
- * Providers can also be defined in a more explicit and imperative form using
- * various [custom provider](https://docs.nestjs.com/fundamentals/custom-providers) techniques that expose
- * more capabilities of the DI system.
+ * 提供者也可以使用各种[自定义提供者](https://docs.nestjs.cn/fundamentals/custom-providers)技术
+ * 以更明确和命令式的方式定义，从而暴露 DI 系统的更多功能。
  *
- * @param options options specifying scope of injectable
+ * @param options 指定可注入对象作用域的选项
  *
- * @see [Providers](https://docs.nestjs.com/providers)
- * @see [Custom Providers](https://docs.nestjs.com/fundamentals/custom-providers)
- * @see [Injection Scopes](https://docs.nestjs.com/fundamentals/injection-scopes)
+ * @see [提供者](https://docs.nestjs.cn/providers)
+ * @see [自定义提供者](https://docs.nestjs.cn/fundamentals/custom-providers)
+ * @see [依赖注入作用域](https://docs.nestjs.cn/fundamentals/injection-scopes)
  *
  * @publicApi
  */

@@ -44,8 +44,8 @@ export interface TcpClientOptions {
     tlsOptions?: ConnectionOptions;
     socketClass?: Type<TcpSocket>;
     /**
-     * Maximum buffer size in characters (default: 128MB in characters, i.e., (512 * 1024 * 1024) / 4).
-     * This limit prevents memory exhaustion when receiving large TCP messages.
+     * 最大缓冲区大小（以字符为单位）（默认：128MB 字符，即 (512 * 1024 * 1024) / 4）。
+     * 此限制可防止接收大型 TCP 消息时内存耗尽。
      */
     maxBufferSize?: number;
   };

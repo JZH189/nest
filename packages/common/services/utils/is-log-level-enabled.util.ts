@@ -10,9 +10,9 @@ const LOG_LEVEL_VALUES: Record<LogLevel, number> = {
 };
 
 /**
- * Checks if target level is enabled.
- * @param targetLevel target level
- * @param logLevels array of enabled log levels
+ * 检查目标级别是否已启用。
+ * @param targetLevel 目标级别
+ * @param logLevels 已启用日志级别的数组
  */
 export function isLogLevelEnabled(
   targetLevel: LogLevel,

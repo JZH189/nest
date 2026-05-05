@@ -1,13 +1,13 @@
 import { RENDER_METADATA } from '../../constants';
 
 /**
- * Route handler method Decorator.  Defines a template to be rendered by the controller.
+ * 路由处理程序方法装饰器。定义由控制器渲染的模板。
  *
- * For example: `@Render('index')`
+ * 例如: `@Render('index')`
  *
- * @param template name of the render engine template file
+ * @param template 渲染引擎模板文件的名称
  *
- * @see [Model-View-Controller](https://docs.nestjs.com/techniques/mvc)
+ * @see [模型-视图-控制器](https://docs.nestjs.cn/techniques/mvc)
  *
  * @publicApi
  */

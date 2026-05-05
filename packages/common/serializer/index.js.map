@@ -1,0 +1,1 @@
+{"version":3,"file":"index.js","sourceRoot":"","sources":["index.ts"],"names":[],"mappings":";;;AAAA,yEAA+C;AAC/C,uDAA6B;AAC7B,wEAA8C","sourcesContent":["export * from './class-serializer.interceptor';\nexport * from './decorators';\nexport * from './class-serializer.interfaces';\n"]}

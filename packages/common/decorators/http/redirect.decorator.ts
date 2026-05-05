@@ -1,7 +1,7 @@
 import { REDIRECT_METADATA } from '../../constants';
 
 /**
- * Redirects request to the specified URL.
+ * 将请求重定向到指定的 URL。
  *
  * @publicApi
  */

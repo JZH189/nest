@@ -1,0 +1,1 @@
+{"version":3,"file":"before-application-shutdown.interface.js","sourceRoot":"","sources":["before-application-shutdown.interface.ts"],"names":[],"mappings":"","sourcesContent":["export interface BeforeApplicationShutdown {\n  beforeApplicationShutdown(signal?: string): any;\n}\n"]}

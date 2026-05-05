@@ -9,10 +9,10 @@ import { isFunction, isNil } from '../../utils/shared.utils';
 export type ParamDecoratorEnhancer = ParameterDecorator;
 
 /**
- * Defines HTTP route param decorator
+ * 定义 HTTP 路由参数装饰器
  *
- * @param factory
- * @param enhancers
+ * @param factory 工厂函数
+ * @param enhancers 装饰器增强器
  *
  * @publicApi
  */

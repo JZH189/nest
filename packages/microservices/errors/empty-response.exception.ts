@@ -4,7 +4,7 @@
 export class EmptyResponseException extends Error {
   constructor(pattern: string) {
     super(
-      `Empty response. There are no subscribers listening to that message ("${pattern}")`,
+      `空响应。没有订阅者监听该消息（"${pattern}"）`,
     );
   }
 }

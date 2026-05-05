@@ -5,23 +5,19 @@ import { isFunction } from '../../utils/shared.utils';
 import { validateEach } from '../../utils/validate-each.util';
 
 /**
- * Decorator that binds guards to the scope of the controller or method,
- * depending on its context.
+ * 根据其上下文，将守卫绑定到控制器或方法作用域的装饰器。
  *
- * When `@UseGuards` is used at the controller level, the guard will be
- * applied to every handler (method) in the controller.
+ * 当在控制器级别使用 `@UseGuards` 时，守卫将被应用到控制器中的每个处理程序(方法)。
  *
- * When `@UseGuards` is used at the individual handler level, the guard
- * will apply only to that specific method.
+ * 当在单独的处理程序级别使用 `@UseGuards` 时，守卫将只应用于该特定方法。
  *
- * @param guards a single guard instance or class, or a list of guard instances
- * or classes.
+ * @param guards 单个守卫实例或类，或守卫实例或类的列表。
  *
- * @see [Guards](https://docs.nestjs.com/guards)
+ * @see [守卫](https://docs.nestjs.cn/guards)
  *
  * @usageNotes
- * Guards can also be set up globally for all controllers and routes
- * using `app.useGlobalGuards()`.  [See here for details](https://docs.nestjs.com/guards#binding-guards)
+ * 守卫也可以使用 `app.useGlobalGuards()` 全局设置到所有控制器和路由。
+ * [详见此处](https://docs.nestjs.cn/guards#binding-guards)
  *
  * @publicApi
  */

@@ -7,21 +7,21 @@ import { INestApplicationContext } from './nest-application-context.interface';
 import { WebSocketAdapter } from './websockets/web-socket-adapter.interface';
 
 /**
- * Interface describing Microservice Context.
+ * 描述微服务上下文的接口。
  *
  * @publicApi
  */
 export interface INestMicroservice extends INestApplicationContext {
   /**
-   * Starts the microservice.
+   * 启动微服务。
    *
    * @returns {void}
    */
   listen(): Promise<any>;
 
   /**
-   * Registers a web socket adapter that will be used for Gateways.
-   * Use to override the default `socket.io` library.
+   * 注册将用于网关的 WebSocket 适配器。
+   * 用于覆盖默认的 `socket.io` 库。
    *
    * @param {WebSocketAdapter} adapter
    * @returns {this}
@@ -29,51 +29,51 @@ export interface INestMicroservice extends INestApplicationContext {
   useWebSocketAdapter(adapter: WebSocketAdapter): this;
 
   /**
-   * Registers global exception filters (will be used for every pattern handler).
+   * 注册全局异常过滤器(将用于每个模式处理程序)。
    *
    * @param {...ExceptionFilter} filters
    */
   useGlobalFilters(...filters: ExceptionFilter[]): this;
 
   /**
-   * Registers global pipes (will be used for every pattern handler).
+   * 注册全局管道(将用于每个模式处理程序)。
    *
    * @param {...PipeTransform} pipes
    */
   useGlobalPipes(...pipes: PipeTransform<any>[]): this;
 
   /**
-   * Registers global interceptors (will be used for every pattern handler).
+   * 注册全局拦截器(将用于每个模式处理程序)。
    *
    * @param {...NestInterceptor} interceptors
    */
   useGlobalInterceptors(...interceptors: NestInterceptor[]): this;
 
   /**
-   * Registers global guards (will be used for every pattern handler).
+   * 注册全局守卫(将用于每个模式处理程序)。
    *
    * @param {...CanActivate} guards
    */
   useGlobalGuards(...guards: CanActivate[]): this;
 
   /**
-   * Terminates the application.
+   * 终止应用程序。
    *
    * @returns {Promise<void>}
    */
   close(): Promise<void>;
 
   /**
-   * Returns an observable that emits status changes.
+   * 返回一个发出状态变化的 Observable。
    *
    * @returns {Observable<string>}
    */
   status: Observable<string>;
 
   /**
-   * Registers an event listener for the given event.
-   * @param event Event name
-   * @param callback Callback to be executed when the event is emitted
+   * 为给定事件注册事件监听器。
+   * @param event 事件名称
+   * @param callback 事件触发时要执行的回调
    */
   on<
     EventsMap extends Record<string, Function> = Record<string, Function>,
@@ -85,8 +85,8 @@ export interface INestMicroservice extends INestApplicationContext {
   ): void;
 
   /**
-   * Returns an instance of the underlying server/broker instance,
-   * or a group of servers if there are more than one.
+   * 返回底层服务器/代理实例，
+   * 或者如果存在多个服务器，则返回一组服务器。
    */
   unwrap<T>(): T;
 }

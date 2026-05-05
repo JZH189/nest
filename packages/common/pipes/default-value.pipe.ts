@@ -6,9 +6,9 @@ import {
 import { isNil, isNumber } from '../utils/shared.utils';
 
 /**
- * Defines the built-in DefaultValue Pipe
+ * 定义内置的 DefaultValue 管道
  *
- * @see [Built-in Pipes](https://docs.nestjs.com/pipes#built-in-pipes)
+ * @see [内置管道](https://docs.nestjs.cn/pipes#built-in-pipes)
  *
  * @publicApi
  */

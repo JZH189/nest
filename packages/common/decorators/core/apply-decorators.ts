@@ -1,9 +1,9 @@
 /**
- * Function that returns a new decorator that applies all decorators provided by param
+ * 返回一个新装饰器的函数，该装饰器应用通过参数提供的所有装饰器
  *
- * Useful to build new decorators (or a decorator factory) encapsulating multiple decorators related with the same feature
+ * 用于构建新的装饰器(或装饰器工厂)，封装与同一功能相关的多个装饰器
  *
- * @param decorators one or more decorators (e.g., `ApplyGuard(...)`)
+ * @param decorators 一个或多个装饰器(例如 `ApplyGuard(...)`)
  *
  * @publicApi
  */

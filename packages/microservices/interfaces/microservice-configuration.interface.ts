@@ -110,8 +110,8 @@ export interface TcpOptions {
     deserializer?: Deserializer;
     socketClass?: Type<TcpSocket>;
     /**
-     * Maximum buffer size in characters (default: 128MB in characters, i.e., (512 * 1024 * 1024) / 4).
-     * This limit prevents memory exhaustion when receiving large TCP messages.
+     * 最大缓冲区大小（以字符为单位）（默认：128MB 字符，即 (512 * 1024 * 1024) / 4）。
+     * 此限制可防止接收大型 TCP 消息时内存耗尽。
      */
     maxBufferSize?: number;
   };
@@ -128,7 +128,7 @@ export interface RedisOptions {
     retryAttempts?: number;
     retryDelay?: number;
     /**
-     * Use `psubscribe`/`pmessage` to enable wildcards in the patterns
+     * 使用 `psubscribe`/`pmessage` 启用模式中的通配符。
      */
     wildcards?: boolean;
     serializer?: Serializer;
@@ -147,19 +147,19 @@ export interface MqttOptions {
     deserializer?: Deserializer;
     subscribeOptions?: {
       /**
-       * The QoS
+       * QoS 等级
        */
       qos: QoS;
       /*
-       * No local flag
+       * 无本地标志
        * */
       nl?: boolean;
       /*
-       * Retain as Published flag
+       * 保留为已发布标志
        * */
       rap?: boolean;
       /*
-       * Retain Handling option
+       * 保留处理选项
        * */
       rh?: number;
     };
@@ -223,97 +223,98 @@ export interface RmqOptions {
   transport?: Transport.RMQ;
   options?: {
     /**
-     * An array of connection URLs to try in order.
+     * 按顺序尝试的连接 URL 数组。
      */
     urls?: string[] | RmqUrl[];
     /**
-     * The name of the queue.
+     * 队列名称。
      */
     queue?: string;
     /**
-     * A prefetch count for this channel. The count given is the maximum number of messages sent over the channel that can be awaiting acknowledgement;
-     * once there are count messages outstanding, the server will not send more messages on this channel until one or more have been acknowledged.
+     * 此频道的预取计数。给定的计数是可以通过频道发送的最大消息数，这些消息可能正在等待确认；
+     * 一旦有 count 条消息未完成，服务器将不会在此频道上发送更多消息，直到有一条或多条消息被确认。
      */
     prefetchCount?: number;
     /**
-     * Sets the per-channel behavior for prefetching messages.
+     * 设置预取消息的每频道行为。
      */
     isGlobalPrefetchCount?: boolean;
     /**
-     * Amqplib queue options.
+     * Amqplib 队列选项。
      * @see https://amqp-node.github.io/amqplib/channel_api.html#channel_assertQueue
      */
     queueOptions?: AmqplibQueueOptions;
     /**
-     * AMQP Connection Manager socket options.
+     * AMQP 连接管理器套接字选项。
      */
     socketOptions?: AmqpConnectionManagerSocketOptions;
     /**
-     * If true, the broker won’t expect an acknowledgement of messages delivered to this consumer; i.e., it will dequeue messages as soon as they’ve been sent down the wire.
+     * 如果为 true，代理不会期望对传递到此消费者的消息进行确认；即，一旦消息被发送到网络上，它就会立即出队。
      * @default false
      */
     noAck?: boolean;
     /**
-     * A name which the server will use to distinguish message deliveries for the consumer; mustn’t be already in use on the channel. It’s usually easier to omit this, in which case the server will create a random name and supply it in the reply.
+     * 服务器将用于区分此消费者的消息传递的名称；不能在频道上已经使用。通常更容易省略此选项，
+     * 在这种情况下，服务器将创建一个随机名称并在回复中提供它。
      */
     consumerTag?: string;
     /**
-     * A serializer for the message payload.
+     * 消息负载的序列化器。
      */
     serializer?: Serializer;
     /**
-     * A deserializer for the message payload.
+     * 消息负载的反序列化器。
      */
     deserializer?: Deserializer;
     /**
-     * A reply queue for the producer.
+     * 生产者的回复队列。
      * @default 'amq.rabbitmq.reply-to'
      */
     replyQueue?: string;
     /**
-     * If truthy, the message will survive broker restarts provided it’s in a queue that also survives restarts.
+     * 如果为真，只要消息所在的队列也能在重启后存活，消息将在代理重启后保留。
      */
     persistent?: boolean;
     /**
-     * Additional headers to be sent with every message.
-     * Applies only to the producer configuration.
+     * 每条消息发送的额外头信息。
+     * 仅适用于生产者配置。
      */
     headers?: Record<string, string>;
     /**
-     * When false, a queue will not be asserted before consuming.
+     * 当为 false 时，队列将在消费前不会被断言。
      * @default false
      */
     noAssert?: boolean;
     /**
-     * Name for the exchange. Defaults to the queue name when "wildcards" is set to true.
+     * 交换区名称。当 "wildcards" 设置为 true 时，默认为队列名称。
      * @default ''
      */
     exchange?: string;
     /**
-     * Type of the exchange.
-     * Accepts the AMQP standard types ('direct', 'fanout', 'topic', 'headers') or any custom exchange type name provided as a string literal.
+     * 交换区类型。
+     * 接受 AMQP 标准类型（'direct'、'fanout'、'topic'、'headers'）或作为字符串字面量提供的任何自定义交换区类型名称。
      * @default 'topic'
      */
     exchangeType?: 'direct' | 'fanout' | 'topic' | 'headers' | (string & {});
     /**
-     * Exchange arguments
+     * 交换区参数
      */
     exchangeArguments?: Record<string, string>;
     /**
-     * Additional routing key for the topic exchange.
+     * 主题交换的附加路由键。
      */
     routingKey?: string;
     /**
-     * Set to true only if you want to use Topic Exchange for routing messages to queues.
-     * Enabling this will allow you to use wildcards (*, #) as message and event patterns.
+     * 仅在你想使用主题交换来路由消息到队列时设置为 true。
+     * 启用此选项将允许你使用通配符 (*, #) 作为消息和事件模式。
      * @see https://www.rabbitmq.com/tutorials/tutorial-five-python#topic-exchange
      * @default false
      */
     wildcards?: boolean;
     /**
-     * Maximum number of connection attempts.
-     * Applies only to the consumer configuration.
-     * -1 === infinite
+     * 最大连接尝试次数。
+     * 仅适用于消费者配置。
+     * -1 === 无限
      * @default -1
      */
     maxConnectionAttempts?: number;
@@ -334,15 +335,14 @@ export interface KafkaOptions {
   transport?: Transport.KAFKA;
   options?: {
     /**
-     * Defaults to `"-server"` on server side and `"-client"` on client side.
+     * 默认为服务器端的 `"-server"` 和客户端的 `"-client"`。
      */
     postfixId?: string;
     client?: KafkaConfig;
     consumer?: ConsumerConfig;
     /**
-     * Options passed to KafkaJS consumer.run().
-     * Note: `partitionsConsumedConcurrently` (KafkaJS parameter) controls
-     * concurrent processing at the partition level (not topic level).
+     * 传递给 KafkaJS consumer.run() 的选项。
+     * 注意：`partitionsConsumedConcurrently`（KafkaJS 参数）控制在分区级别（而非主题级别）的并发处理。
      */
     run?: Omit<ConsumerRunConfig, 'eachBatch' | 'eachMessage'>;
     subscribe?: Omit<ConsumerSubscribeTopics, 'topics'>;

@@ -9,142 +9,121 @@ import { ScopeOptions, VersionOptions } from '../../interfaces';
 import { isString, isUndefined } from '../../utils/shared.utils';
 
 /**
- * Interface defining options that can be passed to `@Controller()` decorator
+ * 定义可传递给 `@Controller()` 装饰器的选项接口
  *
  * @publicApi
  */
 export interface ControllerOptions extends ScopeOptions, VersionOptions {
   /**
-   * Specifies an optional `route path prefix`.  The prefix is pre-pended to the
-   * path specified in any request decorator in the class.
+   * 指定可选的 `路由路径前缀`。此前缀会添加到类中任何请求装饰器指定的路径前面。
    *
-   * Supported only by HTTP-based applications (does not apply to non-HTTP microservices).
+   * 仅由基于 HTTP 的应用程序支持（不适用于非 HTTP 微服务）。
    *
-   * @see [Routing](https://docs.nestjs.com/controllers#routing)
+   * @see [路由](https://docs.nestjs.cn/controllers#routing)
    */
   path?: string | string[];
 
   /**
-   * Specifies an optional HTTP Request host filter.  When configured, methods
-   * within the controller will only be routed if the request host matches the
-   * specified value.
+   * 指定可选的 HTTP 请求主机过滤器。配置后，
+   * 只有当请求主机与指定值匹配时，控制器中的方法才会被路由。
    *
-   * @see [Routing](https://docs.nestjs.com/controllers#routing)
+   * @see [路由](https://docs.nestjs.cn/controllers#routing)
    */
   host?: string | RegExp | Array<string | RegExp>;
 }
 
 /**
- * Decorator that marks a class as a Nest controller that can receive inbound
- * requests and produce responses.
+ * 将类标记为可以接收入站请求并生成响应的 Nest 控制器的装饰器。
  *
- * An HTTP Controller responds to inbound HTTP Requests and produces HTTP Responses.
- * It defines a class that provides the context for one or more related route
- * handlers that correspond to HTTP request methods and associated routes
- * for example `GET /api/profile`, `POST /users/resume`.
+ * HTTP 控制器响应入站 HTTP 请求并生成 HTTP 响应。
+ * 它定义了一个类，为一个或多个对应于 HTTP 请求方法和相关路由的路由处理程序提供上下文，
+ * 例如 `GET /api/profile`、`POST /users/resume`。
  *
- * A Microservice Controller responds to requests as well as events, running over
- * a variety of transports [(read more here)](https://docs.nestjs.com/microservices/basics).
- * It defines a class that provides a context for one or more message or event
- * handlers.
+ * 微服务控制器响应请求以及事件，运行在多种传输上
+ * [（了解更多）](https://docs.nestjs.cn/microservices/basics)。
+ * 它定义了一个类，为一个或多个消息或事件处理程序提供上下文。
  *
- * @see [Controllers](https://docs.nestjs.com/controllers)
- * @see [Microservices](https://docs.nestjs.com/microservices/basics#request-response)
+ * @see [控制器](https://docs.nestjs.cn/controllers)
+ * @see [微服务](https://docs.nestjs.cn/microservices/basics#request-response)
  *
  * @publicApi
  */
 export function Controller(): ClassDecorator;
 
 /**
- * Decorator that marks a class as a Nest controller that can receive inbound
- * requests and produce responses.
+ * 将类标记为可以接收入站请求并生成响应的 Nest 控制器的装饰器。
  *
- * An HTTP Controller responds to inbound HTTP Requests and produces HTTP Responses.
- * It defines a class that provides the context for one or more related route
- * handlers that correspond to HTTP request methods and associated routes
- * for example `GET /api/profile`, `POST /users/resume`.
+ * HTTP 控制器响应入站 HTTP 请求并生成 HTTP 响应。
+ * 它定义了一个类，为一个或多个对应于 HTTP 请求方法和相关路由的路由处理程序提供上下文，
+ * 例如 `GET /api/profile`、`POST /users/resume`。
  *
- * A Microservice Controller responds to requests as well as events, running over
- * a variety of transports [(read more here)](https://docs.nestjs.com/microservices/basics).
- * It defines a class that provides a context for one or more message or event
- * handlers.
+ * 微服务控制器响应请求以及事件，运行在多种传输上
+ * [（了解更多）](https://docs.nestjs.cn/microservices/basics)。
+ * 它定义了一个类，为一个或多个消息或事件处理程序提供上下文。
  *
- * @param {string|Array} prefix string that defines a `route path prefix`.  The prefix
- * is pre-pended to the path specified in any request decorator in the class.
+ * @param {string|Array} prefix 定义 `路由路径前缀` 的字符串。前缀将添加到类中任何请求装饰器指定的路径前面。
  *
- * @see [Routing](https://docs.nestjs.com/controllers#routing)
- * @see [Controllers](https://docs.nestjs.com/controllers)
- * @see [Microservices](https://docs.nestjs.com/microservices/basics#request-response)
+ * @see [路由](https://docs.nestjs.cn/controllers#routing)
+ * @see [控制器](https://docs.nestjs.cn/controllers)
+ * @see [微服务](https://docs.nestjs.cn/microservices/basics#request-response)
  *
  * @publicApi
  */
 export function Controller(prefix: string | string[]): ClassDecorator;
 
 /**
- * Decorator that marks a class as a Nest controller that can receive inbound
- * requests and produce responses.
+ * 将类标记为可以接收入站请求并生成响应的 Nest 控制器的装饰器。
  *
- * An HTTP Controller responds to inbound HTTP Requests and produces HTTP Responses.
- * It defines a class that provides the context for one or more related route
- * handlers that correspond to HTTP request methods and associated routes
- * for example `GET /api/profile`, `POST /users/resume`.
+ * HTTP 控制器响应入站 HTTP 请求并生成 HTTP 响应。
+ * 它定义了一个类，为一个或多个对应于 HTTP 请求方法和相关路由的路由处理程序提供上下文，
+ * 例如 `GET /api/profile`、`POST /users/resume`。
  *
- * A Microservice Controller responds to requests as well as events, running over
- * a variety of transports [(read more here)](https://docs.nestjs.com/microservices/basics).
- * It defines a class that provides a context for one or more message or event
- * handlers.
+ * 微服务控制器响应请求以及事件，运行在多种传输上
+ * [（了解更多）](https://docs.nestjs.cn/microservices/basics)。
+ * 它定义了一个类，为一个或多个消息或事件处理程序提供上下文。
  *
- * @param {object} options configuration object specifying:
+ * @param {object} options 指定以下内容的配置对象：
  *
- * - `scope` - symbol that determines the lifetime of a Controller instance.
- * [See Scope](https://docs.nestjs.com/fundamentals/injection-scopes#usage) for
- * more details.
- * - `prefix` - string that defines a `route path prefix`.  The prefix
- * is pre-pended to the path specified in any request decorator in the class.
- * - `version` - string, array of strings, or Symbol that defines the version
- * of all routes in the class. [See Versioning](https://docs.nestjs.com/techniques/versioning)
- * for more details.
+ * - `scope` - 确定控制器实例生命周期的符号。
+ * 有关更多详细信息，请参见[作用域](https://docs.nestjs.cn/fundamentals/injection-scopes#usage)。
+ * - `prefix` - 定义 `路由路径前缀` 的字符串。前缀将添加到类中任何请求装饰器指定的路径前面。
+ * - `version` - 定义类中所有路由版本的字符串、字符串数组或符号。
+ * 有关更多详细信息，请参见[版本控制](https://docs.nestjs.cn/techniques/versioning)。
  *
- * @see [Routing](https://docs.nestjs.com/controllers#routing)
- * @see [Controllers](https://docs.nestjs.com/controllers)
- * @see [Microservices](https://docs.nestjs.com/microservices/basics#request-response)
- * @see [Versioning](https://docs.nestjs.com/techniques/versioning)
+ * @see [路由](https://docs.nestjs.cn/controllers#routing)
+ * @see [控制器](https://docs.nestjs.cn/controllers)
+ * @see [微服务](https://docs.nestjs.cn/microservices/basics#request-response)
+ * @see [版本控制](https://docs.nestjs.cn/techniques/versioning)
  *
  * @publicApi
  */
 export function Controller(options: ControllerOptions): ClassDecorator;
 
 /**
- * Decorator that marks a class as a Nest controller that can receive inbound
- * requests and produce responses.
+ * 将类标记为可以接收入站请求并生成响应的 Nest 控制器的装饰器。
  *
- * An HTTP Controller responds to inbound HTTP Requests and produces HTTP Responses.
- * It defines a class that provides the context for one or more related route
- * handlers that correspond to HTTP request methods and associated routes
- * for example `GET /api/profile`, `POST /users/resume`
+ * HTTP 控制器响应入站 HTTP 请求并生成 HTTP 响应。
+ * 它定义了一个类，为一个或多个对应于 HTTP 请求方法和相关路由的路由处理程序提供上下文，
+ * 例如 `GET /api/profile`、`POST /users/resume`。
  *
- * A Microservice Controller responds to requests as well as events, running over
- * a variety of transports [(read more here)](https://docs.nestjs.com/microservices/basics).
- * It defines a class that provides a context for one or more message or event
- * handlers.
+ * 微服务控制器响应请求以及事件，运行在多种传输上
+ * [（了解更多）](https://docs.nestjs.cn/microservices/basics)。
+ * 它定义了一个类，为一个或多个消息或事件处理程序提供上下文。
  *
- * @param prefixOrOptions a `route path prefix` or a `ControllerOptions` object.
- * A `route path prefix` is pre-pended to the path specified in any request decorator
- * in the class. `ControllerOptions` is an options configuration object specifying:
- * - `scope` - symbol that determines the lifetime of a Controller instance.
- * [See Scope](https://docs.nestjs.com/fundamentals/injection-scopes#usage) for
- * more details.
- * - `prefix` - string that defines a `route path prefix`.  The prefix
- * is pre-pended to the path specified in any request decorator in the class.
- * - `version` - string, array of strings, or Symbol that defines the version
- * of all routes in the class. [See Versioning](https://docs.nestjs.com/techniques/versioning)
- * for more details.
+ * @param prefixOrOptions `路由路径前缀` 或 `ControllerOptions` 对象。
+ * `路由路径前缀` 将添加到类中任何请求装饰器指定的路径前面。
+ * `ControllerOptions` 是指定以下内容的选项配置对象：
+ * - `scope` - 确定控制器实例生命周期的符号。
+ * 有关更多详细信息，请参见[作用域](https://docs.nestjs.cn/fundamentals/injection-scopes#usage)。
+ * - `prefix` - 定义 `路由路径前缀` 的字符串。前缀将添加到类中任何请求装饰器指定的路径前面。
+ * - `version` - 定义类中所有路由版本的字符串、字符串数组或符号。
+ * 有关更多详细信息，请参见[版本控制](https://docs.nestjs.cn/techniques/versioning)。
  *
- * @see [Routing](https://docs.nestjs.com/controllers#routing)
- * @see [Controllers](https://docs.nestjs.com/controllers)
- * @see [Microservices](https://docs.nestjs.com/microservices/basics#request-response)
- * @see [Scope](https://docs.nestjs.com/fundamentals/injection-scopes#usage)
- * @see [Versioning](https://docs.nestjs.com/techniques/versioning)
+ * @see [路由](https://docs.nestjs.cn/controllers#routing)
+ * @see [控制器](https://docs.nestjs.cn/controllers)
+ * @see [微服务](https://docs.nestjs.cn/microservices/basics#request-response)
+ * @see [作用域](https://docs.nestjs.cn/fundamentals/injection-scopes#usage)
+ * @see [版本控制](https://docs.nestjs.cn/techniques/versioning)
  *
  * @publicApi
  */

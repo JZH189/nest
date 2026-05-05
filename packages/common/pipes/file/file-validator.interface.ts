@@ -1,7 +1,7 @@
 import { IFile } from './interfaces';
 
 /**
- * Interface describing FileValidators, which can be added to a ParseFilePipe
+ * 描述 FileValidators 的接口，可以添加到 ParseFilePipe 中。
  *
  * @see {ParseFilePipe}
  * @publicApi
@@ -13,16 +13,16 @@ export abstract class FileValidator<
   constructor(protected readonly validationOptions: TValidationOptions) {}
 
   /**
-   * Indicates if this file should be considered valid, according to the options passed in the constructor.
-   * @param file the file from the request object
+   * 根据构造函数中传递的选项，指示此文件是否应被视为有效。
+   * @param file 请求对象中的文件
    */
   abstract isValid(
     file?: TFile | TFile[] | Record<string, TFile[]>,
   ): boolean | Promise<boolean>;
 
   /**
-   * Builds an error message in case the validation fails.
-   * @param file the file from the request object
+   * 在验证失败时构建错误消息。
+   * @param file 请求对象中的文件
    */
   abstract buildErrorMessage(file: any): string;
 }

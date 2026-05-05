@@ -17,82 +17,82 @@ const DEFAULT_DEPTH = 5;
  */
 export interface ConsoleLoggerOptions {
   /**
-   * Enabled log levels.
+   * 启用的日志级别。
    */
   logLevels?: LogLevel[];
   /**
-   * If enabled, will print timestamp (time difference) between current and previous log message.
-   * Note: This option is not used when `json` is enabled.
+   * 如果启用，将打印当前日志消息与上一条日志消息之间的时间戳（时间差）。
+   * 注意：当启用 `json` 时不使用此选项。
    */
   timestamp?: boolean;
   /**
-   * A prefix to be used for each log message.
-   * Note: This option is not used when `json` is enabled.
+   * 每个日志消息使用的前缀。
+   * 注意：当启用 `json` 时不使用此选项。
    */
   prefix?: string;
   /**
-   * If enabled, will print the log message in JSON format.
+   * 如果启用，将以 JSON 格式打印日志消息。
    */
   json?: boolean;
   /**
-   * If enabled, will print the log message in color.
-   * Default true if json is disabled, false otherwise
+   * 如果启用，将以彩色打印日志消息。
+   * 当禁用 json 时默认为 true，否则为 false。
    */
   colors?: boolean;
   /**
-   * The context of the logger.
+   * 日志记录器的上下文。
    */
   context?: string;
   /**
-   * If enabled, will force the use of console.log/console.error instead of process.stdout/stderr.write.
-   * This is useful for test environments like Jest that can buffer console calls.
+   * 如果启用，将强制使用 console.log/console.error 而不是 process.stdout/stderr.write。
+   * 这对于可以缓冲 console 调用的测试环境（如 Jest）很有用。
    * @default false
    */
   forceConsole?: boolean;
   /**
-   * If enabled, will print the log message in a single line, even if it is an object with multiple properties.
-   * If set to a number, the most n inner elements are united on a single line as long as all properties fit into breakLength. Short array elements are also grouped together.
-   * Default true when `json` is enabled, false otherwise.
+   * 如果启用，即使是有多个属性的对象，也会将日志消息打印为单行。
+   * 如果设置为数字，只要所有属性适合 breakLength，最多 n 个内部元素会在一行上组合。短数组元素也会组合在一起。
+   * 当启用 `json` 时默认为 true，否则为 false。
    */
   compact?: boolean | number;
   /**
-   * Specifies the maximum number of Array, TypedArray, Map, Set, WeakMap, and WeakSet elements to include when formatting.
-   * Set to null or Infinity to show all elements. Set to 0 or negative to show no elements.
-   * Ignored when `json` is enabled, colors are disabled, and `compact` is set to true as it produces a parseable JSON output.
+   * 指定格式化时包含的 Array、TypedArray、Map、Set、WeakMap 和 WeakSet 元素的最大数量。
+   * 设置为 null 或 Infinity 显示所有元素。设置为 0 或负数不显示任何元素。
+   * 当启用 `json`、禁用 colors 且 `compact` 设置为 true 时被忽略，因为它会产生可解析的 JSON 输出。
    * @default 100
    */
   maxArrayLength?: number;
   /**
-   * Specifies the maximum number of characters to include when formatting.
-   * Set to null or Infinity to show all elements. Set to 0 or negative to show no characters.
-   * Ignored when `json` is enabled, colors are disabled, and `compact` is set to true as it produces a parseable JSON output.
+   * 指定格式化时包含的最大字符数。
+   * 设置为 null 或 Infinity 显示所有元素。设置为 0 或负数不显示任何字符。
+   * 当启用 `json`、禁用 colors 且 `compact` 设置为 true 时被忽略，因为它会产生可解析的 JSON 输出。
    * @default 10000.
    */
   maxStringLength?: number;
   /**
-   * If enabled, will sort keys while formatting objects.
-   * Can also be a custom sorting function.
-   * Ignored when `json` is enabled, colors are disabled, and `compact` is set to true as it produces a parseable JSON output.
+   * 如果启用，格式化对象时将对键进行排序。
+   * 也可以是自定义排序函数。
+   * 当启用 `json`、禁用 colors 且 `compact` 设置为 true 时被忽略，因为它会产生可解析的 JSON 输出。
    * @default false
    */
   sorted?: boolean | ((a: string, b: string) => number);
   /**
-   * Specifies the number of times to recurse while formatting object.
-   * This is useful for inspecting large objects. To recurse up to the maximum call stack size pass Infinity or null.
-   * Ignored when `json` is enabled, colors are disabled, and `compact` is set to true as it produces a parseable JSON output.
+   * 指定格式化对象时递归的次数。
+   * 这对于检查大型对象很有用。传递 Infinity 或 null 以递归到最大调用堆栈大小。
+   * 当启用 `json`、禁用 colors 且 `compact` 设置为 true 时被忽略，因为它会产生可解析的 JSON 输出。
    * @default 5
    */
   depth?: number;
   /**
-   * If true, object's non-enumerable symbols and properties are included in the formatted result.
-   * WeakMap and WeakSet entries are also included as well as user defined prototype properties
+   * 如果为 true，对象的不可枚举符号和属性将包含在格式化结果中。
+   * WeakMap 和 WeakSet 条目以及用户定义的原型属性也会被包含。
    * @default false
    */
   showHidden?: boolean;
   /**
-   * The length at which input values are split across multiple lines. Set to Infinity to format the input as a single line (in combination with "compact" set to true).
-   * Default Infinity when "compact" is true, 80 otherwise.
-   * Ignored when `json` is enabled, colors are disabled, and `compact` is set to true as it produces a parseable JSON output.
+   * 输入值拆分为多行的长度。设置为 Infinity 以将输入格式化为单行（与设置为 true 的 "compact" 组合使用）。
+   * 当 "compact" 为 true 时默认为 Infinity，否则为 80。
+   * 当启用 `json`、禁用 colors 且 `compact` 设置为 true 时被忽略，因为它会产生可解析的 JSON 输出。
    */
   breakLength?: number;
 }
@@ -121,23 +121,23 @@ const dateTimeFormatter = new Intl.DateTimeFormat(undefined, {
 @Injectable()
 export class ConsoleLogger implements LoggerService {
   /**
-   * The options of the logger.
+   * 日志记录器的选项。
    */
   protected options: ConsoleLoggerOptions;
   /**
-   * The context of the logger (can be set manually or automatically inferred).
+   * 日志记录器的上下文（可以手动设置或自动推断）。
    */
   protected context?: string;
   /**
-   * The original context of the logger (set in the constructor).
+   * 日志记录器的原始上下文（在构造函数中设置）。
    */
   protected originalContext?: string;
   /**
-   * The options used for the "inspect" method.
+   * 用于 "inspect" 方法的选项。
    */
   protected inspectOptions: InspectOptions;
   /**
-   * The last timestamp at which the log message was printed.
+   * 上一次打印日志消息的时间戳。
    */
   protected static lastTimestampAt?: number;
 
@@ -173,8 +173,8 @@ export class ConsoleLogger implements LoggerService {
   }
 
   /**
-   * Write a 'log' level log, if the configured level allows for it.
-   * Prints to `stdout` with newline.
+   * 如果配置的级别允许，写入 'log' 级别的日志。
+   * 使用换行符打印到 `stdout`。
    */
   log(message: any, context?: string): void;
   log(message: any, ...optionalParams: [...any, string?]): void;
@@ -190,8 +190,8 @@ export class ConsoleLogger implements LoggerService {
   }
 
   /**
-   * Write an 'error' level log, if the configured level allows for it.
-   * Prints to `stderr` with newline.
+   * 如果配置的级别允许，写入 'error' 级别的日志。
+   * 使用换行符打印到 `stderr`。
    */
   error(message: any, stackOrContext?: string): void;
   error(message: any, stack?: string, context?: string): void;
@@ -208,8 +208,8 @@ export class ConsoleLogger implements LoggerService {
   }
 
   /**
-   * Write a 'warn' level log, if the configured level allows for it.
-   * Prints to `stdout` with newline.
+   * 如果配置的级别允许，写入 'warn' 级别的日志。
+   * 使用换行符打印到 `stdout`。
    */
   warn(message: any, context?: string): void;
   warn(message: any, ...optionalParams: [...any, string?]): void;
@@ -225,8 +225,8 @@ export class ConsoleLogger implements LoggerService {
   }
 
   /**
-   * Write a 'debug' level log, if the configured level allows for it.
-   * Prints to `stdout` with newline.
+   * 如果配置的级别允许，写入 'debug' 级别的日志。
+   * 使用换行符打印到 `stdout`。
    */
   debug(message: any, context?: string): void;
   debug(message: any, ...optionalParams: [...any, string?]): void;
@@ -242,8 +242,8 @@ export class ConsoleLogger implements LoggerService {
   }
 
   /**
-   * Write a 'verbose' level log, if the configured level allows for it.
-   * Prints to `stdout` with newline.
+   * 如果配置的级别允许，写入 'verbose' 级别的日志。
+   * 使用换行符打印到 `stdout`。
    */
   verbose(message: any, context?: string): void;
   verbose(message: any, ...optionalParams: [...any, string?]): void;
@@ -259,8 +259,8 @@ export class ConsoleLogger implements LoggerService {
   }
 
   /**
-   * Write a 'fatal' level log, if the configured level allows for it.
-   * Prints to `stdout` with newline.
+   * 如果配置的级别允许，写入 'fatal' 级别的日志。
+   * 使用换行符打印到 `stdout`。
    */
   fatal(message: any, context?: string): void;
   fatal(message: any, ...optionalParams: [...any, string?]): void;
@@ -276,8 +276,8 @@ export class ConsoleLogger implements LoggerService {
   }
 
   /**
-   * Set log levels
-   * @param levels log levels
+   * 设置日志级别
+   * @param levels 日志级别
    */
   setLogLevels(levels: LogLevel[]) {
     if (!this.options) {
@@ -287,15 +287,15 @@ export class ConsoleLogger implements LoggerService {
   }
 
   /**
-   * Set logger context
-   * @param context context
+   * 设置日志记录器上下文
+   * @param context 上下文
    */
   setContext(context: string) {
     this.context = context;
   }
 
   /**
-   * Resets the logger context to the value that was passed in the constructor.
+   * 将日志记录器上下文重置为构造函数中传递的值。
    */
   resetContext() {
     this.context = this.originalContext;

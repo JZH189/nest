@@ -13,7 +13,7 @@ import { VersioningOptions } from './version-options.interface';
 import { WebSocketAdapter } from './websockets/web-socket-adapter.interface';
 
 /**
- * Interface defining the core NestApplication object.
+ * 定义核心 NestApplication 对象的接口。
  *
  * @publicApi
  */
@@ -21,23 +21,23 @@ export interface INestApplication<
   TServer = any,
 > extends INestApplicationContext {
   /**
-   * A wrapper function around HTTP adapter method: `adapter.use()`.
-   * Example `app.use(cors())`
+   * HTTP 适配器方法 `adapter.use()` 的包装函数。
+   * 示例 `app.use(cors())`
    *
    * @returns {this}
    */
   use(...args: any[]): this;
 
   /**
-   * Enables CORS (Cross-Origin Resource Sharing)
+   * 启用 CORS（跨域资源共享）
    *
    * @returns {void}
    */
   enableCors(options?: any): void;
 
   /**
-   * Enables Versioning for the application.
-   * By default, URI-based versioning is used.
+   * 为应用程序启用版本控制。
+   * 默认使用基于 URI 的版本控制。
    *
    * @param {VersioningOptions} options
    * @returns {this}
@@ -45,12 +45,12 @@ export interface INestApplication<
   enableVersioning(options?: VersioningOptions): this;
 
   /**
-   * Starts the application.
+   * 启动应用程序。
    *
    * @param {number|string} port
    * @param {string} [hostname]
-   * @param {Function} [callback] Optional callback
-   * @returns {Promise} A Promise that, when resolved, is a reference to the underlying HttpServer.
+   * @param {Function} [callback] 可选的回调函数
+   * @returns {Promise} 一个 Promise，解析后是对底层 HttpServer 的引用。
    */
   listen(port: number | string, callback?: () => void): Promise<any>;
   listen(
@@ -60,24 +60,24 @@ export interface INestApplication<
   ): Promise<any>;
 
   /**
-   * Returns the url the application is listening at, based on OS and IP version. Returns as an IP value either in IPv6 or IPv4
+   * 返回应用程序正在监听的 URL，基于操作系统和 IP 版本。返回 IPv6 或 IPv4 格式的 IP 值
    *
-   * @returns {Promise<string>} The IP where the server is listening
+   * @returns {Promise<string>} 服务器正在监听的 IP
    */
   getUrl(): Promise<string>;
 
   /**
-   * Registers a prefix for every HTTP route path.
+   * 为每个 HTTP 路由路径注册前缀。
    *
-   * @param {string} prefix The prefix for every HTTP route path (for example `/v1/api`)
-   * @param {GlobalPrefixOptions} options Global prefix options object
+   * @param {string} prefix 每个 HTTP 路由路径的前缀（例如 `/v1/api`）
+   * @param {GlobalPrefixOptions} options 全局前缀选项对象
    * @returns {this}
    */
   setGlobalPrefix(prefix: string, options?: GlobalPrefixOptions): this;
 
   /**
-   * Register Ws Adapter which will be used inside Gateways.
-   * Use when you want to override default `socket.io` library.
+   * 注册将在网关内部使用的 Ws 适配器。
+   * 当你想覆盖默认的 `socket.io` 库时使用。
    *
    * @param {WebSocketAdapter} adapter
    * @returns {this}
@@ -85,12 +85,11 @@ export interface INestApplication<
   useWebSocketAdapter(adapter: WebSocketAdapter): this;
 
   /**
-   * Connects microservice to the NestApplication instance. Transforms application
-   * to a hybrid instance.
+   * 将微服务连接到 NestApplication 实例。将应用程序转换为混合实例。
    *
    * @template {object} T
-   * @param {T} options Microservice options object
-   * @param {NestHybridApplicationOptions} hybridOptions Hybrid options object
+   * @param {T} options 微服务选项对象
+   * @param {NestHybridApplicationOptions} hybridOptions 混合选项对象
    * @returns {INestMicroservice}
    */
   connectMicroservice<T extends object = any>(
@@ -99,66 +98,63 @@ export interface INestApplication<
   ): INestMicroservice;
 
   /**
-   * Returns array of the microservices connected to the NestApplication.
+   * 返回连接到 NestApplication 的微服务数组。
    *
    * @returns {INestMicroservice[]}
    */
   getMicroservices(): INestMicroservice[];
 
   /**
-   * Returns the underlying native HTTP server.
+   * 返回底层原生 HTTP 服务器。
    *
    * @returns {TServer}
    */
   getHttpServer(): TServer;
 
   /**
-   * Returns the underlying HTTP adapter.
+   * 返回底层 HTTP 适配器。
    *
    * @returns {HttpServer}
    */
   getHttpAdapter(): HttpServer;
 
   /**
-   * Starts all connected microservices asynchronously.
+   * 异步启动所有连接的微服务。
    *
    * @returns {Promise}
    */
   startAllMicroservices(): Promise<this>;
 
   /**
-   * Registers exception filters as global filters (will be used within
-   * every HTTP route handler)
+   * 注册异常过滤器为全局过滤器（将在每个 HTTP 路由处理程序中使用）
    *
    * @param {...ExceptionFilter} filters
    */
   useGlobalFilters(...filters: ExceptionFilter[]): this;
 
   /**
-   * Registers pipes as global pipes (will be used within every HTTP route handler)
+   * 注册管道为全局管道（将在每个 HTTP 路由处理程序中使用）
    *
    * @param {...PipeTransform} pipes
    */
   useGlobalPipes(...pipes: PipeTransform<any>[]): this;
 
   /**
-   * Registers interceptors as global interceptors (will be used within
-   * every HTTP route handler)
+   * 注册拦截器为全局拦截器（将在每个 HTTP 路由处理程序中使用）
    *
    * @param {...NestInterceptor} interceptors
    */
   useGlobalInterceptors(...interceptors: NestInterceptor[]): this;
 
   /**
-   * Registers guards as global guards (will be used within every HTTP route handler)
+   * 注册守卫为全局守卫（将在每个 HTTP 路由处理程序中使用）
    *
    * @param {...CanActivate} guards
    */
   useGlobalGuards(...guards: CanActivate[]): this;
 
   /**
-   * Terminates the application (including NestApplication, Gateways, and each connected
-   * microservice)
+   * 终止应用程序（包括 NestApplication、网关和每个连接的微服务）
    *
    * @returns {Promise<void>}
    */

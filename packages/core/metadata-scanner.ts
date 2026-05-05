@@ -33,7 +33,7 @@ export class MetadataScanner {
 
         visitedNames.set(property, true);
 
-        // reason: https://github.com/nestjs/nest/pull/10821#issuecomment-1411916533
+        // 原因：https://github.com/nestjs/nest/pull/10821#issuecomment-1411916533
         const descriptor = Object.getOwnPropertyDescriptor(
           prototype,
           property,
@@ -97,7 +97,7 @@ export class MetadataScanner {
 
         visitedNames.set(property, true);
 
-        // reason: https://github.com/nestjs/nest/pull/10821#issuecomment-1411916533
+        // 原因：https://github.com/nestjs/nest/pull/10821#issuecomment-1411916533
         const descriptor = Object.getOwnPropertyDescriptor(prototype, property);
 
         if (

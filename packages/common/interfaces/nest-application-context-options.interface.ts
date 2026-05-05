@@ -5,72 +5,71 @@ import { LoggerService, LogLevel } from '../services/logger.service';
  */
 export class NestApplicationContextOptions {
   /**
-   * Specifies the logger to use.  Pass `false` to turn off logging.
+   * 指定要使用的日志记录器。传递 `false` 以关闭日志记录。
    */
   logger?: LoggerService | LogLevel[] | false;
 
   /**
-   * Whether to abort the process on Error. By default, the process is exited.
-   * Pass `false` to override the default behavior. If `false` is passed, Nest will not exit
-   * the application and instead will rethrow the exception.
+   * 是否在错误时中止进程。默认情况下，进程会退出。
+   * 传递 `false` 以覆盖默认行为。如果传递 `false`，Nest 不会退出应用程序，
+   * 而是会重新抛出异常。
    * @default true
    */
   abortOnError?: boolean | undefined;
 
   /**
-   * If enabled, logs will be buffered until the "Logger#flush" method is called.
+   * 如果启用，日志将被缓冲，直到调用 "Logger#flush" 方法。
    * @default false
    */
   bufferLogs?: boolean;
 
   /**
-   * If enabled, logs will be automatically flushed and buffer detached when
-   * application initialization process either completes or fails.
+   * 如果启用，日志将在应用程序初始化过程完成或失败时自动刷新并分离缓冲区。
    * @default true
    */
   autoFlushLogs?: boolean;
 
   /**
-   * Whether to run application in the preview mode.
-   * In the preview mode, providers/controllers are not instantiated & resolved.
+   * 是否以预览模式运行应用程序。
+   * 在预览模式下，提供者/控制器不会被实例化和解析。
    *
    * @default false
    */
   preview?: boolean;
 
   /**
-   * Whether to generate a serialized graph snapshot.
+   * 是否生成序列化的图形快照。
    *
    * @default false
    */
   snapshot?: boolean;
 
   /**
-   * Determines what algorithm use to generate module ids.
-   * When set to `deep-hash`, the module id is generated based on the serialized module definition.
-   * When set to `reference`, each module obtains a unique id based on its reference.
+   * 确定使用什么算法生成模块 ID。
+   * 当设置为 `deep-hash` 时，模块 ID 基于序列化的模块定义生成。
+   * 当设置为 `reference` 时，每个模块根据其引用获得唯一的 ID。
    *
    * @default 'reference'
    */
   moduleIdGeneratorAlgorithm?: 'deep-hash' | 'reference';
 
   /**
-   * Instrument the application context.
-   * This option allows you to add custom instrumentation to the application context.
+   * 为应用程序上下文添加检测功能。
+   * 此选项允许你向应用程序上下文添加自定义检测。
    */
   instrument?: {
     /**
-     * Function that decorates each instance created by the application context.
-     * This function can be used to add custom properties or methods to the instance.
-     * @param instance The instance to decorate.
-     * @returns The decorated instance.
+     * 装饰应用程序上下文创建的每个实例的函数。
+     * 此函数可用于向实例添加自定义属性或方法。
+     * @param instance 要装饰的实例。
+     * @returns 装饰后的实例。
      */
     instanceDecorator: (instance: unknown) => unknown;
   };
 
   /**
-   * If enabled, will force the use of console.log/console.error instead of process.stdout/stderr.write
-   * in the default ConsoleLogger. This is useful for test environments like Jest that can buffer console calls.
+   * 如果启用，将强制在默认的 ConsoleLogger 中使用 console.log/console.error 而不是 process.stdout/stderr.write。
+   * 这对于可以缓冲控制台调用的 Jest 等测试环境很有用。
    * @default false
    */
   forceConsole?: boolean;

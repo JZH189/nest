@@ -6,7 +6,7 @@ import { RuntimeException } from '@nestjs/core/errors/exceptions/runtime.excepti
 export class InvalidKafkaClientTopicException extends RuntimeException {
   constructor(topic?: string) {
     super(
-      `The client consumer did not subscribe to the corresponding reply topic (${topic}).`,
+      `客户端消费者未订阅相应的回复主题（${topic}）。`,
     );
   }
 }

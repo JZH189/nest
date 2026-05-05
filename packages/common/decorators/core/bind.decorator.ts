@@ -1,10 +1,9 @@
 /**
- * Decorator that binds *parameter decorators* to the method that follows.
+ * 将*参数装饰器*绑定到后续方法的装饰器。
  *
- * Useful when the language doesn't provide a 'Parameter Decorator' feature
- * (i.e., vanilla JavaScript).
+ * 当语言不提供"参数装饰器"功能时很有用(即普通 JavaScript)。
  *
- * @param decorators one or more parameter decorators (e.g., `Req()`)
+ * @param decorators 一个或多个参数装饰器(例如 `Req()`)
  *
  * @publicApi
  */

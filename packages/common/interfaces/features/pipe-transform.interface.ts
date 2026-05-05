@@ -4,42 +4,41 @@ import { Paramtype } from './paramtype.interface';
 export type Transform<T = any> = (value: T, metadata: ArgumentMetadata) => any;
 
 /**
- * Interface describing a pipe implementation's `transform()` method metadata argument.
+ * 描述管道实现的 `transform()` 方法元数据参数的接口。
  *
- * @see [Pipes](https://docs.nestjs.com/pipes)
+ * @see [管道](https://docs.nestjs.cn/pipes)
  *
  * @publicApi
  */
 export interface ArgumentMetadata {
   /**
-   * Indicates whether argument is a body, query, param, or custom parameter
+   * 指示参数是 body、query、param 还是自定义参数
    */
   readonly type: Paramtype;
   /**
-   * Underlying base type (e.g., `String`) of the parameter, based on the type
-   * definition in the route handler.
+   * 参数的底层基本类型（例如 `String`），基于路由处理程序中的类型定义。
    */
   readonly metatype?: Type<any> | undefined;
   /**
-   * String passed as an argument to the decorator.
-   * Example: `@Body('userId')` would yield `userId`
+   * 作为参数传递给装饰器的字符串。
+   * 示例：`@Body('userId')` 会产生 `userId`
    */
   readonly data?: string | undefined;
 }
 
 /**
- * Interface describing implementation of a pipe.
+ * 描述管道实现的接口。
  *
- * @see [Pipes](https://docs.nestjs.com/pipes)
+ * @see [管道](https://docs.nestjs.cn/pipes)
  *
  * @publicApi
  */
 export interface PipeTransform<T = any, R = any> {
   /**
-   * Method to implement a custom pipe.  Called with two parameters
+   * 实现自定义管道的方法。接收两个参数
    *
-   * @param value argument before it is received by route handler method
-   * @param metadata contains metadata about the value
+   * @param value 在被路由处理程序方法接收之前的参数值
+   * @param metadata 包含有关该值的元数据
    */
   transform(value: T, metadata: ArgumentMetadata): R;
 }

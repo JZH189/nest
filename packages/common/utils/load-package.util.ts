@@ -1,7 +1,7 @@
 import { Logger } from '../services/logger.service';
 
 const MISSING_REQUIRED_DEPENDENCY = (name: string, reason: string) =>
-  `The "${name}" package is missing. Please, make sure to install it to take advantage of ${reason}.`;
+  `"${name}" 包缺失。请确保已安装它以利用 ${reason}。`;
 
 const logger = new Logger('PackageLoader');
 

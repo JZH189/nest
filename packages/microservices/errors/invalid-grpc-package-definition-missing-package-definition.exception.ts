@@ -3,7 +3,7 @@ import { RuntimeException } from '@nestjs/core/errors/exceptions/runtime.excepti
 export class InvalidGrpcPackageDefinitionMissingPackageDefinitionException extends RuntimeException {
   constructor() {
     super(
-      `Invalid gRPC configuration. protoPath or packageDefinition must be defined.`,
+      `无效的 gRPC 配置。必须定义 protoPath 或 packageDefinition。`,
     );
   }
 }

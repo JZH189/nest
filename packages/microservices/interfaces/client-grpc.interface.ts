@@ -3,15 +3,15 @@
  */
 export interface ClientGrpc {
   /**
-   * Returns an instance of the given gRPC service.
-   * @param name Service name
-   * @returns gRPC service
+   * 返回给定 gRPC 服务的实例。
+   * @param name 服务名称
+   * @returns gRPC 服务
    */
   getService<T extends object>(name: string): T;
   /**
-   * Returns an instance of the given gRPC client.
-   * @param name Service name
-   * @returns gRPC client
+   * 返回给定 gRPC 客户端的实例。
+   * @param name 服务名称
+   * @returns gRPC 客户端
    */
   getClientByServiceName<T = any>(name: string): T;
 }

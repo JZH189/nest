@@ -2,19 +2,16 @@ import { CATCH_WATERMARK, FILTER_CATCH_EXCEPTIONS } from '../../constants';
 import { Type, Abstract } from '../../interfaces';
 
 /**
- * Decorator that marks a class as a Nest exception filter. An exception filter
- * handles exceptions thrown by or not handled by your application code.
+ * 将类标记为 Nest 异常过滤器的装饰器。异常过滤器处理应用程序代码抛出或未处理的异常。
  *
- * The decorated class must implement the `ExceptionFilter` interface.
+ * 被装饰的类必须实现 `ExceptionFilter` 接口。
  *
- * @param exceptions one or more exception *types* specifying
- * the exceptions to be caught and handled by this filter.
+ * @param exceptions 一个或多个异常*类型*，指定要由此过滤器捕获和处理的异常。
  *
- * @see [Exception Filters](https://docs.nestjs.com/exception-filters)
+ * @see [异常过滤器](https://docs.nestjs.cn/exception-filters)
  *
  * @usageNotes
- * Exception filters are applied using the `@UseFilters()` decorator, or (globally)
- * with `app.useGlobalFilters()`.
+ * 异常过滤器使用 `@UseFilters()` 装饰器应用，或(全局)使用 `app.useGlobalFilters()`。
  *
  * @publicApi
  */

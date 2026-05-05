@@ -2,36 +2,35 @@ import { Observable } from 'rxjs';
 import { ExecutionContext } from './execution-context.interface';
 
 /**
- * Interface providing access to the response stream.
+ * 提供对响应流访问的接口。
  *
- * @see [Interceptors](https://docs.nestjs.com/interceptors)
+ * @see [拦截器](https://docs.nestjs.cn/interceptors)
  *
  * @publicApi
  */
 export interface CallHandler<T = any> {
   /**
-   * Returns an `Observable` representing the response stream from the route
-   * handler.
+   * 返回一个表示来自路由处理程序的响应流的 `Observable`。
    */
   handle(): Observable<T>;
 }
 
 /**
- * Interface describing implementation of an interceptor.
+ * 描述拦截器实现的接口。
  *
- * @see [Interceptors](https://docs.nestjs.com/interceptors)
+ * @see [拦截器](https://docs.nestjs.cn/interceptors)
  *
  * @publicApi
  */
 
 export interface NestInterceptor<T = any, R = any> {
   /**
-   * Method to implement a custom interceptor.
+   * 实现自定义拦截器的方法。
    *
-   * @param context an `ExecutionContext` object providing methods to access the
-   * route handler and class about to be invoked.
-   * @param next a reference to the `CallHandler`, which provides access to an
-   * `Observable` representing the response stream from the route handler.
+   * @param context 一个 `ExecutionContext` 对象，提供访问即将被调用的
+   * 路由处理程序和类的方法。
+   * @param next 对 `CallHandler` 的引用，它提供对表示来自路由处理程序的响应流的
+   * `Observable` 的访问。
    */
   intercept(
     context: ExecutionContext,

@@ -1,5 +1,5 @@
 /**
- * Validation error description.
+ * 验证错误描述。
  * @see https://github.com/typestack/class-validator
  *
  * class-validator@0.13.0
@@ -8,33 +8,33 @@
  */
 export interface ValidationError {
   /**
-   * Object that was validated.
+   * 被验证的对象。
    *
-   * OPTIONAL - configurable via the ValidatorOptions.validationError.target option
+   * 可选 - 可通过 ValidatorOptions.validationError.target 选项配置
    */
   target?: Record<string, any>;
   /**
-   * Object's property that hasn't passed validation.
+   * 未通过验证的对象属性。
    */
   property: string;
   /**
-   * Value that haven't pass a validation.
+   * 未通过验证的值。
    *
-   * OPTIONAL - configurable via the ValidatorOptions.validationError.value option
+   * 可选 - 可通过 ValidatorOptions.validationError.value 选项配置
    */
   value?: any;
   /**
-   * Constraints that failed validation with error messages.
+   * 带有错误消息的验证失败约束。
    */
   constraints?: {
     [type: string]: string;
   };
   /**
-   * Contains all nested validation errors of the property.
+   * 包含该属性的所有嵌套验证错误。
    */
   children?: ValidationError[];
   /**
-   * A transient set of data passed through to the validation result for response mapping
+   * 用于响应映射的传递到验证结果的临时数据集合。
    */
   contexts?: {
     [type: string]: any;

@@ -1,19 +1,18 @@
 /**
- * Options for configuring shutdown hooks behavior.
+ * 用于配置关闭钩子行为的选项。
  *
  * @publicApi
  */
 export interface ShutdownHooksOptions {
   /**
-   * If true, uses `process.exit()` instead of `process.kill(process.pid, signal)`
-   * after shutdown hooks complete. This ensures the 'exit' event is properly
-   * triggered, which is required for async loggers (like Pino with transports)
-   * to flush their buffers before the process terminates.
+   * 如果为 true，在关闭钩子完成后使用 `process.exit()` 而不是 `process.kill(process.pid, signal)`。
+   * 这确保 'exit' 事件被正确触发，这对于异步日志记录器（如带有 transports 的 Pino）
+   * 在进程终止前刷新缓冲区是必需的。
    *
-   * Note: Using `process.exit()` will:
-   * - Change the exit code (e.g., SIGTERM: 143 → 0)
-   * - May not trigger other signal handlers from third-party libraries
-   * - May affect orchestrator (Kubernetes, Docker) behavior
+   * 注意：使用 `process.exit()` 会：
+   * - 更改退出代码（例如，SIGTERM: 143 → 0）
+   * - 可能不会触发第三方库的其他信号处理器
+   * - 可能影响编排器（Kubernetes、Docker）行为
    *
    * @default false
    */

@@ -22,50 +22,50 @@ export type LogLevel = (typeof LOG_LEVELS)[number];
  */
 export interface LoggerService {
   /**
-   * Write a 'log' level log.
+   * 写入 'log' 级别的日志。
    */
   log(message: any, ...optionalParams: any[]): any;
 
   /**
-   * Write an 'error' level log.
+   * 写入 'error' 级别的日志。
    */
   error(message: any, ...optionalParams: any[]): any;
 
   /**
-   * Write a 'warn' level log.
+   * 写入 'warn' 级别的日志。
    */
   warn(message: any, ...optionalParams: any[]): any;
 
   /**
-   * Write a 'debug' level log.
+   * 写入 'debug' 级别的日志。
    */
   debug?(message: any, ...optionalParams: any[]): any;
 
   /**
-   * Write a 'verbose' level log.
+   * 写入 'verbose' 级别的日志。
    */
   verbose?(message: any, ...optionalParams: any[]): any;
 
   /**
-   * Write a 'fatal' level log.
+   * 写入 'fatal' 级别的日志。
    */
   fatal?(message: any, ...optionalParams: any[]): any;
 
   /**
-   * Set log levels.
-   * @param levels log levels
+   * 设置日志级别。
+   * @param levels 日志级别
    */
   setLogLevels?(levels: LogLevel[]): any;
 }
 
 interface LogBufferRecord {
   /**
-   * Method to execute.
+   * 要执行的方法。
    */
   methodRef: Function;
 
   /**
-   * Arguments to pass to the method.
+   * 传递给方法的参数。
    */
   arguments: unknown[];
 }
@@ -132,7 +132,7 @@ export class Logger implements LoggerService {
   }
 
   /**
-   * Write an 'error' level log.
+   * 写入 'error' 级别的日志。
    */
   error(message: any, stack?: string, context?: string): void;
   error(message: any, ...optionalParams: [...any, string?, string?]): void;
@@ -148,7 +148,7 @@ export class Logger implements LoggerService {
   }
 
   /**
-   * Write a 'log' level log.
+   * 写入 'log' 级别的日志。
    */
   log(message: any, context?: string): void;
   log(message: any, ...optionalParams: [...any, string?]): void;
@@ -161,7 +161,7 @@ export class Logger implements LoggerService {
   }
 
   /**
-   * Write a 'warn' level log.
+   * 写入 'warn' 级别的日志。
    */
   warn(message: any, context?: string): void;
   warn(message: any, ...optionalParams: [...any, string?]): void;
@@ -174,7 +174,7 @@ export class Logger implements LoggerService {
   }
 
   /**
-   * Write a 'debug' level log.
+   * 写入 'debug' 级别的日志。
    */
   debug(message: any, context?: string): void;
   debug(message: any, ...optionalParams: [...any, string?]): void;
@@ -187,7 +187,7 @@ export class Logger implements LoggerService {
   }
 
   /**
-   * Write a 'verbose' level log.
+   * 写入 'verbose' 级别的日志。
    */
   verbose(message: any, context?: string): void;
   verbose(message: any, ...optionalParams: [...any, string?]): void;
@@ -200,7 +200,7 @@ export class Logger implements LoggerService {
   }
 
   /**
-   * Write a 'fatal' level log.
+   * 写入 'fatal' 级别的日志。
    */
   fatal(message: any, context?: string): void;
   fatal(message: any, ...optionalParams: [...any, string?]): void;
@@ -213,7 +213,7 @@ export class Logger implements LoggerService {
   }
 
   /**
-   * Write an 'error' level log.
+   * 写入 'error' 级别的日志。
    */
   static error(message: any, stackOrContext?: string): void;
   static error(message: any, context?: string): void;
@@ -228,7 +228,7 @@ export class Logger implements LoggerService {
   }
 
   /**
-   * Write a 'log' level log.
+   * 写入 'log' 级别的日志。
    */
   static log(message: any, context?: string): void;
   static log(message: any, ...optionalParams: [...any, string?]): void;
@@ -238,7 +238,7 @@ export class Logger implements LoggerService {
   }
 
   /**
-   * Write a 'warn' level log.
+   * 写入 'warn' 级别的日志。
    */
   static warn(message: any, context?: string): void;
   static warn(message: any, ...optionalParams: [...any, string?]): void;
@@ -248,8 +248,8 @@ export class Logger implements LoggerService {
   }
 
   /**
-   * Write a 'debug' level log, if the configured level allows for it.
-   * Prints to `stdout` with newline.
+   * 写入 'debug' 级别的日志（如果配置的日志级别允许）。
+   * 打印到 `stdout` 并换行。
    */
   static debug(message: any, context?: string): void;
   static debug(message: any, ...optionalParams: [...any, string?]): void;
@@ -259,7 +259,7 @@ export class Logger implements LoggerService {
   }
 
   /**
-   * Write a 'verbose' level log.
+   * 写入 'verbose' 级别的日志。
    */
   static verbose(message: any, context?: string): void;
   static verbose(message: any, ...optionalParams: [...any, string?]): void;
@@ -269,7 +269,7 @@ export class Logger implements LoggerService {
   }
 
   /**
-   * Write a 'fatal' level log.
+   * 写入 'fatal' 级别的日志。
    */
   static fatal(message: any, context?: string): void;
   static fatal(message: any, ...optionalParams: [...any, string?]): void;
@@ -279,7 +279,7 @@ export class Logger implements LoggerService {
   }
 
   /**
-   * Print buffered logs and detach buffer.
+   * 打印缓冲的日志并分离缓冲区。
    */
   static flush() {
     this.isBufferAttached = false;
@@ -290,16 +290,16 @@ export class Logger implements LoggerService {
   }
 
   /**
-   * Attach buffer.
-   * Turns on initialization logs buffering.
+   * 附加缓冲区。
+   * 开启初始化日志缓冲。
    */
   static attachBuffer() {
     this.isBufferAttached = true;
   }
 
   /**
-   * Detach buffer.
-   * Turns off initialization logs buffering.
+   * 分离缓冲区。
+   * 关闭初始化日志缓冲。
    */
   static detachBuffer() {
     this.isBufferAttached = false;

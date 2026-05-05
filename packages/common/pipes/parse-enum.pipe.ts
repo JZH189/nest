@@ -12,27 +12,26 @@ import { isNil } from '../utils/shared.utils';
  */
 export interface ParseEnumPipeOptions {
   /**
-   * If true, the pipe will return null or undefined if the value is not provided
+   * 如果为 true，当未提供值时，管道将返回 null 或 undefined
    * @default false
    */
   optional?: boolean;
   /**
-   * The HTTP status code to be used in the response when the validation fails.
+   * 验证失败时在响应中使用的 HTTP 状态码。
    */
   errorHttpStatusCode?: ErrorHttpStatusCode;
   /**
-   * A factory function that returns an exception object to be thrown
-   * if validation fails.
-   * @param error Error message
-   * @returns The exception object
+   * 验证失败时返回要抛出的异常对象的工厂函数。
+   * @param error 错误信息
+   * @returns 异常对象
    */
   exceptionFactory?: (error: string) => any;
 }
 
 /**
- * Defines the built-in ParseEnum Pipe
+ * 定义内置的 ParseEnum 管道
  *
- * @see [Built-in Pipes](https://docs.nestjs.com/pipes#built-in-pipes)
+ * @see [内置管道](https://docs.nestjs.cn/pipes#built-in-pipes)
  *
  * @publicApi
  */
@@ -45,7 +44,7 @@ export class ParseEnumPipe<T = any> implements PipeTransform<T> {
   ) {
     if (!enumType) {
       throw new Error(
-        `"ParseEnumPipe" requires "enumType" argument specified (to validate input values).`,
+        `"ParseEnumPipe" 需要指定 "enumType" 参数(用于验证输入值)`,
       );
     }
     options = options || {};
@@ -58,11 +57,10 @@ export class ParseEnumPipe<T = any> implements PipeTransform<T> {
   }
 
   /**
-   * Method that accesses and performs optional transformation on argument for
-   * in-flight requests.
+   * 访问并对正在处理的请求参数执行可选转换的方法。
    *
-   * @param value currently processed route argument
-   * @param metadata contains metadata about the currently processed route argument
+   * @param value 当前处理的路由参数
+   * @param metadata 包含当前处理的路由参数的元数据
    */
   async transform(value: T, metadata: ArgumentMetadata): Promise<T> {
     if (isNil(value) && this.options?.optional) {
@@ -70,7 +68,7 @@ export class ParseEnumPipe<T = any> implements PipeTransform<T> {
     }
     if (!this.isEnum(value)) {
       throw this.exceptionFactory(
-        'Validation failed (enum string is expected)',
+        '验证失败(期望枚举字符串)',
       );
     }
     return value;

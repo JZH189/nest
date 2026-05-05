@@ -86,7 +86,7 @@ export class NestApplicationContext<
   }
 
   /**
-   * Allows navigating through the modules tree, for example, to pull out a specific instance from the selected module.
+   * 允许在模块树中导航，例如，从选定的模块中提取特定实例。
    * @returns {INestApplicationContext}
    */
   public select<T>(
@@ -130,14 +130,14 @@ export class NestApplicationContext<
   }
 
   /**
-   * Retrieves an instance of either injectable or controller, otherwise, throws exception.
+   * 获取可注入对象或控制器的实例，如果不存在则抛出异常。
    * @returns {TResult}
    */
   public get<TInput = any, TResult = TInput>(
     typeOrToken: Type<TInput> | Function | string | symbol,
   ): TResult;
   /**
-   * Retrieves an instance of either injectable or controller, otherwise, throws exception.
+   * 获取可注入对象或控制器的实例，如果不存在则抛出异常。
    * @returns {TResult}
    */
   public get<TInput = any, TResult = TInput>(
@@ -148,7 +148,7 @@ export class NestApplicationContext<
     },
   ): TResult;
   /**
-   * Retrieves a list of instances of either injectables or controllers, otherwise, throws exception.
+   * 获取可注入对象或控制器实例的列表，如果不存在则抛出异常。
    * @returns {Array<TResult>}
    */
   public get<TInput = any, TResult = TInput>(
@@ -159,7 +159,7 @@ export class NestApplicationContext<
     },
   ): Array<TResult>;
   /**
-   * Retrieves an instance (or a list of instances) of either injectable or controller, otherwise, throws exception.
+   * 获取可注入对象或控制器的一个实例（或实例列表），如果不存在则抛出异常。
    * @returns {TResult | Array<TResult>}
    */
   public get<TInput = any, TResult = TInput>(
@@ -175,14 +175,14 @@ export class NestApplicationContext<
   }
 
   /**
-   * Resolves transient or request-scoped instance of either injectable or controller, otherwise, throws exception.
+   * 解析可注入对象或控制器的临时实例或请求作用域实例，如果不存在则抛出异常。
    * @returns {Array<TResult>}
    */
   public resolve<TInput = any, TResult = TInput>(
     typeOrToken: Type<TInput> | Function | string | symbol,
   ): Promise<TResult>;
   /**
-   * Resolves transient or request-scoped instance of either injectable or controller, otherwise, throws exception.
+   * 解析可注入对象或控制器的临时实例或请求作用域实例，如果不存在则抛出异常。
    * @returns {Array<TResult>}
    */
   public resolve<TInput = any, TResult = TInput>(
@@ -192,7 +192,7 @@ export class NestApplicationContext<
     },
   ): Promise<TResult>;
   /**
-   * Resolves transient or request-scoped instance of either injectable or controller, otherwise, throws exception.
+   * 解析可注入对象或控制器的临时实例或请求作用域实例，如果不存在则抛出异常。
    * @returns {Array<TResult>}
    */
   public resolve<TInput = any, TResult = TInput>(
@@ -206,7 +206,7 @@ export class NestApplicationContext<
     },
   ): Promise<TResult>;
   /**
-   * Resolves transient or request-scoped instances of either injectables or controllers, otherwise, throws exception.
+   * 解析可注入对象或控制器的临时实例或请求作用域实例，如果不存在则抛出异常。
    * @returns {Array<TResult>}
    */
   public resolve<TInput = any, TResult = TInput>(
@@ -220,7 +220,7 @@ export class NestApplicationContext<
     },
   ): Promise<Array<TResult>>;
   /**
-   * Resolves transient or request-scoped instance (or a list of instances) of either injectable or controller, otherwise, throws exception.
+   * 解析可注入对象或控制器的临时实例或请求作用域实例（列表），如果不存在则抛出异常。
    * @returns {Promise<TResult | Array<TResult>>}
    */
   public resolve<TInput = any, TResult = TInput>(
@@ -237,7 +237,7 @@ export class NestApplicationContext<
   }
 
   /**
-   * Registers the request/context object for a given context ID (DI container sub-tree).
+   * 为给定的上下文 ID（DI 容器子树）注册请求/上下文对象。
    * @returns {void}
    */
   public registerRequestByContextId<T = any>(request: T, contextId: ContextId) {
@@ -245,10 +245,10 @@ export class NestApplicationContext<
   }
 
   /**
-   * Initializes the Nest application.
-   * Calls the Nest lifecycle events.
+   * 初始化 Nest 应用程序。
+   * 调用 Nest 生命周期事件。
    *
-   * @returns {Promise<this>} The NestApplicationContext instance as Promise
+   * @returns {Promise<this>} 返回 Promise 形式的 NestApplicationContext 实例
    */
   public async init(): Promise<this> {
     if (this.isInitialized) {
@@ -271,7 +271,7 @@ export class NestApplicationContext<
   }
 
   /**
-   * Terminates the application
+   * 终止应用程序
    * @returns {Promise<void>}
    */
   public async close(signal?: string): Promise<void> {
@@ -284,8 +284,8 @@ export class NestApplicationContext<
   }
 
   /**
-   * Sets custom logger service.
-   * Flushes buffered logs if auto flush is on.
+   * 设置自定义日志服务。
+   * 如果自动刷新开启，则刷新缓冲的日志。
    * @returns {void}
    */
   public useLogger(logger: LoggerService | LogLevel[] | false) {
@@ -297,7 +297,7 @@ export class NestApplicationContext<
   }
 
   /**
-   * Prints buffered logs and detaches buffer.
+   * 打印缓冲的日志并分离缓冲区。
    * @returns {void}
    */
   public flushLogs() {
@@ -305,21 +305,20 @@ export class NestApplicationContext<
   }
 
   /**
-   * Define that it must flush logs right after defining a custom logger.
+   * 定义在定义自定义日志器后必须立即刷新日志。
    */
   public flushLogsOnOverride() {
     this.shouldFlushLogsOnOverride = true;
   }
 
   /**
-   * Enables the usage of shutdown hooks. Will call the
-   * `onApplicationShutdown` function of a provider if the
-   * process receives a shutdown signal.
+   * 启用关闭钩子的使用。当进程收到关闭信号时，
+   * 将调用提供者的 `onApplicationShutdown` 函数。
    *
-   * @param {ShutdownSignal[]} [signals=[]] The system signals it should listen to
-   * @param {ShutdownHooksOptions} [options={}] Options for configuring shutdown hooks behavior
+   * @param {ShutdownSignal[]} [signals=[]] 应该监听的系统信号
+   * @param {ShutdownHooksOptions} [options={}] 配置关闭钩子行为的选项
    *
-   * @returns {this} The Nest application context instance
+   * @returns {this} Nest 应用上下文实例
    */
   public enableShutdownHooks(
     signals: (ShutdownSignal | string)[] = [],
@@ -330,14 +329,13 @@ export class NestApplicationContext<
         (key: string) => ShutdownSignal[key],
       );
     } else {
-      // given signals array should be unique because
-      // process shouldn't listen to the same signal more than once.
+      // 给定的信号数组应该是唯一的，因为进程不应该监听同一个信号超过一次。
       signals = Array.from(new Set(signals));
     }
 
     signals = iterate(signals)
       .map((signal: string) => signal.toString().toUpperCase().trim())
-      // filter out the signals which is already listening to
+      // 过滤掉已经在监听的信号
       .filter(signal => !this.activeShutdownSignals.includes(signal))
       .toArray();
 
@@ -346,17 +344,15 @@ export class NestApplicationContext<
   }
 
   protected async dispose(): Promise<void> {
-    // Nest application context has no server
-    // to dispose, therefore just call a noop
+    // Nest 应用上下文没有服务器需要释放，因此只执行空操作
     return Promise.resolve();
   }
 
   /**
-   * Listens to shutdown signals by listening to
-   * process events
+   * 通过监听进程事件来监听关闭信号
    *
-   * @param {string[]} signals The system signals it should listen to
-   * @param {ShutdownHooksOptions} options Options for configuring shutdown hooks behavior
+   * @param {string[]} signals 应该监听的系统信号
+   * @param {ShutdownHooksOptions} options 配置关闭钩子行为的选项
    */
   protected listenToShutdownSignals(
     signals: string[],
@@ -366,8 +362,7 @@ export class NestApplicationContext<
     const cleanup = async (signal: string) => {
       try {
         if (receivedSignal) {
-          // If we receive another signal while we're waiting
-          // for the server to stop, just ignore it.
+          // 如果在等待服务器停止时收到另一个信号，则忽略它。
           return;
         }
         receivedSignal = true;
@@ -379,9 +374,9 @@ export class NestApplicationContext<
         signals.forEach(sig => process.removeListener(sig, cleanup));
 
         if (options.useProcessExit) {
-          // Use process.exit() to ensure the 'exit' event is properly triggered.
-          // This is required for async loggers (like Pino with transports)
-          // to flush their buffers before the process terminates.
+          // 使用 process.exit() 确保 'exit' 事件被正确触发。
+          // 这对于异步日志记录器（如带有 transports 的 Pino）
+          // 在进程终止前刷新缓冲区是必需的。
           process.exit(0);
         } else {
           process.kill(process.pid, signal);
@@ -404,7 +399,7 @@ export class NestApplicationContext<
   }
 
   /**
-   * Unsubscribes from shutdown signals (process events)
+   * 取消订阅关闭信号（进程事件）
    */
   protected unsubscribeFromProcessSignals() {
     if (!this.shutdownCleanupRef) {
@@ -416,8 +411,7 @@ export class NestApplicationContext<
   }
 
   /**
-   * Calls the `onModuleInit` function on the registered
-   * modules and its children.
+   * 调用已注册模块及其子模块的 `onModuleInit` 函数。
    */
   protected async callInitHook(): Promise<void> {
     const modulesSortedByDistance = this.getModulesToTriggerHooksOn();
@@ -427,8 +421,7 @@ export class NestApplicationContext<
   }
 
   /**
-   * Calls the `onModuleDestroy` function on the registered
-   * modules and its children.
+   * 调用已注册模块及其子模块的 `onModuleDestroy` 函数。
    */
   protected async callDestroyHook(): Promise<void> {
     const modulesSortedByDistance = [
@@ -441,8 +434,7 @@ export class NestApplicationContext<
   }
 
   /**
-   * Calls the `onApplicationBootstrap` function on the registered
-   * modules and its children.
+   * 调用已注册模块及其子模块的 `onApplicationBootstrap` 函数。
    */
   protected async callBootstrapHook(): Promise<void> {
     const modulesSortedByDistance = this.getModulesToTriggerHooksOn();
@@ -452,8 +444,7 @@ export class NestApplicationContext<
   }
 
   /**
-   * Calls the `onApplicationShutdown` function on the registered
-   * modules and children.
+   * 调用已注册模块及其子模块的 `onApplicationShutdown` 函数。
    */
   protected async callShutdownHook(signal?: string): Promise<void> {
     const modulesSortedByDistance = [
@@ -466,8 +457,7 @@ export class NestApplicationContext<
   }
 
   /**
-   * Calls the `beforeApplicationShutdown` function on the registered
-   * modules and children.
+   * 调用已注册模块及其子模块的 `beforeApplicationShutdown` 函数。
    */
   protected async callBeforeShutdownHook(signal?: string): Promise<void> {
     const modulesSortedByDistance = [

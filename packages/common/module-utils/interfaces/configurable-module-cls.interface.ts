@@ -7,9 +7,8 @@ import {
 import { ConfigurableModuleAsyncOptions } from './configurable-module-async-options.interface';
 
 /**
- * Class that represents a blueprint/prototype for a configurable Nest module.
- * This class provides static methods for constructing dynamic modules. Their names
- * can be controlled through the "MethodKey" type argument.
+ * 表示可配置 Nest 模块的蓝图/原型的类。
+ * 此类提供用于构造动态模块的静态方法。方法名可以通过 "MethodKey" 类型参数进行控制。
  *
  * @publicApi
  */

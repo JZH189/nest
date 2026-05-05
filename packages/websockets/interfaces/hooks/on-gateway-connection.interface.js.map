@@ -1,0 +1,1 @@
+{"version":3,"file":"on-gateway-connection.interface.js","sourceRoot":"","sources":["on-gateway-connection.interface.ts"],"names":[],"mappings":"","sourcesContent":["/**\n * @publicApi\n */\nexport interface OnGatewayConnection<T = any> {\n  handleConnection(client: T, ...args: any[]): any;\n}\n"]}

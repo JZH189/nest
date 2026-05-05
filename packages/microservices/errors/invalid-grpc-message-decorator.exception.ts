@@ -12,7 +12,7 @@ export interface RpcDecoratorMetadata {
 export class InvalidGrpcDecoratorException extends RuntimeException {
   constructor(metadata: RpcDecoratorMetadata) {
     super(
-      `The invalid gRPC decorator (method "${metadata.rpc}" in service "${metadata.service}")`,
+      `无效的 gRPC 装饰器（服务 "${metadata.service}" 中的方法 "${metadata.rpc}"）`,
     );
   }
 }

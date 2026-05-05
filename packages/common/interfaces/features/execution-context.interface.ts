@@ -2,20 +2,19 @@ import { Type } from '../index';
 import { ArgumentsHost } from './arguments-host.interface';
 
 /**
- * Interface describing details about the current request pipeline.
+ * 描述当前请求管道详情的接口。
  *
- * @see [Execution Context](https://docs.nestjs.com/guards#execution-context)
+ * @see [执行上下文](https://docs.nestjs.cn/guards#execution-context)
  *
  * @publicApi
  */
 export interface ExecutionContext extends ArgumentsHost {
   /**
-   * Returns the *type* of the controller class which the current handler belongs to.
+   * 返回当前处理程序所属的控制器类的*类型*。
    */
   getClass<T = any>(): Type<T>;
   /**
-   * Returns a reference to the handler (method) that will be invoked next in the
-   * request pipeline.
+   * 返回将在请求管道中接下来调用的处理程序（方法）的引用。
    */
   getHandler(): Function;
 }

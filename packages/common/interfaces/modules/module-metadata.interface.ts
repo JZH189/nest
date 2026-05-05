@@ -5,33 +5,31 @@ import { ForwardReference } from './forward-reference.interface';
 import { Provider } from './provider.interface';
 
 /**
- * Interface defining the property object that describes the module.
+ * 定义描述模块的属性对象的接口。
  *
- * @see [Modules](https://docs.nestjs.com/modules)
+ * @see [模块](https://docs.nestjs.cn/modules)
  *
  * @publicApi
  */
 export interface ModuleMetadata {
   /**
-   * Optional list of imported modules that export the providers which are
-   * required in this module.
+   * 可选的导入模块列表，这些模块导出了此模块所需的提供者。
    */
   imports?: Array<
     Type<any> | DynamicModule | Promise<DynamicModule> | ForwardReference
   >;
   /**
-   * Optional list of controllers defined in this module which have to be
-   * instantiated.
+   * 可选的在此模块中定义的、需要实例化的控制器列表。
    */
   controllers?: Type<any>[];
   /**
-   * Optional list of providers that will be instantiated by the Nest injector
-   * and that may be shared at least across this module.
+   * 可选的提供者列表，将由 Nest 注入器实例化，
+   * 并且至少在此模块中共享。
    */
   providers?: Provider[];
   /**
-   * Optional list of the subset of providers that are provided by this module
-   * and should be available in other modules which import this module.
+   * 可选的从此模块提供的提供者的子集列表，
+   * 应该在其导入此模块的其他模块中可用。
    */
   exports?: Array<
     | DynamicModule

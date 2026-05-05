@@ -10,7 +10,7 @@ export function flatten<T extends Array<unknown> = any>(
 }
 
 /**
- * Decorator that sets required dependencies (required with a vanilla JavaScript objects)
+ * 设置所需依赖的装饰器(需要使用普通 JavaScript 对象)
  *
  * @publicApi
  */

@@ -1,5 +1,5 @@
 /**
- * @see [Middleware](https://docs.nestjs.com/middleware)
+ * @see [中间件](https://docs.nestjs.cn/middleware)
  *
  * @publicApi
  */

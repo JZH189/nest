@@ -1,0 +1,1 @@
+{"version":3,"file":"optional-factory-dependency.interface.js","sourceRoot":"","sources":["optional-factory-dependency.interface.ts"],"names":[],"mappings":"","sourcesContent":["import { InjectionToken } from './injection-token.interface';\n\n/**\n * @publicApi\n */\nexport type OptionalFactoryDependency = {\n  token: InjectionToken;\n  optional: boolean;\n};\n"]}

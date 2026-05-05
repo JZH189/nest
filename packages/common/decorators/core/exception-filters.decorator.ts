@@ -5,23 +5,19 @@ import { isFunction } from '../../utils/shared.utils';
 import { validateEach } from '../../utils/validate-each.util';
 
 /**
- * Decorator that binds exception filters to the scope of the controller or
- * method, depending on its context.
+ * 根据其上下文，将异常过滤器绑定到控制器或方法作用域的装饰器。
  *
- * When `@UseFilters` is used at the controller level, the filter will be
- * applied to every handler (method) in the controller.
+ * 当在控制器级别使用 `@UseFilters` 时，过滤器将被应用到控制器中的每个处理程序(方法)。
  *
- * When `@UseFilters` is used at the individual handler level, the filter
- * will apply only to that specific method.
+ * 当在单独的处理程序级别使用 `@UseFilters` 时，过滤器将只应用于该特定方法。
  *
- * @param filters exception filter instance or class, or a list of exception
- * filter instances or classes.
+ * @param filters 异常过滤器实例或类，或异常过滤器实例或类的列表。
  *
- * @see [Exception filters](https://docs.nestjs.com/exception-filters)
+ * @see [异常过滤器](https://docs.nestjs.cn/exception-filters)
  *
  * @usageNotes
- * Exception filters can also be set up globally for all controllers and routes
- * using `app.useGlobalFilters()`.  [See here for details](https://docs.nestjs.com/exception-filters#binding-filters)
+ * 异常过滤器也可以使用 `app.useGlobalFilters()` 全局设置到所有控制器和路由。
+ * [详见此处](https://docs.nestjs.cn/exception-filters#binding-filters)
  *
  * @publicApi
  */

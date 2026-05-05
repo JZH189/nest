@@ -3,6 +3,6 @@
  */
 export class CorruptedPacketLengthException extends Error {
   constructor(rawContentLength: string) {
-    super(`Corrupted length value "${rawContentLength}" supplied in a packet`);
+    super(`包中提供的长度值已损坏："${rawContentLength}"`);
   }
 }

@@ -7,12 +7,11 @@ import { FileValidator } from './file-validator.interface';
 import { ParseFileOptions } from './parse-file-options.interface';
 
 /**
- * Defines the built-in ParseFile Pipe. This pipe can be used to validate incoming files
- * with `@UploadedFile()` decorator. You can use either other specific built-in validators
- * or provide one of your own, simply implementing it through FileValidator interface
- * and adding it to ParseFilePipe's constructor.
+ * 定义内置的 ParseFile 管道。此管道可用于使用 `@UploadedFile()` 装饰器验证传入文件。
+ * 你可以使用其他特定的内置验证器，或者提供自己的验证器，只需通过 FileValidator 接口实现它，
+ * 并将其添加到 ParseFilePipe 的构造函数中即可。
  *
- * @see [Built-in Pipes](https://docs.nestjs.com/pipes#built-in-pipes)
+ * @see [内置管道](https://docs.nestjs.cn/pipes#built-in-pipes)
  *
  * @publicApi
  */
@@ -82,7 +81,7 @@ export class ParseFilePipe implements PipeTransform<any> {
   }
 
   /**
-   * @returns list of validators used in this pipe.
+   * @returns 此管道使用的验证器列表。
    */
   getValidators() {
     return this.validators;

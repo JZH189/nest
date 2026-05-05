@@ -90,7 +90,7 @@ Potential solutions:
 - Ensure the imported class is decorated with @Injectable() or is a valid provider
 - If using dynamic imports, ensure the class is available at runtime, not just for type checking
 
-For more common dependency resolution issues, see: https://docs.nestjs.com/faq/common-errors`;
+For more common dependency resolution issues, see: https://docs.nestjs.cn/faq/common-errors`;
   } else {
     potentialSolutions =
       // If module's name is well defined
@@ -104,7 +104,7 @@ Potential solutions:
     imports: [ /* the Module containing ${dependencyName} */ ]
   })
 
-For more common dependency resolution issues, see: https://docs.nestjs.com/faq/common-errors`
+For more common dependency resolution issues, see: https://docs.nestjs.cn/faq/common-errors`
         : `\n
 Potential solutions:
 - If ${dependencyName} is a provider, is it part of the current Module?
@@ -113,7 +113,7 @@ Potential solutions:
     imports: [ /* the Module containing ${dependencyName} */ ]
   })
 
-For more common dependency resolution issues, see: https://docs.nestjs.com/faq/common-errors`;
+For more common dependency resolution issues, see: https://docs.nestjs.cn/faq/common-errors`;
   }
 
   let message = `Nest can't resolve dependencies of the ${type.toString()}`;
@@ -149,7 +149,7 @@ export const UNDEFINED_FORWARDREF_MESSAGE = (
   scope: Type<any>[],
 ) => `Nest cannot create the module instance. Often, this is because of a circular dependency between modules. Use forwardRef() to avoid it.
 
-(Read more: https://docs.nestjs.com/fundamentals/circular-dependency)
+(Read more: https://docs.nestjs.cn/fundamentals/circular-dependency)
 Scope [${stringifyScope(scope)}]
 `;
 
@@ -190,7 +190,7 @@ export const UNDEFINED_MODULE_MESSAGE = (
 The module at index [${index}] of the ${parentModuleName} "imports" array is undefined.
 
 Potential causes:
-- A circular dependency between modules. Use forwardRef() to avoid it. Read more: https://docs.nestjs.com/fundamentals/circular-dependency
+- A circular dependency between modules. Use forwardRef() to avoid it. Read more: https://docs.nestjs.cn/fundamentals/circular-dependency
 - The module at index [${index}] is of type "undefined". Check your import statements and the type of the module.
 
 Scope [${stringifyScope(scope)}]`;
@@ -207,7 +207,7 @@ export const UNKNOWN_EXPORT_MESSAGE = (
 Possible Solutions:
 - Is ${token} part of the relevant providers/imports within ${module}?
 
-For more common dependency resolution issues, see: https://docs.nestjs.com/faq/common-errors
+For more common dependency resolution issues, see: https://docs.nestjs.cn/faq/common-errors
 `;
 };
 

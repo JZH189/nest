@@ -1,0 +1,1 @@
+{"version":3,"file":"file-validator-context.interface.js","sourceRoot":"","sources":["file-validator-context.interface.ts"],"names":[],"mappings":"","sourcesContent":["import { IFile } from './interfaces';\n\nexport type FileValidatorContext<TConfig> = {\n  file?: IFile;\n  config: TConfig;\n};\n"]}

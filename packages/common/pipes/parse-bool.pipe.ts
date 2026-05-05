@@ -16,27 +16,26 @@ import { isNil } from '../utils/shared.utils';
  */
 export interface ParseBoolPipeOptions {
   /**
-   * The HTTP status code to be used in the response when the validation fails.
+   * 验证失败时在响应中使用的 HTTP 状态码。
    */
   errorHttpStatusCode?: ErrorHttpStatusCode;
   /**
-   * A factory function that returns an exception object to be thrown
-   * if validation fails.
-   * @param error Error message
-   * @returns The exception object
+   * 如果验证失败，返回要抛出的异常对象的工厂函数。
+   * @param error 错误消息
+   * @returns 异常对象
    */
   exceptionFactory?: (error: string) => any;
   /**
-   * If true, the pipe will return null or undefined if the value is not provided
+   * 如果为 true，当未提供值时，管道将返回 null 或 undefined
    * @default false
    */
   optional?: boolean;
 }
 
 /**
- * Defines the built-in ParseBool Pipe
+ * 定义内置的 ParseBool 管道
  *
- * @see [Built-in Pipes](https://docs.nestjs.com/pipes#built-in-pipes)
+ * @see [内置管道](https://docs.nestjs.cn/pipes#built-in-pipes)
  *
  * @publicApi
  */
@@ -57,11 +56,10 @@ export class ParseBoolPipe implements PipeTransform<
   }
 
   /**
-   * Method that accesses and performs optional transformation on argument for
-   * in-flight requests.
+   * 访问并对正在处理中的请求参数执行可选转换的方法。
    *
-   * @param value currently processed route argument
-   * @param metadata contains metadata about the currently processed route argument
+   * @param value 当前正在处理的路由参数
+   * @param metadata 包含有关当前正在处理的路由参数的元数据
    */
   async transform(
     value: string | boolean,
@@ -82,18 +80,16 @@ export class ParseBoolPipe implements PipeTransform<
   }
 
   /**
-   * @param value currently processed route argument
-   * @returns `true` if `value` is said 'true', ie., if it is equal to the boolean
-   * `true` or the string `"true"`
+   * @param value 当前正在处理的路由参数
+   * @returns 如果 `value` 为 'true'，即等于布尔值 `true` 或字符串 `"true"`，则返回 `true`
    */
   protected isTrue(value: string | boolean): boolean {
     return value === true || value === 'true';
   }
 
   /**
-   * @param value currently processed route argument
-   * @returns `true` if `value` is said 'false', ie., if it is equal to the boolean
-   * `false` or the string `"false"`
+   * @param value 当前正在处理的路由参数
+   * @returns 如果 `value` 为 'false'，即等于布尔值 `false` 或字符串 `"false"`，则返回 `true`
    */
   protected isFalse(value: string | boolean): boolean {
     return value === false || value === 'false';

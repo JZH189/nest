@@ -1,0 +1,1 @@
+{"version":3,"file":"nest-middleware.interface.js","sourceRoot":"","sources":["nest-middleware.interface.ts"],"names":[],"mappings":"","sourcesContent":["/**\n * @see [中间件](https://docs.nestjs.cn/middleware)\n *\n * @publicApi\n */\nexport interface NestMiddleware<TRequest = any, TResponse = any> {\n  use(req: TRequest, res: TResponse, next: (error?: any) => void): any;\n}\n"]}

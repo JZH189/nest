@@ -16,31 +16,30 @@ import { isNil, isString } from '../utils/shared.utils';
  */
 export interface ParseUUIDPipeOptions {
   /**
-   * UUID version to validate
+   * 要验证的 UUID 版本
    */
   version?: '3' | '4' | '5' | '7';
   /**
-   * The HTTP status code to be used in the response when the validation fails.
+   * 验证失败时在响应中使用的 HTTP 状态码。
    */
   errorHttpStatusCode?: ErrorHttpStatusCode;
   /**
-   * A factory function that returns an exception object to be thrown
-   * if validation fails.
-   * @param error Error message
-   * @returns The exception object
+   * 验证失败时返回要抛出的异常对象的工厂函数。
+   * @param error 错误信息
+   * @returns 异常对象
    */
   exceptionFactory?: (errors: string) => any;
   /**
-   * If true, the pipe will return null or undefined if the value is not provided
+   * 如果为 true，当未提供值时，管道将返回 null 或 undefined
    * @default false
    */
   optional?: boolean;
 }
 
 /**
- * Defines the built-in ParseUUID Pipe
+ * 定义内置的 ParseUUID 管道
  *
- * @see [Built-in Pipes](https://docs.nestjs.com/pipes#built-in-pipes)
+ * @see [内置管道](https://docs.nestjs.cn/pipes#built-in-pipes)
  *
  * @publicApi
  */
@@ -76,9 +75,7 @@ export class ParseUUIDPipe implements PipeTransform<string> {
     }
     if (!this.isUUID(value, this.version)) {
       throw this.exceptionFactory(
-        `Validation failed (uuid${
-          this.version ? ` v ${this.version}` : ''
-        } is expected)`,
+        `验证失败(期望 UUID${this.version ? ` v${this.version}` : ''})`,
       );
     }
     return value;
@@ -86,7 +83,7 @@ export class ParseUUIDPipe implements PipeTransform<string> {
 
   protected isUUID(str: unknown, version = 'all') {
     if (!isString(str)) {
-      throw this.exceptionFactory('The value passed as UUID is not a string');
+      throw this.exceptionFactory('作为 UUID 传入的值不是字符串');
     }
     const pattern = ParseUUIDPipe.uuidRegExps[version];
     return pattern?.test(str);

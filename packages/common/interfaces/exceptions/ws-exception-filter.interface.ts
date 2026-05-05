@@ -1,20 +1,19 @@
 import { ArgumentsHost } from '../features/arguments-host.interface';
 
 /**
- * Interface describing implementation of a Web Sockets exception filter.
+ * 描述 WebSocket 异常过滤器实现的接口。
  *
- * @see [Exception Filters](https://docs.nestjs.com/websockets/exception-filters)
+ * @see [异常过滤器](https://docs.nestjs.cn/websockets/exception-filters)
  *
  * @publicApi
  */
 
 export interface WsExceptionFilter<T = any> {
   /**
-   * Method to implement a custom (web sockets) exception filter.
+   * 实现自定义（WebSocket）异常过滤器的方法。
    *
-   * @param exception the type (class) of the exception being handled
-   * @param host used to access an array of arguments for
-   * the in-flight message  catch(exception: T, host: ArgumentsHost): any;
+   * @param exception 被处理的异常类型（类）
+   * @param host 用于访问正在处理的消息的参数数组
    */
   catch(exception: T, host: ArgumentsHost): any;
 }

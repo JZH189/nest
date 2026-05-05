@@ -1,6 +1,6 @@
 /**
- * Exception that represents an intrinsic error in the application.
- * When thrown, the default exception filter will not log the error message.
+ * 表示应用程序内在错误的异常。
+ * 当抛出时，默认异常过滤器不会记录错误消息。
  *
  * @publicApi
  */

@@ -1,9 +1,8 @@
 type StaticOrigin = boolean | string | RegExp | (string | RegExp)[];
 
 /**
- * Set origin to a function implementing some custom logic. The function takes the
- * request origin as the first parameter and a callback (which expects the signature
- * err [object], allow [bool]) as the second.
+ * 将 origin 设置为实现一些自定义逻辑的函数。该函数将请求 origin 作为第一个参数，
+ * 回调函数（期望签名 err [object], allow [bool]）作为第二个参数。
  *
  * @see https://github.com/expressjs/cors
  *
@@ -15,42 +14,42 @@ export type CustomOrigin = (
 ) => void;
 
 /**
- * Interface describing CORS options that can be set.
+ * 描述可设置的 CORS 选项的接口。
  *
  * @see https://github.com/expressjs/cors
  * @publicApi
  */
 export interface CorsOptions {
   /**
-   * Configures the `Access-Control-Allow-Origins` CORS header.  See [here for more detail.](https://github.com/expressjs/cors#configuration-options)
+   * 配置 `Access-Control-Allow-Origins` CORS 头。详见[此处](https://github.com/expressjs/cors#configuration-options)。
    */
   origin?: StaticOrigin | CustomOrigin;
   /**
-   * Configures the Access-Control-Allow-Methods CORS header.
+   * 配置 Access-Control-Allow-Methods CORS 头。
    */
   methods?: string | string[];
   /**
-   * Configures the Access-Control-Allow-Headers CORS header.
+   * 配置 Access-Control-Allow-Headers CORS 头。
    */
   allowedHeaders?: string | string[];
   /**
-   * Configures the Access-Control-Expose-Headers CORS header.
+   * 配置 Access-Control-Expose-Headers CORS 头。
    */
   exposedHeaders?: string | string[];
   /**
-   * Configures the Access-Control-Allow-Credentials CORS header.
+   * 配置 Access-Control-Allow-Credentials CORS 头。
    */
   credentials?: boolean;
   /**
-   * Configures the Access-Control-Max-Age CORS header.
+   * 配置 Access-Control-Max-Age CORS 头。
    */
   maxAge?: number;
   /**
-   * Whether to pass the CORS preflight response to the next handler.
+   * 是否将 CORS 预检响应传递给下一个处理程序。
    */
   preflightContinue?: boolean;
   /**
-   * Provides a status code to use for successful OPTIONS requests.
+   * 为成功的 OPTIONS 请求提供状态码。
    */
   optionsSuccessStatus?: number;
 }

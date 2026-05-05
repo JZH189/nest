@@ -3,6 +3,6 @@
  */
 export class NetSocketClosedException extends Error {
   constructor() {
-    super(`The net socket is closed.`);
+    super(`网络套接字已关闭。`);
   }
 }

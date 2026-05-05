@@ -95,9 +95,8 @@ export class DependenciesScanner {
     await this.scanModulesForDependencies();
     this.addScopedEnhancersMetadata();
 
-    // Modules distance calculation should be done after all modules are scanned
-    // but before global modules are registered (linked to all modules).
-    // Global modules have their distance set to MAX anyway.
+    // 模块距离计算应在所有模块扫描完成后但在全局模块注册（链接到所有模块）之前进行。
+    // 全局模块的距离无论如何都会设置为 MAX。
     this.calculateModulesDistance();
 
     this.container.bindGlobalScope();
@@ -145,7 +144,7 @@ export class DependenciesScanner {
 
     let registeredModuleRefs: Module[] = [];
     for (const [index, innerModule] of modules.entries()) {
-      // In case of a circular dependency (ES module system), JavaScript will resolve the type to `undefined`.
+      // 在循环依赖的情况下（ES 模块系统），JavaScript 会将类型解析为 `undefined`。
       if (innerModule === undefined) {
         throw new UndefinedModuleException(moduleDefinition, index, scope);
       }
@@ -396,8 +395,8 @@ export class DependenciesScanner {
 
   public calculateModulesDistance() {
     const modulesGenerator = this.container.getModules().values();
-    // Skip "InternalCoreModule"
-    // The second element is the actual root module
+    // 跳过 "InternalCoreModule"
+    // 第二个元素是实际的根模块
     modulesGenerator.next();
 
     const rootModule = modulesGenerator.next().value!;
@@ -405,7 +404,7 @@ export class DependenciesScanner {
       return;
     }
 
-    // Convert modules to an acyclic connected graph
+    // 将模块转换为无环连通图
     const tree = new TopologyTree(rootModule);
     tree.walk((moduleRef, depth) => {
       if (moduleRef.isGlobal) {
@@ -623,8 +622,7 @@ export class DependenciesScanner {
   }
 
   /**
-   * Add either request or transient globally scoped enhancers
-   * to all controllers metadata storage
+   * 将请求或瞬态全局作用域的增强器添加到所有控制器的元数据存储中
    */
   public addScopedEnhancersMetadata() {
     iterate(this.applicationProvidersApplyMap)
@@ -721,7 +719,7 @@ export class DependenciesScanner {
 
   /**
    * @param metatype
-   * @returns `true` if `metatype` is annotated with the `@Injectable()` decorator.
+   * @returns 如果 `metatype` 使用了 `@Injectable()` 装饰器标注，则返回 `true`。
    */
   private isInjectable(metatype: Type<any>): boolean {
     return !!Reflect.getMetadata(INJECTABLE_WATERMARK, metatype);
@@ -729,7 +727,7 @@ export class DependenciesScanner {
 
   /**
    * @param metatype
-   * @returns `true` if `metatype` is annotated with the `@Controller()` decorator.
+   * @returns 如果 `metatype` 使用了 `@Controller()` 装饰器标注，则返回 `true`。
    */
   private isController(metatype: Type<any>): boolean {
     return !!Reflect.getMetadata(CONTROLLER_WATERMARK, metatype);
@@ -737,7 +735,7 @@ export class DependenciesScanner {
 
   /**
    * @param metatype
-   * @returns `true` if `metatype` is annotated with the `@Catch()` decorator.
+   * @returns 如果 `metatype` 使用了 `@Catch()` 装饰器标注，则返回 `true`。
    */
   private isExceptionFilter(metatype: Type<any>): boolean {
     return !!Reflect.getMetadata(CATCH_WATERMARK, metatype);

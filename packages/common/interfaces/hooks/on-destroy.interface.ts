@@ -1,9 +1,8 @@
 /**
- * Interface defining method called just before Nest destroys the host module
- * (`app.close()` method has been evaluated).  Use to perform cleanup on
- * resources (e.g., Database connections).
+ * 定义在 Nest 销毁宿主模块之前调用方法的接口
+ *（`app.close()` 方法已被评估）。用于执行资源清理（例如数据库连接）。
  *
- * @see [Lifecycle Events](https://docs.nestjs.com/fundamentals/lifecycle-events)
+ * @see [生命周期事件](https://docs.nestjs.cn/fundamentals/lifecycle-events)
  *
  * @publicApi
  */

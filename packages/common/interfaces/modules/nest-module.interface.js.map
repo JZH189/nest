@@ -1,0 +1,1 @@
+{"version":3,"file":"nest-module.interface.js","sourceRoot":"","sources":["nest-module.interface.ts"],"names":[],"mappings":"","sourcesContent":["import { MiddlewareConsumer } from '../middleware/middleware-consumer.interface';\n\n/**\n * @publicApi\n */\nexport interface NestModule {\n  configure(consumer: MiddlewareConsumer);\n}\n"]}

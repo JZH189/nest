@@ -2,16 +2,16 @@ import { HEADERS_METADATA } from '../../constants';
 import { extendArrayMetadata } from '../../utils/extend-metadata.util';
 
 /**
- * Request method Decorator.  Sets a response header.
+ * 请求方法装饰器。设置响应头。
  *
- * For example:
+ * 例如:
  * `@Header('Cache-Control', 'none')`
  * `@Header('Cache-Control', () => 'none')`
  *
- * @param name string to be used for header name
- * @param value string to be used for header value
+ * @param name 用作响应头名称的字符串
+ * @param value 用作响应头值的字符串
  *
- * @see [Headers](https://docs.nestjs.com/controllers#headers)
+ * @see [响应头](https://docs.nestjs.cn/controllers#headers)
  *
  * @publicApi
  */

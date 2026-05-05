@@ -5,15 +5,14 @@ import {
 import { isUndefined } from '../../utils/shared.utils';
 
 /**
- * Parameter decorator for an injected dependency marking the
- * dependency as optional.
+ * 用于将注入的依赖标记为可选的参数装饰器。
  *
- * For example:
+ * 例如:
  * ```typescript
  * constructor(@Optional() @Inject('HTTP_OPTIONS')private readonly httpClient: T) {}
  * ```
  *
- * @see [Optional providers](https://docs.nestjs.com/providers#optional-providers)
+ * @see [可选提供者](https://docs.nestjs.cn/providers#optional-providers)
  *
  * @publicApi
  */

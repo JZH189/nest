@@ -1,79 +1,79 @@
 /**
- * Interface describing options for serving static assets.
+ * 描述用于提供静态资源的选项的接口。
  *
- * @see [Serving static files in Express](https://expressjs.com/en/starter/static-files.html)
- * @see [Model-View-Controller](https://docs.nestjs.com/techniques/mvc)
+ * @see [在 Express 中提供静态文件](https://expressjs.com/en/starter/static-files.html)
+ * @see [模型-视图-控制器](https://docs.nestjs.cn/techniques/mvc)
  *
  * @publicApi
  */
 export interface ServeStaticOptions {
   /**
-   * Set how "dotfiles" are treated when encountered. A dotfile is a file or directory that begins with a dot (".").
-   * Note this check is done on the path itself without checking if the path actually exists on the disk.
-   * If root is specified, only the dotfiles above the root are checked (i.e. the root itself can be within a dotfile when when set to "deny").
-   * The default value is 'ignore'.
-   * 'allow' No special treatment for dotfiles
-   * 'deny' Send a 403 for any request for a dotfile
-   * 'ignore' Pretend like the dotfile does not exist and call next()
+   * 设置遇到"点文件"时的处理方式。点文件是以点（"."）开头的文件或目录。
+   * 请注意，此检查是在路径本身上进行的，而不检查路径是否实际存在于磁盘上。
+   * 如果指定了 root，则只检查 root 上方的点文件（即当设置为 "deny" 时，root 本身可以位于点文件中）。
+   * 默认值为 'ignore'。
+   * 'allow' 对点文件没有特殊处理
+   * 'deny' 对任何点文件请求发送 403
+   * 'ignore' 假装点文件不存在并调用 next()
    */
   dotfiles?: string;
 
   /**
-   * Enable or disable etag generation, defaults to true.
+   * 启用或禁用 etag 生成，默认为 true。
    */
   etag?: boolean;
 
   /**
-   * Set file extension fallbacks. When set, if a file is not found, the given extensions will be added to the file name and search for.
-   * The first that exists will be served. Example: ['html', 'htm'].
-   * The default value is false.
+   * 设置文件扩展名回退。当设置时，如果找不到文件，将把给定的扩展名添加到文件名并进行搜索。
+   * 第一个存在的将被提供。示例：['html', 'htm']。
+   * 默认值为 false。
    */
   extensions?: string[];
 
   /**
-   * Let client errors fall-through as unhandled requests, otherwise forward a client error.
-   * The default value is false.
+   * 让客户端错误作为未处理的请求通过，否则转发客户端错误。
+   * 默认值为 false。
    */
   fallthrough?: boolean;
 
   /**
-   * Enable or disable the immutable directive in the Cache-Control response header.
-   * If enabled, the maxAge option should also be specified to enable caching. The immutable directive will prevent supported clients from making conditional requests during the life of the maxAge option to check if the file has changed.
+   * 在 Cache-Control 响应头中启用或禁用 immutable 指令。
+   * 如果启用，还应指定 maxAge 选项以启用缓存。immutable 指令将阻止支持的客户端在 maxAge 选项的有效期内发出条件请求来检查文件是否已更改。
    */
   immutable?: boolean;
 
   /**
-   * By default this module will send "index.html" files in response to a request on a directory.
-   * To disable this set false or to supply a new index pass a string or an array in preferred order.
+   * 默认情况下，此模块将在对目录的请求时发送 "index.html" 文件。
+   * 要禁用此功能，请设置为 false，或按首选顺序传递字符串或数组作为新索引。
    */
   index?: boolean | string | string[];
 
   /**
-   * Enable or disable Last-Modified header, defaults to true. Uses the file system's last modified value.
+   * 启用或禁用 Last-Modified 头，默认为 true。使用文件系统的最后修改值。
    */
   lastModified?: boolean;
 
   /**
-   * Provide a max-age in milliseconds for http caching, defaults to 0. This can also be a string accepted by the ms module.
+   * 提供 http 缓存的最大期限（以毫秒为单位），默认为 0。这也可以是 ms 模块接受的字符串。
    */
   maxAge?: number | string;
 
   /**
-   * Redirect to trailing "/" when the pathname is a dir. Defaults to true.
+   * 当路径名是目录时重定向到尾随的 "/"。默认为 true。
    */
   redirect?: boolean;
 
   /**
-   * Function to set custom headers on response. Alterations to the headers need to occur synchronously.
-   * The function is called as `fn(res, path, stat)`, where the arguments are:
-   * `res` - the response object
-   * `path` - the file path that is being sent
-   * `stat` - the stat object of the file that is being sent
+   * 设置自定义响应头的函数。对头文件的修改需要同步进行。
+   * 函数被调用为 `fn(res, path, stat)`，其中参数为：
+   * `res` - 响应对象
+   * `path` - 正在发送的文件路径
+   * `stat` - 正在发送的文件的 stat 对象
    */
   setHeaders?: (res: any, path: string, stat: any) => any;
 
   /**
-   * Creates a virtual path prefix
+   * 创建虚拟路径前缀
    */
   prefix?: string;
 }

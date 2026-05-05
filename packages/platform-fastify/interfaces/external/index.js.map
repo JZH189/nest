@@ -1,0 +1,1 @@
+{"version":3,"file":"index.js","sourceRoot":"","sources":["index.ts"],"names":[],"mappings":";;;AAAA,6EAAmD;AACnD,2EAAiD","sourcesContent":["export * from './fastify-static-options.interface';\nexport * from './fastify-view-options.interface';\n"]}

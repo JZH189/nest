@@ -21,32 +21,31 @@ export interface ParseArrayOptions extends Omit<
   'transform' | 'validateCustomDecorators' | 'exceptionFactory'
 > {
   /**
-   * Type for items to be converted into
+   * 要转换成的项目类型
    */
   items?: Type<unknown>;
   /**
-   * Items separator to split string by
+   * 用于分割字符串的项目分隔符
    * @default ','
    */
   separator?: string;
   /**
-   * If true, the pipe will return null or undefined if the value is not provided
+   * 如果为 true，当未提供值时，管道将返回 null 或 undefined
    * @default false
    */
   optional?: boolean;
   /**
-   * A factory function that returns an exception object to be thrown
-   * if validation fails.
-   * @param error Error message or object
-   * @returns The exception object
+   * 如果验证失败，返回要抛出的异常对象的工厂函数。
+   * @param error 错误消息或对象
+   * @returns 异常对象
    */
   exceptionFactory?: (error: any) => any;
 }
 
 /**
- * Defines the built-in ParseArray Pipe
+ * 定义内置的 ParseArray 管道
  *
- * @see [Built-in Pipes](https://docs.nestjs.com/pipes#built-in-pipes)
+ * @see [内置管道](https://docs.nestjs.cn/pipes#built-in-pipes)
  *
  * @publicApi
  */
@@ -70,11 +69,10 @@ export class ParseArrayPipe implements PipeTransform {
   }
 
   /**
-   * Method that accesses and performs optional transformation on argument for
-   * in-flight requests.
+   * 访问并对正在处理中的请求参数执行可选转换的方法。
    *
-   * @param value currently processed route argument
-   * @param metadata contains metadata about the currently processed route argument
+   * @param value 当前正在处理的路由参数
+   * @param metadata 包含有关当前正在处理的路由参数的元数据
    */
   async transform(value: any, metadata: ArgumentMetadata): Promise<any> {
     if (!value && !this.options.optional) {

@@ -1,0 +1,1 @@
+{"version":3,"file":"nest-gateway.interface.js","sourceRoot":"","sources":["nest-gateway.interface.ts"],"names":[],"mappings":"","sourcesContent":["/**\n * @publicApi\n */\nexport interface NestGateway {\n  afterInit?: (server: any) => void;\n  handleConnection?: (...args: any[]) => void;\n  handleDisconnect?: (client: any) => void;\n}\n"]}

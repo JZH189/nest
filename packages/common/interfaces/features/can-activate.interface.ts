@@ -2,22 +2,19 @@ import { Observable } from 'rxjs';
 import { ExecutionContext } from './execution-context.interface';
 
 /**
- * Interface defining the `canActivate()` function that must be implemented
- * by a guard.  Return value indicates whether or not the current request is
- * allowed to proceed.  Return can be either synchronous (`boolean`)
- * or asynchronous (`Promise` or `Observable`).
+ * 定义守卫必须实现的 `canActivate()` 函数的接口。
+ * 返回值指示当前请求是否被允许继续。返回值可以是同步的（`boolean`）
+ * 或异步的（`Promise` 或 `Observable`）。
  *
- * @see [Guards](https://docs.nestjs.com/guards)
+ * @see [守卫](https://docs.nestjs.cn/guards)
  *
  * @publicApi
  */
 export interface CanActivate {
   /**
-   * @param context Current execution context. Provides access to details about
-   * the current request pipeline.
+   * @param context 当前执行上下文。提供对当前请求管道详情的访问。
    *
-   * @returns Value indicating whether or not the current request is allowed to
-   * proceed.
+   * @returns 指示当前请求是否被允许继续的值。
    */
   canActivate(
     context: ExecutionContext,

@@ -1,0 +1,1 @@
+{"version":3,"file":"index.js","sourceRoot":"","sources":["index.ts"],"names":[],"mappings":";;;AAAA,wEAA8C;AAC9C,uDAA6B","sourcesContent":["export * from './configurable-module.builder';\nexport * from './interfaces';\n"]}

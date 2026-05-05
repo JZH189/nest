@@ -1,0 +1,1 @@
+{"version":3,"file":"module-override.interface.js","sourceRoot":"","sources":["module-override.interface.ts"],"names":[],"mappings":"","sourcesContent":["import { ModuleDefinition } from './module-definition.interface';\n\nexport interface ModuleOverride {\n  moduleToReplace: ModuleDefinition;\n  newModule: ModuleDefinition;\n}\n"]}

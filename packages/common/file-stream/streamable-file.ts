@@ -6,7 +6,7 @@ import { isFunction } from '../utils/shared.utils';
 import { StreamableFileOptions, StreamableHandlerResponse } from './interfaces';
 
 /**
- * @see [Streaming files](https://docs.nestjs.com/techniques/streaming-files)
+ * @see [流式文件](https://docs.nestjs.cn/techniques/streaming-files)
  *
  * @publicApi
  */

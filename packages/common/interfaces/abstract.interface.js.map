@@ -1,0 +1,1 @@
+{"version":3,"file":"abstract.interface.js","sourceRoot":"","sources":["abstract.interface.ts"],"names":[],"mappings":"","sourcesContent":["export interface Abstract<T> extends Function {\n  prototype: T;\n}\n"]}

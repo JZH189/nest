@@ -25,9 +25,9 @@ const mapInjectToTokens = (t: InjectionToken | OptionalFactoryDependency) =>
 
 /**
  *
- * @param providers List of a module's providers
- * @param tokens Injection tokens needed for a useFactory function (usually the module's options' token)
- * @returns All the providers needed for the tokens' injection (searched recursively)
+ * @param providers 模块的提供者列表
+ * @param tokens useFactory 函数所需的注入令牌（通常是模块选项的令牌）
+ * @returns 令牌注入所需的所有提供者（递归搜索）
  */
 export function getInjectionProviders(
   providers: Provider[],

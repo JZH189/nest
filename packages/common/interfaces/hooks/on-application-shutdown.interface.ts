@@ -1,8 +1,7 @@
 /**
- * Interface defining method to respond to system signals (when application gets
- * shutdown by, e.g., SIGTERM)
+ * 定义响应系统信号的方法的接口（当应用程序被关闭时，例如通过 SIGTERM）
  *
- * @see [Lifecycle Events](https://docs.nestjs.com/fundamentals/lifecycle-events)
+ * @see [生命周期事件](https://docs.nestjs.cn/fundamentals/lifecycle-events)
  *
  * @publicApi
  */

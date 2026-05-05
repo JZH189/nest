@@ -2,14 +2,13 @@ import { Observable, ReplaySubject, Subject } from 'rxjs';
 import { AbstractHttpAdapter } from '../adapters/http-adapter';
 
 /**
- * Defines the `HttpAdapterHost` object.
+ * 定义 `HttpAdapterHost` 对象。
  *
- * `HttpAdapterHost` wraps the underlying
- * platform-specific `HttpAdapter`.  The `HttpAdapter` is a wrapper around the underlying
- * native HTTP server library (e.g., Express).  The `HttpAdapterHost` object
- * provides methods to `get` and `set` the underlying HttpAdapter.
+ * `HttpAdapterHost` 包装了底层的平台特定 `HttpAdapter`。`HttpAdapter` 是底层
+ * 本机 HTTP 服务器库（例如 Express）的包装器。`HttpAdapterHost` 对象
+ * 提供了 `get` 和 `set` 底层 HttpAdapter 的方法。
  *
- * @see [Http adapter](https://docs.nestjs.com/faq/http-adapter)
+ * @see [HTTP 适配器](https://docs.nestjs.cn/faq/http-adapter)
  *
  * @publicApi
  */
@@ -22,9 +21,9 @@ export class HttpAdapterHost<
   private isListening = false;
 
   /**
-   * Accessor for the underlying `HttpAdapter`
+   * 底层 `HttpAdapter` 的访问器
    *
-   * @param httpAdapter reference to the `HttpAdapter` to be set
+   * @param httpAdapter 要设置的 `HttpAdapter` 的引用
    */
   set httpAdapter(httpAdapter: T) {
     this._httpAdapter = httpAdapter;
@@ -34,7 +33,7 @@ export class HttpAdapterHost<
   }
 
   /**
-   * Accessor for the underlying `HttpAdapter`
+   * 底层 `HttpAdapter` 的访问器
    *
    * @example
    * `const httpAdapter = adapterHost.httpAdapter;`
@@ -44,23 +43,23 @@ export class HttpAdapterHost<
   }
 
   /**
-   * Observable that allows to subscribe to the `listen` event.
-   * This event is emitted when the HTTP application is listening for incoming requests.
+   * 允许订阅 `listen` 事件的可观察对象。
+   * 当 HTTP 应用程序正在监听传入请求时发出此事件。
    */
   get listen$(): Observable<void> {
     return this._listen$.asObservable();
   }
 
   /**
-   * Observable that allows to subscribe to the `init` event.
-   * This event is emitted when the HTTP application is initialized.
+   * 允许订阅 `init` 事件的可观察对象。
+   * 当 HTTP 应用程序初始化时发出此事件。
    */
   get init$(): Observable<void> {
     return this._init$.asObservable();
   }
 
   /**
-   * Sets the listening state of the application.
+   * 设置应用程序的监听状态。
    */
   set listening(listening: boolean) {
     this.isListening = listening;
@@ -72,7 +71,7 @@ export class HttpAdapterHost<
   }
 
   /**
-   * Returns a boolean indicating whether the application is listening for incoming requests.
+   * 返回一个布尔值，指示应用程序是否正在监听传入请求。
    */
   get listening(): boolean {
     return this.isListening;

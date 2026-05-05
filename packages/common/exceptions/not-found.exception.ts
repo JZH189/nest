@@ -2,36 +2,33 @@ import { HttpStatus } from '../enums/http-status.enum';
 import { HttpException, HttpExceptionOptions } from './http.exception';
 
 /**
- * Defines an HTTP exception for *Not Found* type errors.
+ * 定义 *Not Found* 类型错误的 HTTP 异常。
  *
- * @see [Built-in HTTP exceptions](https://docs.nestjs.com/exception-filters#built-in-http-exceptions)
+ * @see [内置 HTTP 异常](https://docs.nestjs.cn/exception-filters#built-in-http-exceptions)
  *
  * @publicApi
  */
 export class NotFoundException extends HttpException {
   /**
-   * Instantiate a `NotFoundException` Exception.
+   * 创建一个 `NotFoundException` 异常实例。
    *
    * @example
    * `throw new NotFoundException()`
    *
    * @usageNotes
-   * The HTTP response status code will be 404.
-   * - The `objectOrError` argument defines the JSON response body or the message string.
-   * - The `descriptionOrOptions` argument contains either a short description of the HTTP error or an options object used to provide an underlying error cause.
+   * HTTP 响应状态码将为 404。
+   * - `objectOrError` 参数定义 JSON 响应体或消息字符串。
+   * - `descriptionOrOptions` 参数包含 HTTP 错误的简短描述或用于提供底层错误原因的对象。
    *
-   * By default, the JSON response body contains two properties:
-   * - `statusCode`: this will be the value 404.
-   * - `message`: the string `'Not Found'` by default; override this by supplying
-   * a string in the `objectOrError` parameter.
+   * 默认情况下，JSON 响应体包含两个属性：
+   * - `statusCode`：这将是值 404。
+   * - `message`：默认为字符串 `'Not Found'`；通过在 `objectOrError` 参数中提供字符串来覆盖。
    *
-   * If the parameter `objectOrError` is a string, the response body will contain an
-   * additional property, `error`, with a short description of the HTTP error. To override the
-   * entire JSON response body, pass an object instead. Nest will serialize the object
-   * and return it as the JSON response body.
+   * 如果参数 `objectOrError` 是一个字符串，响应体将包含一个附加属性 `error`，包含 HTTP 错误的简短描述。
+   * 要覆盖整个 JSON 响应体，请改为传递一个对象。Nest 将序列化该对象并将其作为 JSON 响应体返回。
    *
-   * @param objectOrError string or object describing the error condition.
-   * @param descriptionOrOptions either a short description of the HTTP error or an options object used to provide an underlying error cause
+   * @param objectOrError 描述错误条件的字符串或对象。
+   * @param descriptionOrOptions HTTP 错误的简短描述或用于提供底层错误原因的对象
    */
   constructor(
     objectOrError?: any,

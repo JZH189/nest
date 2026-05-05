@@ -1,0 +1,1 @@
+{"version":3,"file":"lazy-module-loader-options.interface.js","sourceRoot":"","sources":["lazy-module-loader-options.interface.ts"],"names":[],"mappings":"","sourcesContent":["export interface LazyModuleLoaderLoadOptions {\n  /**\n   * If `false`, no logs will be generated when loading some module lazily.\n   */\n  logger?: boolean;\n}\n"]}

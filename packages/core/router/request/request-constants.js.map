@@ -1,0 +1,1 @@
+{"version":3,"file":"request-constants.js","sourceRoot":"","sources":["request-constants.ts"],"names":[],"mappings":";;;AAAa,QAAA,OAAO,GAAG,SAAS,CAAC;AACpB,QAAA,kBAAkB,GAAG,MAAM,CAAC,oBAAoB,CAAC,CAAC","sourcesContent":["export const REQUEST = 'REQUEST';\nexport const REQUEST_CONTEXT_ID = Symbol('REQUEST_CONTEXT_ID');\n"]}

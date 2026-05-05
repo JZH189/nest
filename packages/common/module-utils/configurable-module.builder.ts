@@ -22,22 +22,22 @@ import { generateOptionsInjectionToken, getInjectionProviders } from './utils';
  */
 export interface ConfigurableModuleBuilderOptions {
   /**
-   * Specifies what injection token should be used for the module options provider.
-   * By default, an auto-generated UUID will be used.
+   * 指定模块选项提供者应使用哪个注入令牌。
+   * 默认情况下，将使用自动生成的 UUID。
    */
   optionsInjectionToken?: string | symbol;
   /**
-   * By default, an UUID will be used as a module options provider token.
-   * Explicitly specifying the "moduleName" will instruct the "ConfigurableModuleBuilder"
-   * to use a more descriptive provider token.
+   * 默认情况下，UUID 将用作模块选项提供者令牌。
+   * 显式指定 "moduleName" 将指示 "ConfigurableModuleBuilder"
+   * 使用更具描述性的提供者令牌。
    *
-   * For example, `moduleName: "Cache"` will auto-generate the provider token: "CACHE_MODULE_OPTIONS".
+   * 例如，`moduleName: "Cache"` 将自动生成提供者令牌："CACHE_MODULE_OPTIONS"。
    */
   moduleName?: string;
   /**
-   * Indicates whether module should always be "transient" - meaning,
-   * every time you call the static method to construct a dynamic module,
-   * regardless of what arguments you pass in, a new "unique" module will be created.
+   * 指示模块是否应始终为 "transient" —— 意思是，
+   * 每次调用静态方法构造动态模块时，
+   * 无论传入什么参数，都会创建一个新的"唯一"模块。
    *
    * @default false
    */
@@ -45,8 +45,8 @@ export interface ConfigurableModuleBuilderOptions {
 }
 
 /**
- * Factory that lets you create configurable modules and
- * provides a way to reduce the majority of dynamic module boilerplate.
+ * 让你创建可配置模块的工厂，
+ * 并提供了一种减少大多数动态模块样板代码的方法。
  *
  * @publicApi
  */
@@ -85,12 +85,12 @@ export class ConfigurableModuleBuilder<
   }
 
   /**
-   * Registers the "extras" object (a set of extra options that can be used to modify the dynamic module definition).
-   * Values you specify within the "extras" object will be used as default values (that can be overridden by module consumers).
+   * 注册 "extras" 对象（一组可用于修改动态模块定义的额外选项）。
+   * 你在 "extras" 对象中指定的值将用作默认值（可以被模块使用者覆盖）。
    *
-   * This method also applies the so-called "module definition transform function" that takes the auto-generated
-   * dynamic module object ("DynamicModule") and the actual consumer "extras" object as input parameters.
-   * The "extras" object consists of values explicitly specified by module consumers and default values.
+   * 此方法还应用了所谓的 "module definition transform function"，
+   * 它将自动生成的动态模块对象（"DynamicModule"）和实际的消费者 "extras" 对象作为输入参数。
+   * "extras" 对象由模块使用者明确指定的值和默认值组成。
    *
    * @example
    * ```typescript
@@ -118,15 +118,15 @@ export class ConfigurableModuleBuilder<
   }
 
   /**
-   * Dynamic modules must expose public static methods that let you pass in
-   * configuration parameters (control the module's behavior from the outside).
-   * Some frequently used names that you may have seen in other modules are:
-   * "forRoot", "forFeature", "register", "configure".
+   * 动态模块必须公开公共静态方法，让你传入
+   * 配置参数（从外部控制模块的行为）。
+   * 你可能在其他模块中看到的常用名称有：
+   * "forRoot"、"forFeature"、"register"、"configure"。
    *
-   * This method "setClassMethodName" lets you specify the name of the
-   * method that will be auto-generated.
+   * 此方法 "setClassMethodName" 让你指定
+   * 将被自动生成的方法的名称。
    *
-   * @param key name of the method
+   * @param key 方法的名称
    */
   setClassMethodName<StaticMethodKey extends string>(key: StaticMethodKey) {
     const builder = new ConfigurableModuleBuilder<
@@ -140,15 +140,14 @@ export class ConfigurableModuleBuilder<
   }
 
   /**
-   * Asynchronously configured modules (that rely on other modules, i.e. "ConfigModule")
-   * let you pass the configuration factory class that will be registered and instantiated as a provider.
-   * This provider then will be used to retrieve the module's configuration. To provide the configuration,
-   * the corresponding factory method must be implemented.
+   * 异步配置的模块（依赖其他模块，即 "ConfigModule"）
+   * 让你传入将被注册并实例化为提供者的配置工厂类。
+   * 然后，此提供者将用于获取模块的配置。为了提供配置，
+   * 必须实现相应的工厂方法。
    *
-   * This method ("setFactoryMethodName") lets you control what method name will have to be
-   * implemented by the config factory (default is "create").
+   * 此方法（"setFactoryMethodName"）让你控制配置工厂需要实现的方法名称（默认为 "create"）。
    *
-   * @param key name of the method
+   * @param key 方法的名称
    */
   setFactoryMethodName<FactoryClassMethodKey extends string>(
     key: FactoryClassMethodKey,
@@ -164,8 +163,8 @@ export class ConfigurableModuleBuilder<
   }
 
   /**
-   * Returns an object consisting of multiple properties that lets you
-   * easily construct dynamic configurable modules. See "ConfigurableModuleHost" interface for more details.
+   * 返回由多个属性组成的对象，让你
+   * 轻松构造动态可配置模块。详见 "ConfigurableModuleHost" 接口。
    */
   build(): ConfigurableModuleHost<
     ModuleOptions,

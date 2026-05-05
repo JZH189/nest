@@ -1,5 +1,5 @@
 /**
- * Interface describing Https Options that can be set.
+ * 描述可设置的 Https 选项的接口。
  *
  * @see https://nodejs.org/api/tls.html
  *
@@ -7,99 +7,85 @@
  */
 export interface HttpsOptions {
   /**
-   * PFX or PKCS12 encoded private key and certificate chain. pfx is an alternative
-   * to providing key and cert individually. PFX is usually encrypted, if it is,
-   * passphrase will be used to decrypt it. Multiple PFX can be provided either
-   * as an array of unencrypted PFX buffers, or an array of objects in the form
-   * {buf: <string|buffer>[, passphrase: <string>]}. The object form can only
-   * occur in an array. object.passphrase is optional. Encrypted PFX will be decrypted
-   * with object.passphrase if provided, or options.passphrase if it is not.
+   * PFX 或 PKCS12 编码的私钥和证书链。pfx 是单独提供 key 和 cert 的替代方案。
+   * PFX 通常是加密的，如果是，将使用密码短语来解密。可以提供多个 PFX，
+   * 作为未加密 PFX 缓冲区数组，或对象数组，格式为 {buf: <string|buffer>[, passphrase: <string>]}。
+   * 对象形式只能出现在数组中。object.passphrase 是可选的。
+   * 如果提供了 object.passphrase，则使用它来解密加密的 PFX，否则使用 options.passphrase。
    */
   pfx?: any;
   /**
-   * Private keys in PEM format. PEM allows the option of private keys being encrypted.
-   * Encrypted keys will be decrypted with options.passphrase. Multiple keys using
-   * different algorithms can be provided either as an array of unencrypted key
-   * strings or buffers, or an array of objects in the form {pem: <string|buffer>[, passphrase: <string>]}.
-   * The object form can only occur in an array. object.passphrase is optional.
-   * Encrypted keys will be decrypted with object.passphrase if provided, or options.passphrase
-   * if it is not
+   * PEM 格式的私钥。PEM 允许选择加密私钥。加密的密钥将使用 options.passphrase 解密。
+   * 可以使用不同算法的多个密钥可以提供为未加密密钥字符串或缓冲区数组，
+   * 或对象数组，格式为 {pem: <string|buffer>[, passphrase: <string>]}。
+   * 对象形式只能出现在数组中。object.passphrase 是可选的。
+   * 如果提供了 object.passphrase，则使用它来解密加密密钥，否则使用 options.passphrase。
    */
   key?: any;
   /**
-   * Shared passphrase used for a single private key and/or a PFX.
+   * 用于单个私钥和/或 PFX 的共享密码短语。
    */
   passphrase?: string;
   /**
-   * Cert chains in PEM format. One cert chain should be provided per private key.
-   * Each cert chain should consist of the PEM formatted certificate for a provided
-   * private key, followed by the PEM formatted intermediate certificates (if any),
-   * in order, and not including the root CA (the root CA must be pre-known to the
-   * peer, see ca). When providing multiple cert chains, they do not have to be
-   * in the same order as their private keys in key. If the intermediate certificates
-   * are not provided, the peer will not be able to validate the certificate, and
-   * the handshake will fail.
+   * PEM 格式的证书链。每个私钥应提供一个证书链。
+   * 每个证书链应包括所提供私钥的 PEM 格式证书，后跟 PEM 格式的中间证书（如果有），
+   * 按顺序排列，不包括根 CA（根 CA 必须预先被对等方知道，请参见 ca）。
+   * 当提供多个证书链时，它们不必与 key 中的私钥顺序相同。
+   * 如果未提供中间证书，对等方将无法验证证书，并且握手将失败。
    */
   cert?: any;
   /**
-   * Optionally override the trusted CA certificates. Default is to trust the well-known
-   * CAs curated by Mozilla. Mozilla's CAs are completely replaced when CAs are
-   * explicitly specified using this option. The value can be a string or Buffer,
-   * or an Array of strings and/or Buffers. Any string or Buffer can contain multiple
-   * PEM CAs concatenated together. The peer's certificate must be chainable to
-   * a CA trusted by the server for the connection to be authenticated. When using
-   * certificates that are not chainable to a well-known CA, the certificate's CA
-   * must be explicitly specified as a trusted or the connection will fail to authenticate.
-   * If the peer uses a certificate that doesn't match or chain to one of the default
-   * CAs, use the ca option to provide a CA certificate that the peer's certificate
-   * can match or chain to. For self-signed certificates, the certificate is its
-   * own CA, and must be provided. For PEM encoded certificates, supported types
-   * are "TRUSTED CERTIFICATE", "X509 CERTIFICATE", and "CERTIFICATE". See also tls.rootCertificates.
+   * 可选地覆盖受信任的 CA 证书。默认为信任 Mozilla 策划的知名 CA。
+   * 当使用此选项明确指定 CA 时，MoMozilla 的 CA 将被完全替换。
+   * 该值可以是字符串或 Buffer，或字符串和/或 Buffer 的数组。
+   * 任何字符串或 Buffer 可以包含多个 PEM CA 连接在一起。
+   * 对等方的证书必须可链接到服务器信任的 CA 才能使连接被认证。
+   * 当使用不能链接到知名 CA 的证书时，必须将证书的 CA 明确指定为受信任的，
+   * 否则连接将无法认证。如果对等方使用的证书与默认 CA 之一不匹配或无法链接，
+   * 请使用 ca 选项提供对等方证书可以匹配或链接到的 CA 证书。
+   * 对于自签名证书，证书是自己的 CA，必须提供。
+   * 对于 PEM 编码的证书，支持的类型为"TRUSTED CERTIFICATE"、"X509 CERTIFICATE"和"CERTIFICATE"。
+   * 另请参见 tls.rootCertificates。
    */
   ca?: any;
   /**
-   * PEM formatted CRLs (Certificate Revocation Lists).
+   * PEM 格式的 CRL（证书吊销列表）。
    */
   crl?: any;
   /**
-   * Cipher suite specification, replacing the default. For more information, see
-   * modifying the default cipher suite. Permitted ciphers can be obtained via tls.getCiphers().
-   * Cipher names must be uppercased in order for OpenSSL to accept them.
+   * 密码套件规范，替换默认值。有关更多信息，请参见修改默认密码套件。
+   * 可以通过 tls.getCiphers() 获取允许的密码。密码名称必须大写才能被 OpenSSL 接受。
    */
   ciphers?: string;
   /**
-   * Attempt to use the server's cipher suite preferences instead of the client's.
-   * When true, causes SSL_OP_CIPHER_SERVER_PREFERENCE to be set in secureOptions,
-   * see OpenSSL Options for more information.
+   * 尝试使用服务器的密码套件偏好而不是客户端的。
+   * 当为 true 时，导致在 secureOptions 中设置 SSL_OP_CIPHER_SERVER_PREFERENCE，
+   * 有关更多信息，请参见 OpenSSL 选项。
    */
   honorCipherOrder?: boolean;
   /**
-   * If true the server will request a certificate from clients that connect and
-   * attempt to verify that certificate. Default: false.
+   * 如果为 true，服务器将请求连接客户端的证书并尝试验证该证书。默认：false。
    */
   requestCert?: boolean;
   /**
-   * If not false the server will reject any connection which is not authorized
-   * with the list of supplied CAs. This option only has an effect if requestCert is true. Default: true
+   * 如果不是 false，服务器将拒绝任何未被提供的 CA 列表授权的连接。
+   * 此选项仅在 requestCert 为 true 时有效。默认：true
    */
   rejectUnauthorized?: boolean;
   /**
-   * An array or Buffer of possible NPN protocols. (Protocols should be ordered
-   * by their priority).
+   * 可能 NPN 协议的数组或缓冲区。（协议应按优先级排序）。
    */
   NPNProtocols?: any;
   /**
-   * A function that will be called if the client supports SNI TLS extension. Two
-   * arguments will be passed when called: servername and cb. SNICallback should
-   * invoke cb(null, ctx), where ctx is a SecureContext instance. (tls.createSecureContext(...)
-   * can be used to get a proper SecureContext.) If SNICallback wasn't provided
-   * the default callback with high-level API will be used.
+   * 如果客户端支持 SNI TLS 扩展，将调用一个函数。调用时将传递两个参数：servername 和 cb。
+   * SNICallback 应调用 cb(null, ctx)，其中 ctx 是 SecureContext 实例。
+   *（可以使用 tls.createSecureContext(...) 获取适当的 SecureContext。）
+   * 如果未提供 SNICallback，将使用带有高级 API 的默认回调。
    */
   SNICallback?: (servername: string, cb: (err: Error, ctx: any) => any) => any;
   /**
-   * Optionally affect the OpenSSL protocol behavior, which is not usually necessary.
-   * This should be used carefully if at all! Value is a numeric bitmask of the SSL_OP_* options
-   * from OpenSSL Options.
+   * 可选地影响 OpenSSL 协议行为，这通常不是必需的。
+   * 如果需要，应该谨慎使用！该值是 OpenSSL 选项中 SSL_OP_* 选项的数字位掩码。
    */
   secureOptions?: number;
 }

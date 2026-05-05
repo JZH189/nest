@@ -1,0 +1,1 @@
+{"version":3,"file":"index.js","sourceRoot":"","sources":["index.ts"],"names":[],"mappings":";;;AAAA,6DAAmC;AACnC,6DAAmC","sourcesContent":["export * from './global.decorator';\nexport * from './module.decorator';\n"]}

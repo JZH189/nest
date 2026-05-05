@@ -39,13 +39,13 @@ let classValidator: ValidatorPackage = {} as any;
 let classTransformer: TransformerPackage = {} as any;
 
 /**
- * Built-in JavaScript types that should be excluded from prototype stripping
- * to avoid conflicts with test frameworks like Jest's useFakeTimers
+ * 应该从原型剥离中排除的内置 JavaScript 类型，
+ * 以避免与 Jest 的 useFakeTimers 等测试框架冲突
  */
 const BUILT_IN_TYPES = [Date, RegExp, Error, Map, Set, WeakMap, WeakSet];
 
 /**
- * @see [Validation](https://docs.nestjs.com/techniques/validation)
+ * @see [验证](https://docs.nestjs.cn/techniques/validation)
  *
  * @publicApi
  */

@@ -1,0 +1,1 @@
+{"version":3,"file":"index.js","sourceRoot":"","sources":["index.ts"],"names":[],"mappings":";;;AAAA,8EAAoD;AACpD,+EAAqD;AACrD,0EAAgD;AAChD,sEAA4C","sourcesContent":["export * from './middleware-config-proxy.interface';\nexport * from './middleware-configuration.interface';\nexport * from './middleware-consumer.interface';\nexport * from './nest-middleware.interface';\n"]}

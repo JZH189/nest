@@ -49,7 +49,7 @@ export abstract class Server<
   Status extends string = string,
 > {
   /**
-   * Unique transport identifier.
+   * 唯一的传输标识符。
    */
   public transportId?: Transport | symbol;
 
@@ -73,16 +73,16 @@ export abstract class Server<
   protected _status$ = new ReplaySubject<Status>(1);
 
   /**
-   * Returns an observable that emits status changes.
+   * 返回一个发出状态变化的可观察对象。
    */
   public get status(): Observable<Status> {
     return this._status$.asObservable().pipe(distinctUntilChanged());
   }
 
   /**
-   * Registers an event listener for the given event.
-   * @param event Event name
-   * @param callback Callback to be executed when the event is emitted
+   * 为给定事件注册事件监听器。
+   * @param event 事件名称
+   * @param callback 事件发出时执行的回调函数
    */
   public abstract on<
     EventKey extends keyof EventsMap = keyof EventsMap,
@@ -90,32 +90,32 @@ export abstract class Server<
   >(event: EventKey, callback: EventCallback): any;
 
   /**
-   * Returns an instance of the underlying server/broker instance,
-   * or a group of servers if there are more than one.
+   * 返回底层服务器/代理实例的实例，
+   * 如果有多个则返回服务器组。
    */
   public abstract unwrap<T>(): T;
 
   /**
-   * Method called when server is being initialized.
-   * @param callback Function to be called upon initialization
+   * 服务器初始化时调用的方法。
+   * @param callback 初始化时调用的函数
    */
   public abstract listen(callback: (...optionalParams: unknown[]) => any): any;
 
   /**
-   * Method called when server is being terminated.
+   * 服务器终止时调用的方法。
    */
   public abstract close(): any;
 
   /**
-   * Sets the transport identifier.
-   * @param transportId Unique transport identifier.
+   * 设置传输标识符。
+   * @param transportId 唯一的传输标识符。
    */
   public setTransportId(transportId: Transport | symbol): void {
     this.transportId = transportId;
   }
 
   /**
-   * Sets a hook that will be called when processing starts.
+   * 设置处理开始时调用的钩子。
    */
   public setOnProcessingStartHook(
     hook: (
@@ -128,7 +128,7 @@ export abstract class Server<
   }
 
   /**
-   * Sets a hook that will be called when processing ends.
+   * 设置处理结束时调用的钩子。
    */
   public setOnProcessingEndHook(
     hook: (transportId: Transport | symbol, context: unknown) => void,

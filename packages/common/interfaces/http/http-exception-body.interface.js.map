@@ -1,0 +1,1 @@
+{"version":3,"file":"http-exception-body.interface.js","sourceRoot":"","sources":["http-exception-body.interface.ts"],"names":[],"mappings":"","sourcesContent":["export type HttpExceptionBodyMessage = string | string[] | number;\n\nexport interface HttpExceptionBody {\n  message: HttpExceptionBodyMessage;\n  error?: string;\n  statusCode: number;\n}\n"]}

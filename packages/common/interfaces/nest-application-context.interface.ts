@@ -9,26 +9,25 @@ export type SelectOptions = Pick<NestApplicationContextOptions, 'abortOnError'>;
 
 export interface GetOrResolveOptions {
   /**
-   * If enabled, lookup will only be performed in the host module.
+   * 如果启用，查找将仅在宿主模块中执行。
    * @default false
    */
   strict?: boolean;
   /**
-   * If enabled, instead of returning a first instance registered under a given token,
-   * a list of instances will be returned.
+   * 如果启用，将返回一个实例列表，而不是返回在给定令牌下注册的第一个实例。
    * @default false
    */
   each?: boolean;
 }
 
 /**
- * Interface defining NestApplicationContext.
+ * 定义 NestApplicationContext 的接口。
  *
  * @publicApi
  */
 export interface INestApplicationContext {
   /**
-   * Allows navigating through the modules tree, for example, to pull out a specific instance from the selected module.
+   * 允许在模块树中导航，例如，从选定的模块中提取特定实例。
    * @returns {INestApplicationContext}
    */
   select<T>(
@@ -37,14 +36,14 @@ export interface INestApplicationContext {
   ): INestApplicationContext;
 
   /**
-   * Retrieves an instance of either injectable or controller, otherwise, throws exception.
+   * 获取可注入对象或控制器的实例，如果不存在则抛出异常。
    * @returns {TResult}
    */
   get<TInput = any, TResult = TInput>(
     typeOrToken: Type<TInput> | Function | string | symbol,
   ): TResult;
   /**
-   * Retrieves an instance of either injectable or controller, otherwise, throws exception.
+   * 获取可注入对象或控制器的实例，如果不存在则抛出异常。
    * @returns {TResult}
    */
   get<TInput = any, TResult = TInput>(
@@ -52,7 +51,7 @@ export interface INestApplicationContext {
     options: { strict?: boolean; each?: undefined | false },
   ): TResult;
   /**
-   * Retrieves a list of instances of either injectables or controllers, otherwise, throws exception.
+   * 获取可注入对象或控制器实例的列表，如果不存在则抛出异常。
    * @returns {Array<TResult>}
    */
   get<TInput = any, TResult = TInput>(
@@ -60,7 +59,7 @@ export interface INestApplicationContext {
     options: { strict?: boolean; each: true },
   ): Array<TResult>;
   /**
-   * Retrieves an instance (or a list of instances) of either injectable or controller, otherwise, throws exception.
+   * 获取可注入对象或控制器的一个实例（或实例列表），如果不存在则抛出异常。
    * @returns {TResult | Array<TResult>}
    */
   get<TInput = any, TResult = TInput>(
@@ -69,14 +68,14 @@ export interface INestApplicationContext {
   ): TResult | Array<TResult>;
 
   /**
-   * Resolves transient or request-scoped instance of either injectable or controller, otherwise, throws exception.
+   * 解析可注入对象或控制器的临时实例或请求作用域实例，如果不存在则抛出异常。
    * @returns {Array<TResult>}
    */
   resolve<TInput = any, TResult = TInput>(
     typeOrToken: Type<TInput> | Function | string | symbol,
   ): Promise<TResult>;
   /**
-   * Resolves transient or request-scoped instance of either injectable or controller, otherwise, throws exception.
+   * 解析可注入对象或控制器的临时实例或请求作用域实例，如果不存在则抛出异常。
    * @returns {Array<TResult>}
    */
   resolve<TInput = any, TResult = TInput>(
@@ -84,7 +83,7 @@ export interface INestApplicationContext {
     contextId?: { id: number },
   ): Promise<TResult>;
   /**
-   * Resolves transient or request-scoped instance of either injectable or controller, otherwise, throws exception.
+   * 解析可注入对象或控制器的临时实例或请求作用域实例，如果不存在则抛出异常。
    * @returns {Array<TResult>}
    */
   resolve<TInput = any, TResult = TInput>(
@@ -93,7 +92,7 @@ export interface INestApplicationContext {
     options?: { strict?: boolean; each?: undefined | false },
   ): Promise<TResult>;
   /**
-   * Resolves transient or request-scoped instances of either injectables or controllers, otherwise, throws exception.
+   * 解析可注入对象或控制器的临时实例或请求作用域实例，如果不存在则抛出异常。
    * @returns {Array<TResult>}
    */
   resolve<TInput = any, TResult = TInput>(
@@ -102,7 +101,7 @@ export interface INestApplicationContext {
     options?: { strict?: boolean; each: true },
   ): Promise<Array<TResult>>;
   /**
-   * Resolves transient or request-scoped instance (or a list of instances) of either injectable or controller, otherwise, throws exception.
+   * 解析可注入对象或控制器的临时实例或请求作用域实例（列表），如果不存在则抛出异常。
    * @returns {Promise<TResult | Array<TResult>>}
    */
   resolve<TInput = any, TResult = TInput>(
@@ -112,7 +111,7 @@ export interface INestApplicationContext {
   ): Promise<TResult | Array<TResult>>;
 
   /**
-   * Registers the request/context object for a given context ID (DI container sub-tree).
+   * 为给定的上下文 ID（DI 容器子树）注册请求/上下文对象。
    * @returns {void}
    */
   registerRequestByContextId<T = any>(
@@ -121,33 +120,32 @@ export interface INestApplicationContext {
   ): void;
 
   /**
-   * Terminates the application
+   * 终止应用程序
    * @returns {Promise<void>}
    */
   close(): Promise<void>;
 
   /**
-   * Sets custom logger service.
-   * Flushes buffered logs if auto flush is on.
+   * 设置自定义日志服务。
+   * 如果自动刷新开启，则刷新缓冲的日志。
    * @returns {void}
    */
   useLogger(logger: LoggerService | LogLevel[] | false): void;
 
   /**
-   * Prints buffered logs and detaches buffer.
+   * 打印缓冲的日志并分离缓冲区。
    * @returns {void}
    */
   flushLogs(): void;
 
   /**
-   * Enables the usage of shutdown hooks. Will call the
-   * `onApplicationShutdown` function of a provider if the
-   * process receives a shutdown signal.
+   * 启用关闭钩子的使用。当进程收到关闭信号时，
+   * 将调用提供者的 `onApplicationShutdown` 函数。
    *
-   * @param {ShutdownSignal[] | string[]} [signals] The system signals to listen to
-   * @param {ShutdownHooksOptions} [options] Options for configuring shutdown hooks behavior
+   * @param {ShutdownSignal[] | string[]} [signals] 要监听的系统信号
+   * @param {ShutdownHooksOptions} [options] 配置关闭钩子行为的选项
    *
-   * @returns {this} The Nest application context instance
+   * @returns {this} Nest 应用上下文实例
    */
   enableShutdownHooks(
     signals?: ShutdownSignal[] | string[],
@@ -155,11 +153,11 @@ export interface INestApplicationContext {
   ): this;
 
   /**
-   * Initializes the Nest application.
-   * Calls the Nest lifecycle events.
-   * It isn't mandatory to call this method directly.
+   * 初始化 Nest 应用程序。
+   * 调用 Nest 生命周期事件。
+   * 不一定要直接调用此方法。
    *
-   * @returns {Promise<this>} The NestApplicationContext instance as Promise
+   * @returns {Promise<this>} 返回 Promise 形式的 NestApplicationContext 实例
    */
   init(): Promise<this>;
 }

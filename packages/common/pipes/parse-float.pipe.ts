@@ -12,27 +12,26 @@ import { isNil } from '../utils/shared.utils';
  */
 export interface ParseFloatPipeOptions {
   /**
-   * The HTTP status code to be used in the response when the validation fails.
+   * 验证失败时在响应中使用的 HTTP 状态码。
    */
   errorHttpStatusCode?: ErrorHttpStatusCode;
   /**
-   * A factory function that returns an exception object to be thrown
-   * if validation fails.
-   * @param error Error message
-   * @returns The exception object
+   * 验证失败时返回要抛出的异常对象的工厂函数。
+   * @param error 错误信息
+   * @returns 异常对象
    */
   exceptionFactory?: (error: string) => any;
   /**
-   * If true, the pipe will return null or undefined if the value is not provided
+   * 如果为 true，当未提供值时，管道将返回 null 或 undefined
    * @default false
    */
   optional?: boolean;
 }
 
 /**
- * Defines the built-in ParseFloat Pipe
+ * 定义内置的 ParseFloat 管道
  *
- * @see [Built-in Pipes](https://docs.nestjs.com/pipes#built-in-pipes)
+ * @see [内置管道](https://docs.nestjs.cn/pipes#built-in-pipes)
  *
  * @publicApi
  */
@@ -51,11 +50,10 @@ export class ParseFloatPipe implements PipeTransform<string> {
   }
 
   /**
-   * Method that accesses and performs optional transformation on argument for
-   * in-flight requests.
+   * 访问并对正在处理的请求参数执行可选转换的方法。
    *
-   * @param value currently processed route argument
-   * @param metadata contains metadata about the currently processed route argument
+   * @param value 当前处理的路由参数
+   * @param metadata 包含当前处理的路由参数的元数据
    */
   async transform(value: string, metadata: ArgumentMetadata): Promise<number> {
     if (isNil(value) && this.options?.optional) {
@@ -63,15 +61,15 @@ export class ParseFloatPipe implements PipeTransform<string> {
     }
     if (!this.isNumeric(value)) {
       throw this.exceptionFactory(
-        'Validation failed (numeric string is expected)',
+        '验证失败(期望数字字符串)',
       );
     }
     return parseFloat(value);
   }
 
   /**
-   * @param value currently processed route argument
-   * @returns `true` if `value` is a valid float number
+   * @param value 当前处理的路由参数
+   * @returns 如果 value 是有效的浮点数则返回 true
    */
   protected isNumeric(value: string): boolean {
     return (

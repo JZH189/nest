@@ -2,16 +2,15 @@ import { ModuleMetadata } from '../../interfaces/modules/module-metadata.interfa
 import { validateModuleKeys } from '../../utils/validate-module-keys.util';
 
 /**
- * Decorator that marks a class as a [module](https://docs.nestjs.com/modules).
+ * 将类标记为[模块](https://docs.nestjs.cn/modules)的装饰器。
  *
- * Modules are used by Nest to organize the application structure into scopes. Controllers
- * and Providers are scoped by the module they are declared in. Modules and their
- * classes (Controllers and Providers) form a graph that determines how Nest
- * performs [Dependency Injection (DI)](https://docs.nestjs.com/providers#dependency-injection).
+ * 模块用于 Nest 将应用程序结构组织到作用域中。控制器和提供者由它们声明所在的模块限定作用域。
+ * 模块及其类（控制器和提供者）形成一个图，该图决定了 Nest 如何执行
+ * [依赖注入 (DI)](https://docs.nestjs.cn/providers#dependency-injection)。
  *
- * @param metadata module configuration metadata
+ * @param metadata 模块配置元数据
  *
- * @see [Modules](https://docs.nestjs.com/modules)
+ * @see [模块](https://docs.nestjs.cn/modules)
  *
  * @publicApi
  */

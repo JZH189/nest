@@ -8,27 +8,26 @@ type MaxFileSizeValidatorContext = FileValidatorContext<
 
 export type MaxFileSizeValidatorOptions = {
   /**
-   * Maximum allowed file size in bytes.
+   * 允许的最大文件大小（字节）。
    */
   maxSize: number;
 
   /**
-   * @deprecated Use `errorMessage` instead.
+   * @deprecated 请使用 `errorMessage` 替代。
    */
   message?: string | ((maxSize: number) => string);
 
   /**
-   * Custom error message returned when file size validation fails.
-   * Can be provided as a static string, or as a factory function
-   * that receives the validation context (file and validator configuration)
-   * and returns a dynamic error message.
+   * 文件大小验证失败时返回的自定义错误消息。
+   * 可以提供静态字符串，或作为工厂函数接收验证上下文（文件和验证器配置）
+   * 并返回动态错误消息。
    *
    * @example
-   * // Static message
+   * // 静态消息
    * new MaxFileSizeValidator({ maxSize: 1000, errorMessage: 'File size exceeds the limit' })
    *
    * @example
-   * // Dynamic message based on file object and validator configuration
+   * // 基于文件对象和验证器配置的动态消息
    * new MaxFileSizeValidator({
    *   maxSize: 1000,
    *   errorMessage: ctx => `Received file size is ${ctx.file?.size}, but it must be smaller than ${ctx.config.maxSize}.`
@@ -38,9 +37,9 @@ export type MaxFileSizeValidatorOptions = {
 };
 
 /**
- * Defines the built-in MaxSize File Validator
+ * 定义内置的最大文件大小验证器。
  *
- * @see [File Validators](https://docs.nestjs.com/techniques/file-upload#file-validation)
+ * @see [文件验证器](https://docs.nestjs.cn/techniques/file-upload#file-validation)
  *
  * @publicApi
  */

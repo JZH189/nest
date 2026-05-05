@@ -137,7 +137,7 @@ export class ApplicationConfig {
 
   public enableVersioning(options: VersioningOptions): void {
     if (Array.isArray(options.defaultVersion)) {
-      // Drop duplicated versions
+      // 移除重复的版本
       options.defaultVersion = Array.from(new Set(options.defaultVersion));
     }
 

@@ -35,18 +35,18 @@ export type ReflectableDecorator<TParam, TTransformed = TParam> = ((
 };
 
 /**
- * Helper class providing Nest reflection capabilities.
+ * 提供 Nest 反射功能的辅助类。
  *
- * @see [Reflection](https://docs.nestjs.com/guards#putting-it-all-together)
+ * @see [反射](https://docs.nestjs.cn/guards#putting-it-all-together)
  *
  * @publicApi
  */
 export class Reflector {
   /**
-   * Creates a decorator that can be used to decorate classes and methods with metadata.
-   * Can be used as a strongly-typed alternative to `@SetMetadata`.
-   * @param options Decorator options.
-   * @returns A decorator function.
+   * 创建一个可用于为类和方法添加元数据的装饰器。
+   * 可用作 `@SetMetadata` 的强类型替代方案。
+   * @param options 装饰器选项。
+   * @returns 一个装饰器函数。
    */
   static createDecorator<TParam>(
     options?: CreateDecoratorOptions<TParam>,
@@ -72,13 +72,13 @@ export class Reflector {
   }
 
   /**
-   * Retrieve metadata for a reflectable decorator for a specified target.
+   * 检索指定目标的可反射装饰器的元数据。
    *
    * @example
    * `const roles = this.reflector.get(Roles, context.getHandler());`
    *
-   * @param decorator reflectable decorator created through `Reflector.createDecorator`
-   * @param target context (decorated object) to retrieve metadata from
+   * @param decorator 通过 `Reflector.createDecorator` 创建的可反射装饰器
+   * @param target 要从中检索元数据的上下文（装饰对象）
    *
    */
   public get<T extends ReflectableDecorator<any>>(
@@ -86,13 +86,13 @@ export class Reflector {
     target: Type<any> | Function,
   ): T extends ReflectableDecorator<any, infer R> ? R : unknown;
   /**
-   * Retrieve metadata for a specified key for a specified target.
+   * 检索指定目标的指定键的元数据。
    *
    * @example
    * `const roles = this.reflector.get<string[]>('roles', context.getHandler());`
    *
-   * @param metadataKey lookup key for metadata to retrieve
-   * @param target context (decorated object) to retrieve metadata from
+   * @param metadataKey 要检索的元数据的查找键
+   * @param target 要从中检索元数据的上下文（装饰对象）
    *
    */
   public get<TResult = any, TKey = any>(
@@ -100,13 +100,13 @@ export class Reflector {
     target: Type<any> | Function,
   ): TResult;
   /**
-   * Retrieve metadata for a specified key or decorator for a specified target.
+   * 检索指定目标的指定键或装饰器的元数据。
    *
    * @example
    * `const roles = this.reflector.get<string[]>('roles', context.getHandler());`
    *
-   * @param metadataKey lookup key or decorator for metadata to retrieve
-   * @param target context (decorated object) to retrieve metadata from
+   * @param metadataKeyOrDecorator 要检索的元数据的查找键或装饰器
+   * @param target 要从中检索元数据的上下文（装饰对象）
    *
    */
   public get<TResult = any, TKey = any>(
@@ -121,10 +121,10 @@ export class Reflector {
   }
 
   /**
-   * Retrieve metadata for a specified decorator for a specified set of targets.
+   * 检索指定目标集的可反射装饰器的元数据。
    *
-   * @param decorator lookup decorator for metadata to retrieve
-   * @param targets context (decorated objects) to retrieve metadata from
+   * @param decorator 要检索的元数据的查找装饰器
+   * @param targets 要从中检索元数据的上下文（装饰对象）
    *
    */
   public getAll<TParam = any, TTransformed = TParam>(
@@ -132,10 +132,10 @@ export class Reflector {
     targets: (Type<any> | Function)[],
   ): TTransformed extends Array<any> ? TTransformed : TTransformed[];
   /**
-   * Retrieve metadata for a specified key for a specified set of targets.
+   * 检索指定目标集的指定键的元数据。
    *
-   * @param metadataKey lookup key for metadata to retrieve
-   * @param targets context (decorated objects) to retrieve metadata from
+   * @param metadataKey 要检索的元数据的查找键
+   * @param targets 要从中检索元数据的上下文（装饰对象）
    *
    */
   public getAll<TResult extends any[] = any[], TKey = any>(
@@ -143,10 +143,10 @@ export class Reflector {
     targets: (Type<any> | Function)[],
   ): TResult;
   /**
-   * Retrieve metadata for a specified key or decorator for a specified set of targets.
+   * 检索指定目标集的指定键或装饰器的元数据。
    *
-   * @param metadataKeyOrDecorator lookup key or decorator for metadata to retrieve
-   * @param targets context (decorated objects) to retrieve metadata from
+   * @param metadataKeyOrDecorator 要检索的元数据的查找键或装饰器
+   * @param targets 要从中检索元数据的上下文（装饰对象）
    *
    */
   public getAll<TResult extends any[] = any[], TKey = any>(
@@ -159,10 +159,10 @@ export class Reflector {
   }
 
   /**
-   * Retrieve metadata for a specified decorator for a specified set of targets and merge results.
+   * 检索指定目标集的可反射装饰器的元数据并合并结果。
    *
-   * @param decorator lookup decorator for metadata to retrieve
-   * @param targets context (decorated objects) to retrieve metadata from
+   * @param decorator 要检索的元数据的查找装饰器
+   * @param targets 要从中检索元数据的上下文（装饰对象）
    *
    */
   public getAllAndMerge<TParam = any, TTransformed = TParam>(
@@ -174,10 +174,10 @@ export class Reflector {
       ? TTransformed
       : TTransformed[];
   /**
-   * Retrieve metadata for a specified key for a specified set of targets and merge results.
+   * 检索指定目标集的指定键的元数据并合并结果。
    *
-   * @param metadataKey lookup key for metadata to retrieve
-   * @param targets context (decorated objects) to retrieve metadata from
+   * @param metadataKey 要检索的元数据的查找键
+   * @param targets 要从中检索元数据的上下文（装饰对象）
    *
    */
   public getAllAndMerge<TResult extends any[] | object = any[], TKey = any>(
@@ -185,10 +185,10 @@ export class Reflector {
     targets: (Type<any> | Function)[],
   ): TResult;
   /**
-   * Retrieve metadata for a specified key or decorator for a specified set of targets and merge results.
+   * 检索指定目标集的指定键或装饰器的元数据并合并结果。
    *
-   * @param metadataKeyOrDecorator lookup key for metadata to retrieve
-   * @param targets context (decorated objects) to retrieve metadata from
+   * @param metadataKeyOrDecorator 要检索的元数据的查找键
+   * @param targets 要从中检索元数据的上下文（装饰对象）
    *
    */
   public getAllAndMerge<TResult extends any[] | object = any[], TKey = any>(
@@ -225,10 +225,10 @@ export class Reflector {
   }
 
   /**
-   * Retrieve metadata for a specified decorator for a specified set of targets and return a first not undefined value.
+   * 检索指定目标集的可反射装饰器的元数据并返回第一个非 undefined 值。
    *
-   * @param decorator lookup decorator for metadata to retrieve
-   * @param targets context (decorated objects) to retrieve metadata from
+   * @param decorator 要检索的元数据的查找装饰器
+   * @param targets 要从中检索元数据的上下文（装饰对象）
    *
    */
   public getAllAndOverride<TParam = any, TTransformed = TParam>(
@@ -236,10 +236,10 @@ export class Reflector {
     targets: (Type<any> | Function)[],
   ): TTransformed;
   /**
-   * Retrieve metadata for a specified key for a specified set of targets and return a first not undefined value.
+   * 检索指定目标集的指定键的元数据并返回第一个非 undefined 值。
    *
-   * @param metadataKey lookup key for metadata to retrieve
-   * @param targets context (decorated objects) to retrieve metadata from
+   * @param metadataKey 要检索的元数据的查找键
+   * @param targets 要从中检索元数据的上下文（装饰对象）
    *
    */
   public getAllAndOverride<TResult = any, TKey = any>(
@@ -247,10 +247,10 @@ export class Reflector {
     targets: (Type<any> | Function)[],
   ): TResult;
   /**
-   * Retrieve metadata for a specified key or decorator for a specified set of targets and return a first not undefined value.
+   * 检索指定目标集的指定键或装饰器的元数据并返回第一个非 undefined 值。
    *
-   * @param metadataKeyOrDecorator lookup key or metadata for metadata to retrieve
-   * @param targets context (decorated objects) to retrieve metadata from
+   * @param metadataKeyOrDecorator 要检索的元数据的查找键或元数据
+   * @param targets 要从中检索元数据的上下文（装饰对象）
    *
    */
   public getAllAndOverride<TResult = any, TKey = any>(

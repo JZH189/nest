@@ -1,0 +1,1 @@
+{"version":3,"file":"nest-microservice-options.interface.js","sourceRoot":"","sources":["nest-microservice-options.interface.ts"],"names":[],"mappings":"","sourcesContent":["import { NestApplicationContextOptions } from '../nest-application-context-options.interface';\n\n/**\n * @publicApi\n */\nexport type NestMicroserviceOptions = NestApplicationContextOptions;\n"]}

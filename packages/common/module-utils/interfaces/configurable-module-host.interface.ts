@@ -3,7 +3,7 @@ import { ConfigurableModuleAsyncOptions } from './configurable-module-async-opti
 import { ConfigurableModuleCls } from './configurable-module-cls.interface';
 
 /**
- * Configurable module host. See properties for more details
+ * 可配置模块宿主。详见各属性。
  *
  * @publicApi
  */
@@ -14,11 +14,10 @@ export interface ConfigurableModuleHost<
   ExtraModuleDefinitionOptions = {},
 > {
   /**
-   * Class that represents a blueprint/prototype for a configurable Nest module.
-   * This class provides static methods for constructing dynamic modules. Their names
-   * can be controlled through the "MethodKey" type argument.
+   * 表示可配置 Nest 模块的蓝图/原型的类。
+   * 此类提供用于构造动态模块的静态方法。方法名可以通过 "MethodKey" 类型参数进行控制。
    *
-   * Your module class should inherit from this class to make the static methods available.
+   * 你的模块类应该继承此类以使静态方法可用。
    *
    * @example
    * ```typescript
@@ -35,13 +34,12 @@ export interface ConfigurableModuleHost<
     ExtraModuleDefinitionOptions
   >;
   /**
-   * Module options provider token. Can be used to inject the "options object" to
-   * providers registered within the host module.
+   * 模块选项提供者令牌。可用于向宿主模块内注册的提供者注入"选项对象"。
    */
   MODULE_OPTIONS_TOKEN: string | symbol;
   /**
-   * Can be used to auto-infer the compound "async module options" type.
-   * Note: this property is not supposed to be used as a value.
+   * 可用于自动推断复合"异步模块选项"类型。
+   * 注意：此属性不应作为值使用。
    *
    * @example
    * ```typescript
@@ -60,8 +58,8 @@ export interface ConfigurableModuleHost<
   > &
     Partial<ExtraModuleDefinitionOptions>;
   /**
-   * Can be used to auto-infer the compound "module options" type (options interface + extra module definition options).
-   * Note: this property is not supposed to be used as a value.
+   * 可用于自动推断复合"模块选项"类型（选项接口 + 额外模块定义选项）。
+   * 注意：此属性不应作为值使用。
    *
    * @example
    * ```typescript

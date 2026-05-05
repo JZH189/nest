@@ -1,0 +1,1 @@
+{"version":3,"file":"forward-reference.interface.js","sourceRoot":"","sources":["forward-reference.interface.ts"],"names":[],"mappings":"","sourcesContent":["export interface ForwardReference<T = any> {\n  forwardRef: T;\n}\n"]}

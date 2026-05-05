@@ -2,7 +2,7 @@ import { METHOD_METADATA, PATH_METADATA, SSE_METADATA } from '../../constants';
 import { RequestMethod } from '../../enums/request-method.enum';
 
 /**
- * Declares this route as a Server-Sent-Events endpoint
+ * 将此路由声明为 Server-Sent-Events 端点
  *
  * @publicApi
  */

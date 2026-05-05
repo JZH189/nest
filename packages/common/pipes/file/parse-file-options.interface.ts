@@ -10,7 +10,7 @@ export interface ParseFileOptions {
   exceptionFactory?: (error: string) => any;
 
   /**
-   * Defines if file parameter is required.
+   * 定义文件参数是否为必需。
    * @default true
    */
   fileIsRequired?: boolean;

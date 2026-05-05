@@ -16,9 +16,8 @@ export interface PlainLiteralObject {
   [key: string]: any;
 }
 
-// NOTE (external)
-// We need to deduplicate them here due to the circular dependency
-// between core and common packages
+// 注意 (external)
+// 由于 core 和 common 包之间的循环依赖，我们需要在这里对它们进行去重
 const REFLECTOR = 'Reflector';
 
 /**
@@ -65,7 +64,7 @@ export class ClassSerializerInterceptor implements NestInterceptor {
   }
 
   /**
-   * Serializes responses that are non-null objects nor streamable files.
+   * 序列化既不是空对象也不是可流式传输文件的响应。
    */
   serialize(
     response: PlainLiteralObject | Array<PlainLiteralObject>,

@@ -1,0 +1,1 @@
+{"version":3,"file":"on-init.interface.js","sourceRoot":"","sources":["on-init.interface.ts"],"names":[],"mappings":"","sourcesContent":["/**\n * 定义在宿主模块初始化后调用方法的接口。\n *\n * @see [生命周期事件](https://docs.nestjs.cn/fundamentals/lifecycle-events)\n *\n * @publicApi\n */\nexport interface OnModuleInit {\n  onModuleInit(): any;\n}\n"]}

@@ -1,0 +1,1 @@
+{"version":3,"file":"pattern-handler.enum.js","sourceRoot":"","sources":["pattern-handler.enum.ts"],"names":[],"mappings":";;;AAAA,IAAY,cAGX;AAHD,WAAY,cAAc;IACxB,yDAAW,CAAA;IACX,qDAAS,CAAA;AACX,CAAC,EAHW,cAAc,8BAAd,cAAc,QAGzB","sourcesContent":["export enum PatternHandler {\n  MESSAGE = 1,\n  EVENT = 2,\n}\n"]}

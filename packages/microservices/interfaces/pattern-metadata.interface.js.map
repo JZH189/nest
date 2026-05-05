@@ -1,0 +1,1 @@
+{"version":3,"file":"pattern-metadata.interface.js","sourceRoot":"","sources":["pattern-metadata.interface.ts"],"names":[],"mappings":"","sourcesContent":["export type PatternMetadata = Record<string, any> | string;\n"]}

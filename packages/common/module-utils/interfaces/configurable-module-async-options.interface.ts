@@ -7,8 +7,8 @@ import {
 import { DEFAULT_FACTORY_CLASS_METHOD_KEY } from '../constants';
 
 /**
- * Interface that must be implemented by the module options factory class.
- * Method key varies depending on the "FactoryClassMethodKey" type argument.
+ * 必须由模块选项工厂类实现的接口。
+ * 方法键根据 "FactoryClassMethodKey" 类型参数的不同而变化。
  *
  * @publicApi
  */
@@ -21,8 +21,8 @@ export type ConfigurableModuleOptionsFactory<
 >;
 
 /**
- * Interface that represents the module async options object
- * Factory method name varies depending on the "FactoryClassMethodKey" type argument.
+ * 表示模块异步选项对象的接口。
+ * 工厂方法名根据 "FactoryClassMethodKey" 类型参数的不同而变化。
  *
  * @publicApi
  */
@@ -32,32 +32,29 @@ export interface ConfigurableModuleAsyncOptions<
     typeof DEFAULT_FACTORY_CLASS_METHOD_KEY,
 > extends Pick<ModuleMetadata, 'imports'> {
   /**
-   * Injection token resolving to an existing provider. The provider must implement
-   * the corresponding interface.
+   * 解析为现有提供者的注入令牌。该提供者必须实现相应的接口。
    */
   useExisting?: Type<
     ConfigurableModuleOptionsFactory<ModuleOptions, FactoryClassMethodKey>
   >;
   /**
-   * Injection token resolving to a class that will be instantiated as a provider.
-   * The class must implement the corresponding interface.
+   * 解析为将作为提供者实例化的类的注入令牌。
+   * 该类必须实现相应的接口。
    */
   useClass?: Type<
     ConfigurableModuleOptionsFactory<ModuleOptions, FactoryClassMethodKey>
   >;
   /**
-   * Function returning options (or a Promise resolving to options) to configure the
-   * module.
+   * 返回选项（或解析为选项的 Promise）的函数，用于配置模块。
    */
   useFactory?: (...args: any[]) => Promise<ModuleOptions> | ModuleOptions;
   /**
-   * Dependencies that a Factory may inject.
+   * 工厂可以注入的依赖项。
    */
   inject?: FactoryProvider['inject'];
   /**
-   * List of parent module's providers that will be filtered to only provide necessary
-   * providers for the 'inject' array
-   * useful to pass options to nested async modules
+   * 父模块的提供者列表，将被过滤以仅提供 'inject' 数组所需的必要提供者。
+   * 这对于将选项传递给嵌套异步模块很有用。
    */
   provideInjectionTokensFrom?: Provider[];
 }

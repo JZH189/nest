@@ -6,7 +6,7 @@ import { isNumber, isObject, isString } from '../utils/shared.utils';
 import { IntrinsicException } from './intrinsic.exception';
 
 export interface HttpExceptionOptions {
-  /** original cause of the error */
+  /** 错误的原始原因 */
   cause?: unknown;
   description?: string;
 }
@@ -17,52 +17,50 @@ export interface DescriptionAndOptions {
 }
 
 /**
- * Defines the base Nest HTTP exception, which is handled by the default
- * Exceptions Handler.
+ * 定义 Nest 的基础 HTTP 异常类，由默认的异常处理器处理。
  *
- * @see [Built-in HTTP exceptions](https://docs.nestjs.com/exception-filters#built-in-http-exceptions)
+ * @see [内置 HTTP 异常](https://docs.nestjs.cn/exception-filters#built-in-http-exceptions)
  *
  * @publicApi
  */
 export class HttpException extends IntrinsicException {
   /**
-   * Exception cause. Indicates the specific original cause of the error.
-   * It is used when catching and re-throwing an error with a more-specific or useful error message in order to still have access to the original error.
+   * 异常原因。表示错误的特定原始原因。
+   * 当捕获并重新抛出错误以获得更具体或更有用的错误消息时使用，以保留对原始错误的访问。
    */
   public cause: unknown;
 
   /**
-   * Instantiate a plain HTTP Exception.
+   * 创建一个简单的 HTTP 异常实例。
    *
    * @example
-   * throw new HttpException('message', HttpStatus.BAD_REQUEST)
-   * throw new HttpException('custom message', HttpStatus.BAD_REQUEST, {
-   *  cause: new Error('Cause Error'),
+   * throw new HttpException('消息', HttpStatus.BAD_REQUEST)
+   * throw new HttpException('自定义消息', HttpStatus.BAD_REQUEST, {
+   *  cause: new Error('原始错误'),
    * })
    *
    *
    * @usageNotes
-   * The constructor arguments define the response and the HTTP response status code.
-   * - The `response` argument (required) defines the JSON response body. alternatively, it can also be
-   *  an error object that is used to define an error [cause](https://nodejs.org/en/blog/release/v16.9.0/#error-cause).
-   * - The `status` argument (required) defines the HTTP Status Code.
-   * - The `options` argument (optional) defines additional error options. Currently, it supports the `cause` attribute,
-   *  and can be used as an alternative way to specify the error cause: `const error = new HttpException('description', 400, { cause: new Error() });`
+   * 构造函数参数定义了响应和 HTTP 响应状态码。
+   * - `response` 参数(必需)定义了 JSON 响应体。它也可以是一个错误对象，
+   *  用于定义错误的[原因](https://nodejs.org/en/blog/release/v16.9.0/#error-cause)。
+   * - `status` 参数(必需)定义了 HTTP 状态码。
+   * - `options` 参数(可选)定义了额外的错误选项。目前支持 `cause` 属性，
+   *  可以作为指定错误原因的替代方式: `const error = new HttpException('描述', 400, { cause: new Error() });`
    *
-   * By default, the JSON response body contains two properties:
-   * - `statusCode`: the Http Status Code.
-   * - `message`: a short description of the HTTP error by default; override this
-   * by supplying a string in the `response` parameter.
+   * 默认情况下，JSON 响应体包含两个属性:
+   * - `statusCode`: HTTP 状态码。
+   * - `message`: HTTP 错误的简短描述。可以通过在 `response` 参数中提供字符串来覆盖此值。
    *
-   * To override the entire JSON response body, pass an object to the `createBody`
-   * method. Nest will serialize the object and return it as the JSON response body.
+   * 要覆盖整个 JSON 响应体，请将对象传递给 `createBody` 方法。
+   * Nest 会序列化该对象并将其作为 JSON 响应体返回。
    *
-   * The `status` argument is required, and should be a valid HTTP status code.
-   * Best practice is to use the `HttpStatus` enum imported from `nestjs/common`.
+   * `status` 参数是必需的，应该是有效的 HTTP 状态码。
+   * 最佳实践是使用从 `nestjs/common` 导入的 `HttpStatus` 枚举。
    *
-   * @param response string, object describing the error condition or the error cause.
-   * @param status HTTP response status code.
-   * @param options An object used to add an error cause.
+   * @param response 描述错误条件或错误原因的字符串或对象。
+   * @param status HTTP 响应状态码。
+   * @param options 用于添加错误原因的对象。
    */
   constructor(
     private readonly response: string | Record<string, any>,
@@ -76,7 +74,7 @@ export class HttpException extends IntrinsicException {
   }
 
   /**
-   * Configures error chaining support
+   * 配置错误链支持
    *
    * @see https://nodejs.org/en/blog/release/v16.9.0/#error-cause
    * @see https://github.com/microsoft/TypeScript/issues/45167
@@ -163,9 +161,9 @@ export class HttpException extends IntrinsicException {
   }
 
   /**
-   * Utility method used to extract the error description and httpExceptionOptions from the given argument.
-   * This is used by inheriting classes to correctly parse both options.
-   * @returns the error description and the httpExceptionOptions as an object.
+   * 用于从给定参数中提取错误描述和 httpExceptionOptions 的工具方法。
+   * 继承的类使用此方法来正确解析这两个选项。
+   * @returns 错误描述和 httpExceptionOptions 作为一个对象返回。
    */
   public static extractDescriptionAndOptionsFrom(
     descriptionOrOptions: string | HttpExceptionOptions,

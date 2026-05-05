@@ -1,0 +1,1 @@
+{"version":3,"file":"index.js","sourceRoot":"","sources":["index.ts"],"names":[],"mappings":";;;AAAA,0EAAgD;AAChD,iEAAuC","sourcesContent":["export * from './controller-metadata.interface';\nexport * from './controller.interface';\n"]}

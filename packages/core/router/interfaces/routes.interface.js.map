@@ -1,0 +1,1 @@
+{"version":3,"file":"routes.interface.js","sourceRoot":"","sources":["routes.interface.ts"],"names":[],"mappings":"","sourcesContent":["import { Type } from '@nestjs/common';\n\nexport interface RouteTree {\n  path: string;\n  module?: Type<any>;\n  children?: (RouteTree | Type<any>)[];\n}\n\nexport type Routes = RouteTree[];\n"]}

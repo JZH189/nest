@@ -1,8 +1,7 @@
 /**
- * Interface defining method called once the application has fully started and
- * is bootstrapped.
+ * 定义在应用程序完全启动和引导后调用方法的接口。
  *
- * @see [Lifecycle Events](https://docs.nestjs.com/fundamentals/lifecycle-events)
+ * @see [生命周期事件](https://docs.nestjs.cn/fundamentals/lifecycle-events)
  *
  * @publicApi
  */

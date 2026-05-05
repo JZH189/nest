@@ -8,13 +8,12 @@ import { Type } from '../../interfaces';
 import { isNil, isString } from '../../utils/shared.utils';
 
 /**
- * The `@Response()`/`@Res` parameter decorator options.
+ * `@Response()`/`@Res` 参数装饰器选项。
  */
 export interface ResponseDecoratorOptions {
   /**
-   * Determines whether the response will be sent manually within the route handler,
-   * with the use of native response handling methods exposed by the platform-specific response object,
-   * or if it should passthrough Nest response processing pipeline.
+   * 确定响应是由路由处理程序内部手动发送(使用特定平台响应对象公开的本机响应处理方法)，
+   * 还是应该通过 Nest 响应处理管道传递。
    *
    * @default false
    */
@@ -86,13 +85,12 @@ const createPipesRouteParamDecorator =
   };
 
 /**
- * Route handler parameter decorator. Extracts the `Request`
- * object from the underlying platform and populates the decorated
- * parameter with the value of `Request`.
+ * 路由处理程序参数装饰器。从底层平台提取 `Request`
+ * 对象，并用 `Request` 的值填充被装饰的参数。
  *
- * Example: `logout(@Request() req)`
+ * 示例: `logout(@Request() req)`
  *
- * @see [Request object](https://docs.nestjs.com/controllers#request-object)
+ * @see [请求对象](https://docs.nestjs.cn/controllers#request-object)
  *
  * @publicApi
  */
@@ -101,11 +99,10 @@ export const Request: () => ParameterDecorator = createRouteParamDecorator(
 );
 
 /**
- * Route handler parameter decorator. Extracts the `Response`
- * object from the underlying platform and populates the decorated
- * parameter with the value of `Response`.
+ * 路由处理程序参数装饰器。从底层平台提取 `Response`
+ * 对象，并用 `Response` 的值填充被装饰的参数。
  *
- * Example: `logout(@Response() res)`
+ * 示例: `logout(@Response() res)`
  *
  * @publicApi
  */
@@ -129,9 +126,8 @@ export const Response: (
   };
 
 /**
- * Route handler parameter decorator. Extracts reference to the `Next` function
- * from the underlying platform and populates the decorated
- * parameter with the value of `Next`.
+ * 路由处理程序参数装饰器。从底层平台提取对 `Next` 函数的引用，
+ * 并用 `Next` 的值填充被装饰的参数。
  *
  * @publicApi
  */
@@ -140,11 +136,10 @@ export const Next: () => ParameterDecorator = createRouteParamDecorator(
 );
 
 /**
- * Route handler parameter decorator. Extracts the `Ip` property
- * from the `req` object and populates the decorated
- * parameter with the value of `ip`.
+ * 路由处理程序参数装饰器。从 `req` 对象中提取 `Ip` 属性，
+ * 并用 `ip` 的值填充被装饰的参数。
  *
- * @see [Request object](https://docs.nestjs.com/controllers#request-object)
+ * @see [请求对象](https://docs.nestjs.cn/controllers#request-object)
  *
  * @publicApi
  */
@@ -153,11 +148,10 @@ export const Ip: () => ParameterDecorator = createRouteParamDecorator(
 );
 
 /**
- * Route handler parameter decorator. Extracts the `Session` object
- * from the underlying platform and populates the decorated
- * parameter with the value of `Session`.
+ * 路由处理程序参数装饰器。从底层平台提取 `Session` 对象，
+ * 并用 `Session` 的值填充被装饰的参数。
  *
- * @see [Request object](https://docs.nestjs.com/controllers#request-object)
+ * @see [请求对象](https://docs.nestjs.cn/controllers#request-object)
  *
  * @publicApi
  */
@@ -166,35 +160,33 @@ export const Session: () => ParameterDecorator = createRouteParamDecorator(
 );
 
 /**
- * Route handler parameter decorator. Extracts the `file` object
- * and populates the decorated parameter with the value of `file`.
- * Used in conjunction with
- * [multer middleware](https://github.com/expressjs/multer) for Express-based applications.
+ * 路由处理程序参数装饰器。提取 `file` 对象，
+ * 并用 `file` 的值填充被装饰的参数。
+ * 与基于 Express 的应用程序的[multer 中间件](https://github.com/expressjs/multer)配合使用。
  *
- * For example:
+ * 例如:
  * ```typescript
  * uploadFile(@UploadedFile() file) {
  *   console.log(file);
  * }
  * ```
- * @see [Request object](https://docs.nestjs.com/techniques/file-upload)
+ * @see [请求对象](https://docs.nestjs.cn/techniques/file-upload)
  *
  * @publicApi
  */
 export function UploadedFile(): ParameterDecorator;
 /**
- * Route handler parameter decorator. Extracts the `file` object
- * and populates the decorated parameter with the value of `file`.
- * Used in conjunction with
- * [multer middleware](https://github.com/expressjs/multer) for Express-based applications.
+ * 路由处理程序参数装饰器。提取 `file` 对象，
+ * 并用 `file` 的值填充被装饰的参数。
+ * 与基于 Express 的应用程序的[multer 中间件](https://github.com/expressjs/multer)配合使用。
  *
- * For example:
+ * 例如:
  * ```typescript
  * uploadFile(@UploadedFile() file) {
  *   console.log(file);
  * }
  * ```
- * @see [Request object](https://docs.nestjs.com/techniques/file-upload)
+ * @see [请求对象](https://docs.nestjs.cn/techniques/file-upload)
  *
  * @publicApi
  */
@@ -203,18 +195,17 @@ export function UploadedFile(
 ): ParameterDecorator;
 
 /**
- * Route handler parameter decorator. Extracts the `file` object
- * and populates the decorated parameter with the value of `file`.
- * Used in conjunction with
- * [multer middleware](https://github.com/expressjs/multer) for Express-based applications.
+ * 路由处理程序参数装饰器。提取 `file` 对象，
+ * 并用 `file` 的值填充被装饰的参数。
+ * 与基于 Express 的应用程序的[multer 中间件](https://github.com/expressjs/multer)配合使用。
  *
- * For example:
+ * 例如:
  * ```typescript
  * uploadFile(@UploadedFile() file) {
  *   console.log(file);
  * }
  * ```
- * @see [Request object](https://docs.nestjs.com/techniques/file-upload)
+ * @see [请求对象](https://docs.nestjs.cn/techniques/file-upload)
  *
  * @publicApi
  */
@@ -223,18 +214,17 @@ export function UploadedFile(
   ...pipes: (Type<PipeTransform> | PipeTransform)[]
 ): ParameterDecorator;
 /**
- * Route handler parameter decorator. Extracts the `file` object
- * and populates the decorated parameter with the value of `file`.
- * Used in conjunction with
- * [multer middleware](https://github.com/expressjs/multer) for Express-based applications.
+ * 路由处理程序参数装饰器。提取 `file` 对象，
+ * 并用 `file` 的值填充被装饰的参数。
+ * 与基于 Express 的应用程序的[multer 中间件](https://github.com/expressjs/multer)配合使用。
  *
- * For example:
+ * 例如:
  * ```typescript
  * uploadFile(@UploadedFile() file) {
  *   console.log(file);
  * }
  * ```
- * @see [Request object](https://docs.nestjs.com/techniques/file-upload)
+ * @see [请求对象](https://docs.nestjs.cn/techniques/file-upload)
  *
  * @publicApi
  */
@@ -249,35 +239,33 @@ export function UploadedFile(
 }
 
 /**
- * Route handler parameter decorator. Extracts the `files` object
- * and populates the decorated parameter with the value of `files`.
- * Used in conjunction with
- * [multer middleware](https://github.com/expressjs/multer) for Express-based applications.
+ * 路由处理程序参数装饰器。提取 `files` 对象，
+ * 并用 `files` 的值填充被装饰的参数。
+ * 与基于 Express 的应用程序的[multer 中间件](https://github.com/expressjs/multer)配合使用。
  *
- * For example:
+ * 例如:
  * ```typescript
  * uploadFile(@UploadedFiles() files) {
  *   console.log(files);
  * }
  * ```
- * @see [Request object](https://docs.nestjs.com/techniques/file-upload)
+ * @see [请求对象](https://docs.nestjs.cn/techniques/file-upload)
  *
  * @publicApi
  */
 export function UploadedFiles(): ParameterDecorator;
 /**
- * Route handler parameter decorator. Extracts the `files` object
- * and populates the decorated parameter with the value of `files`.
- * Used in conjunction with
- * [multer middleware](https://github.com/expressjs/multer) for Express-based applications.
+ * 路由处理程序参数装饰器。提取 `files` 对象，
+ * 并用 `files` 的值填充被装饰的参数。
+ * 与基于 Express 的应用程序的[multer 中间件](https://github.com/expressjs/multer)配合使用。
  *
- * For example:
+ * 例如:
  * ```typescript
  * uploadFile(@UploadedFiles() files) {
  *   console.log(files);
  * }
  * ```
- * @see [Request object](https://docs.nestjs.com/techniques/file-upload)
+ * @see [请求对象](https://docs.nestjs.cn/techniques/file-upload)
  *
  * @publicApi
  */
@@ -285,18 +273,17 @@ export function UploadedFiles(
   ...pipes: (Type<PipeTransform> | PipeTransform)[]
 ): ParameterDecorator;
 /**
- * Route handler parameter decorator. Extracts the `files` object
- * and populates the decorated parameter with the value of `files`.
- * Used in conjunction with
- * [multer middleware](https://github.com/expressjs/multer) for Express-based applications.
+ * 路由处理程序参数装饰器。提取 `files` 对象，
+ * 并用 `files` 的值填充被装饰的参数。
+ * 与基于 Express 的应用程序的[multer 中间件](https://github.com/expressjs/multer)配合使用。
  *
- * For example:
+ * 例如:
  * ```typescript
  * uploadFile(@UploadedFiles() files) {
  *   console.log(files);
  * }
  * ```
- * @see [Request object](https://docs.nestjs.com/techniques/file-upload)
+ * @see [请求对象](https://docs.nestjs.cn/techniques/file-upload)
  *
  * @publicApi
  */
@@ -310,15 +297,14 @@ export function UploadedFiles(
 }
 
 /**
- * Route handler parameter decorator. Extracts the `headers`
- * property from the `req` object and populates the decorated
- * parameter with the value of `headers`.
+ * 路由处理程序参数装饰器。从 `req` 对象中提取 `headers`
+ * 属性，并用 `headers` 的值填充被装饰的参数。
  *
- * For example: `async update(@Headers('Cache-Control') cacheControl: string)`
+ * 例如: `async update(@Headers('Cache-Control') cacheControl: string)`
  *
- * @param property name of single header property to extract.
+ * @param property 要提取的单个 header 属性的名称。
  *
- * @see [Request object](https://docs.nestjs.com/controllers#request-object)
+ * @see [请求对象](https://docs.nestjs.cn/controllers#request-object)
  *
  * @publicApi
  */
@@ -326,39 +312,37 @@ export const Headers: (property?: string) => ParameterDecorator =
   createRouteParamDecorator(RouteParamtypes.HEADERS);
 
 /**
- * Route handler parameter decorator. Extracts the `query`
- * property from the `req` object and populates the decorated
- * parameter with the value of `query`. May also apply pipes to the bound
- * query parameter.
+ * 路由处理程序参数装饰器。从 `req` 对象中提取 `query`
+ * 属性，并用 `query` 的值填充被装饰的参数。
+ * 还可以对绑定的查询参数应用管道。
  *
- * For example:
+ * 例如:
  * ```typescript
  * async find(@Query('user') user: string)
  * ```
  *
- * @param property name of single property to extract from the `query` object
- * @param pipes one or more pipes to apply to the bound query parameter
+ * @param property 要从 `query` 对象中提取的单个属性的名称
+ * @param pipes 要应用于绑定查询参数的一个或多个管道
  *
- * @see [Request object](https://docs.nestjs.com/controllers#request-object)
+ * @see [请求对象](https://docs.nestjs.cn/controllers#request-object)
  *
  * @publicApi
  */
 export function Query(): ParameterDecorator;
 /**
- * Route handler parameter decorator. Extracts the `query`
- * property from the `req` object and populates the decorated
- * parameter with the value of `query`. May also apply pipes to the bound
- * query parameter.
+ * 路由处理程序参数装饰器。从 `req` 对象中提取 `query`
+ * 属性，并用 `query` 的值填充被装饰的参数。
+ * 还可以对绑定的查询参数应用管道。
  *
- * For example:
+ * 例如:
  * ```typescript
  * async find(@Query('user') user: string)
  * ```
  *
- * @param property name of single property to extract from the `query` object
- * @param pipes one or more pipes to apply to the bound query parameter
+ * @param property 要从 `query` 对象中提取的单个属性的名称
+ * @param pipes 要应用于绑定查询参数的一个或多个管道
  *
- * @see [Request object](https://docs.nestjs.com/controllers#request-object)
+ * @see [请求对象](https://docs.nestjs.cn/controllers#request-object)
  *
  * @publicApi
  */
@@ -366,20 +350,19 @@ export function Query(
   ...pipes: (Type<PipeTransform> | PipeTransform)[]
 ): ParameterDecorator;
 /**
- * Route handler parameter decorator. Extracts the `query`
- * property from the `req` object and populates the decorated
- * parameter with the value of `query`. May also apply pipes to the bound
- * query parameter.
+ * 路由处理程序参数装饰器。从 `req` 对象中提取 `query`
+ * 属性，并用 `query` 的值填充被装饰的参数。
+ * 还可以对绑定的查询参数应用管道。
  *
- * For example:
+ * 例如:
  * ```typescript
  * async find(@Query('user') user: string)
  * ```
  *
- * @param property name of single property to extract from the `query` object
- * @param pipes one or more pipes to apply to the bound query parameter
+ * @param property 要从 `query` 对象中提取的单个属性的名称
+ * @param pipes 要应用于绑定查询参数的一个或多个管道
  *
- * @see [Request object](https://docs.nestjs.com/controllers#request-object)
+ * @see [请求对象](https://docs.nestjs.cn/controllers#request-object)
  *
  * @publicApi
  */
@@ -388,20 +371,19 @@ export function Query(
   ...pipes: (Type<PipeTransform> | PipeTransform)[]
 ): ParameterDecorator;
 /**
- * Route handler parameter decorator. Extracts the `query`
- * property from the `req` object and populates the decorated
- * parameter with the value of `query`. May also apply pipes to the bound
- * query parameter.
+ * 路由处理程序参数装饰器。从 `req` 对象中提取 `query`
+ * 属性，并用 `query` 的值填充被装饰的参数。
+ * 还可以对绑定的查询参数应用管道。
  *
- * For example:
+ * 例如:
  * ```typescript
  * async find(@Query('user') user: string)
  * ```
  *
- * @param property name of single property to extract from the `query` object
- * @param pipes one or more pipes to apply to the bound query parameter
+ * @param property 要从 `query` 对象中提取的单个属性的名称
+ * @param pipes 要应用于绑定查询参数的一个或多个管道
  *
- * @see [Request object](https://docs.nestjs.com/controllers#request-object)
+ * @see [请求对象](https://docs.nestjs.cn/controllers#request-object)
  *
  * @publicApi
  */
@@ -416,37 +398,34 @@ export function Query(
 }
 
 /**
- * Route handler parameter decorator. Extracts the entire `body`
- * object from the `req` object and populates the decorated
- * parameter with the value of `body`.
+ * 路由处理程序参数装饰器。从 `req` 对象中提取整个 `body`
+ * 对象，并用 `body` 的值填充被装饰的参数。
  *
- * For example:
+ * 例如:
  * ```typescript
  * async create(@Body() createDto: CreateCatDto)
  * ```
  *
- * @see [Request object](https://docs.nestjs.com/controllers#request-object)
+ * @see [请求对象](https://docs.nestjs.cn/controllers#request-object)
  *
  * @publicApi
  */
 export function Body(): ParameterDecorator;
 
 /**
- * Route handler parameter decorator. Extracts the entire `body`
- * object from the `req` object and populates the decorated
- * parameter with the value of `body`. Also applies the specified
- * pipes to that parameter.
+ * 路由处理程序参数装饰器。从 `req` 对象中提取整个 `body`
+ * 对象，并用 `body` 的值填充被装饰的参数。
+ * 还可以对该参数应用指定的管道。
  *
- * For example:
+ * 例如:
  * ```typescript
  * async create(@Body(new ValidationPipe()) createDto: CreateCatDto)
  * ```
  *
- * @param pipes one or more pipes - either instances or classes - to apply to
- * the bound body parameter.
+ * @param pipes 一个或多个要应用于绑定 body 参数的管道(实例或类)。
  *
- * @see [Request object](https://docs.nestjs.com/controllers#request-object)
- * @see [Working with pipes](https://docs.nestjs.com/custom-decorators#working-with-pipes)
+ * @see [请求对象](https://docs.nestjs.cn/controllers#request-object)
+ * @see [使用管道](https://docs.nestjs.cn/custom-decorators#working-with-pipes)
  *
  * @publicApi
  */
@@ -455,22 +434,19 @@ export function Body(
 ): ParameterDecorator;
 
 /**
- * Route handler parameter decorator. Extracts a single property from
- * the `body` object property of the `req` object and populates the decorated
- * parameter with the value of that property. Also applies pipes to the bound
- * body parameter.
+ * 路由处理程序参数装饰器。从 `req` 对象的 `body` 对象属性中提取单个属性，
+ * 并用该属性的值填充被装饰的参数。还可以对绑定的 body 参数应用管道。
  *
- * For example:
+ * 例如:
  * ```typescript
  * async create(@Body('role', new ValidationPipe()) role: string)
  * ```
  *
- * @param property name of single property to extract from the `body` object
- * @param pipes one or more pipes - either instances or classes - to apply to
- * the bound body parameter.
+ * @param property 要从 `body` 对象中提取的单个属性的名称
+ * @param pipes 一个或多个要应用于绑定 body 参数的管道(实例或类)。
  *
- * @see [Request object](https://docs.nestjs.com/controllers#request-object)
- * @see [Working with pipes](https://docs.nestjs.com/custom-decorators#working-with-pipes)
+ * @see [请求对象](https://docs.nestjs.cn/controllers#request-object)
+ * @see [使用管道](https://docs.nestjs.cn/custom-decorators#working-with-pipes)
  *
  * @publicApi
  */
@@ -480,22 +456,20 @@ export function Body(
 ): ParameterDecorator;
 
 /**
- * Route handler parameter decorator. Extracts the entire `body` object
- * property, or optionally a named property of the `body` object, from
- * the `req` object and populates the decorated parameter with that value.
- * Also applies pipes to the bound body parameter.
+ * 路由处理程序参数装饰器。从 `req` 对象中提取整个 `body` 对象属性，
+ * 或可选的 `body` 对象的命名属性，并用该值填充被装饰的参数。
+ * 还可以对绑定的 body 参数应用管道。
  *
- * For example:
+ * 例如:
  * ```typescript
  * async create(@Body('role', new ValidationPipe()) role: string)
  * ```
  *
- * @param property name of single property to extract from the `body` object
- * @param pipes one or more pipes - either instances or classes - to apply to
- * the bound body parameter.
+ * @param property 要从 `body` 对象中提取的单个属性的名称
+ * @param pipes 一个或多个要应用于绑定 body 参数的管道(实例或类)。
  *
- * @see [Request object](https://docs.nestjs.com/controllers#request-object)
- * @see [Working with pipes](https://docs.nestjs.com/custom-decorators#working-with-pipes)
+ * @see [请求对象](https://docs.nestjs.cn/controllers#request-object)
+ * @see [使用管道](https://docs.nestjs.cn/custom-decorators#working-with-pipes)
  *
  * @publicApi
  */
@@ -510,37 +484,35 @@ export function Body(
 }
 
 /**
- * Route handler parameter decorator. Extracts the `rawBody` Buffer
- * property from the `req` object and populates the decorated parameter with that value.
+ * 路由处理程序参数装饰器。从 `req` 对象中提取 `rawBody` Buffer 属性，
+ * 并用该值填充被装饰的参数。
  *
- * For example:
+ * 例如:
  * ```typescript
  * async create(@RawBody() rawBody: Buffer | undefined)
  * ```
  *
- * @see [Request object](https://docs.nestjs.com/controllers#request-object)
- * @see [Raw body](https://docs.nestjs.com/faq/raw-body)
+ * @see [请求对象](https://docs.nestjs.cn/controllers#request-object)
+ * @see [原始 body](https://docs.nestjs.cn/faq/raw-body)
  *
  * @publicApi
  */
 export function RawBody(): ParameterDecorator;
 
 /**
- * Route handler parameter decorator. Extracts the `rawBody` Buffer
- * property from the `req` object and populates the decorated parameter with that value.
- * Also applies pipes to the bound rawBody parameter.
+ * 路由处理程序参数装饰器。从 `req` 对象中提取 `rawBody` Buffer 属性，
+ * 并用该值填充被装饰的参数。还可以对绑定的 rawBody 参数应用管道。
  *
- * For example:
+ * 例如:
  * ```typescript
  * async create(@RawBody(new ValidationPipe()) rawBody: Buffer)
  * ```
  *
- * @param pipes one or more pipes - either instances or classes - to apply to
- * the bound body parameter.
+ * @param pipes 一个或多个要应用于绑定 body 参数的管道(实例或类)。
  *
- * @see [Request object](https://docs.nestjs.com/controllers#request-object)
- * @see [Raw body](https://docs.nestjs.com/faq/raw-body)
- * @see [Working with pipes](https://docs.nestjs.com/custom-decorators#working-with-pipes)
+ * @see [请求对象](https://docs.nestjs.cn/controllers#request-object)
+ * @see [原始 body](https://docs.nestjs.cn/faq/raw-body)
+ * @see [使用管道](https://docs.nestjs.cn/custom-decorators#working-with-pipes)
  *
  * @publicApi
  */
@@ -552,21 +524,19 @@ export function RawBody(
 ): ParameterDecorator;
 
 /**
- * Route handler parameter decorator. Extracts the `rawBody` Buffer
- * property from the `req` object and populates the decorated parameter with that value.
- * Also applies pipes to the bound rawBody parameter.
+ * 路由处理程序参数装饰器。从 `req` 对象中提取 `rawBody` Buffer 属性，
+ * 并用该值填充被装饰的参数。还可以对绑定的 rawBody 参数应用管道。
  *
- * For example:
+ * 例如:
  * ```typescript
  * async create(@RawBody(new ValidationPipe()) rawBody: Buffer)
  * ```
  *
- * @param pipes one or more pipes - either instances or classes - to apply to
- * the bound body parameter.
+ * @param pipes 一个或多个要应用于绑定 body 参数的管道(实例或类)。
  *
- * @see [Request object](https://docs.nestjs.com/controllers#request-object)
- * @see [Raw body](https://docs.nestjs.com/faq/raw-body)
- * @see [Working with pipes](https://docs.nestjs.com/custom-decorators#working-with-pipes)
+ * @see [请求对象](https://docs.nestjs.cn/controllers#request-object)
+ * @see [原始 body](https://docs.nestjs.cn/faq/raw-body)
+ * @see [使用管道](https://docs.nestjs.cn/custom-decorators#working-with-pipes)
  *
  * @publicApi
  */
@@ -583,51 +553,47 @@ export function RawBody(
 }
 
 /**
- * Route handler parameter decorator. Extracts the `params`
- * property from the `req` object and populates the decorated
- * parameter with the value of `params`. May also apply pipes to the bound
- * parameter.
+ * 路由处理程序参数装饰器。从 `req` 对象中提取 `params`
+ * 属性，并用 `params` 的值填充被装饰的参数。
+ * 还可以对绑定的参数应用管道。
  *
- * For example, extracting all params:
+ * 例如，提取所有参数:
  * ```typescript
  * findOne(@Param() params: string[])
  * ```
  *
- * For example, extracting a single param:
+ * 例如，提取单个参数:
  * ```typescript
  * findOne(@Param('id') id: string)
  * ```
- * @param property name of single property to extract from the `req` object
- * @param pipes one or more pipes - either instances or classes - to apply to
- * the bound parameter.
+ * @param property 要从 `req` 对象中提取的单个属性的名称
+ * @param pipes 一个或多个要应用于绑定参数的管道(实例或类)。
  *
- * @see [Request object](https://docs.nestjs.com/controllers#request-object)
- * @see [Working with pipes](https://docs.nestjs.com/custom-decorators#working-with-pipes)
+ * @see [请求对象](https://docs.nestjs.cn/controllers#request-object)
+ * @see [使用管道](https://docs.nestjs.cn/custom-decorators#working-with-pipes)
  *
  * @publicApi
  */
 export function Param(): ParameterDecorator;
 /**
- * Route handler parameter decorator. Extracts the `params`
- * property from the `req` object and populates the decorated
- * parameter with the value of `params`. May also apply pipes to the bound
- * parameter.
+ * 路由处理程序参数装饰器。从 `req` 对象中提取 `params`
+ * 属性，并用 `params` 的值填充被装饰的参数。
+ * 还可以对绑定的参数应用管道。
  *
- * For example, extracting all params:
+ * 例如，提取所有参数:
  * ```typescript
  * findOne(@Param() params: string[])
  * ```
  *
- * For example, extracting a single param:
+ * 例如，提取单个参数:
  * ```typescript
  * findOne(@Param('id') id: string)
  * ```
- * @param property name of single property to extract from the `req` object
- * @param pipes one or more pipes - either instances or classes - to apply to
- * the bound parameter.
+ * @param property 要从 `req` 对象中提取的单个属性的名称
+ * @param pipes 一个或多个要应用于绑定参数的管道(实例或类)。
  *
- * @see [Request object](https://docs.nestjs.com/controllers#request-object)
- * @see [Working with pipes](https://docs.nestjs.com/custom-decorators#working-with-pipes)
+ * @see [请求对象](https://docs.nestjs.cn/controllers#request-object)
+ * @see [使用管道](https://docs.nestjs.cn/custom-decorators#working-with-pipes)
  *
  * @publicApi
  */
@@ -635,26 +601,24 @@ export function Param(
   ...pipes: (Type<PipeTransform> | PipeTransform)[]
 ): ParameterDecorator;
 /**
- * Route handler parameter decorator. Extracts the `params`
- * property from the `req` object and populates the decorated
- * parameter with the value of `params`. May also apply pipes to the bound
- * parameter.
+ * 路由处理程序参数装饰器。从 `req` 对象中提取 `params`
+ * 属性，并用 `params` 的值填充被装饰的参数。
+ * 还可以对绑定的参数应用管道。
  *
- * For example, extracting all params:
+ * 例如，提取所有参数:
  * ```typescript
  * findOne(@Param() params: string[])
  * ```
  *
- * For example, extracting a single param:
+ * 例如，提取单个参数:
  * ```typescript
  * findOne(@Param('id') id: string)
  * ```
- * @param property name of single property to extract from the `req` object
- * @param pipes one or more pipes - either instances or classes - to apply to
- * the bound parameter.
+ * @param property 要从 `req` 对象中提取的单个属性的名称
+ * @param pipes 一个或多个要应用于绑定参数的管道(实例或类)。
  *
- * @see [Request object](https://docs.nestjs.com/controllers#request-object)
- * @see [Working with pipes](https://docs.nestjs.com/custom-decorators#working-with-pipes)
+ * @see [请求对象](https://docs.nestjs.cn/controllers#request-object)
+ * @see [使用管道](https://docs.nestjs.cn/custom-decorators#working-with-pipes)
  *
  * @publicApi
  */
@@ -663,26 +627,24 @@ export function Param(
   ...pipes: (Type<PipeTransform> | PipeTransform)[]
 ): ParameterDecorator;
 /**
- * Route handler parameter decorator. Extracts the `params`
- * property from the `req` object and populates the decorated
- * parameter with the value of `params`. May also apply pipes to the bound
- * parameter.
+ * 路由处理程序参数装饰器。从 `req` 对象中提取 `params`
+ * 属性，并用 `params` 的值填充被装饰的参数。
+ * 还可以对绑定的参数应用管道。
  *
- * For example, extracting all params:
+ * 例如，提取所有参数:
  * ```typescript
  * findOne(@Param() params: string[])
  * ```
  *
- * For example, extracting a single param:
+ * 例如，提取单个参数:
  * ```typescript
  * findOne(@Param('id') id: string)
  * ```
- * @param property name of single property to extract from the `req` object
- * @param pipes one or more pipes - either instances or classes - to apply to
- * the bound parameter.
+ * @param property 要从 `req` 对象中提取的单个属性的名称
+ * @param pipes 一个或多个要应用于绑定参数的管道(实例或类)。
  *
- * @see [Request object](https://docs.nestjs.com/controllers#request-object)
- * @see [Working with pipes](https://docs.nestjs.com/custom-decorators#working-with-pipes)
+ * @see [请求对象](https://docs.nestjs.cn/controllers#request-object)
+ * @see [使用管道](https://docs.nestjs.cn/custom-decorators#working-with-pipes)
  *
  * @publicApi
  */
@@ -697,67 +659,64 @@ export function Param(
 }
 
 /**
- * Route handler parameter decorator. Extracts the `hosts`
- * property from the `req` object and populates the decorated
- * parameter with the value of `hosts`. May also apply pipes to the bound
- * parameter.
+ * 路由处理程序参数装饰器。从 `req` 对象中提取 `hosts`
+ * 属性，并用 `hosts` 的值填充被装饰的参数。
+ * 还可以对绑定的参数应用管道。
  *
- * For example, extracting all params:
+ * 例如，提取所有参数:
  * ```typescript
  * findOne(@HostParam() params: string[])
  * ```
  *
- * For example, extracting a single param:
+ * 例如，提取单个参数:
  * ```typescript
  * findOne(@HostParam('id') id: string)
  * ```
- * @param property name of single property to extract from the `req` object
+ * @param property 要从 `req` 对象中提取的单个属性的名称
  *
- * @see [Request object](https://docs.nestjs.com/controllers#request-object)
+ * @see [请求对象](https://docs.nestjs.cn/controllers#request-object)
  *
  * @publicApi
  */
 export function HostParam(): ParameterDecorator;
 /**
- * Route handler parameter decorator. Extracts the `hosts`
- * property from the `req` object and populates the decorated
- * parameter with the value of `hosts`. May also apply pipes to the bound
- * parameter.
+ * 路由处理程序参数装饰器。从 `req` 对象中提取 `hosts`
+ * 属性，并用 `hosts` 的值填充被装饰的参数。
+ * 还可以对绑定的参数应用管道。
  *
- * For example, extracting all params:
+ * 例如，提取所有参数:
  * ```typescript
  * findOne(@HostParam() params: string[])
  * ```
  *
- * For example, extracting a single param:
+ * 例如，提取单个参数:
  * ```typescript
  * findOne(@HostParam('id') id: string)
  * ```
- * @param property name of single property to extract from the `req` object
+ * @param property 要从 `req` 对象中提取的单个属性的名称
  *
- * @see [Request object](https://docs.nestjs.com/controllers#request-object)
+ * @see [请求对象](https://docs.nestjs.cn/controllers#request-object)
  *
  * @publicApi
  */
 export function HostParam(property: string): ParameterDecorator;
 /**
- * Route handler parameter decorator. Extracts the `hosts`
- * property from the `req` object and populates the decorated
- * parameter with the value of `params`. May also apply pipes to the bound
- * parameter.
+ * 路由处理程序参数装饰器。从 `req` 对象中提取 `hosts`
+ * 属性，并用 `params` 的值填充被装饰的参数。
+ * 还可以对绑定的参数应用管道。
  *
- * For example, extracting all params:
+ * 例如，提取所有参数:
  * ```typescript
  * findOne(@HostParam() params: string[])
  * ```
  *
- * For example, extracting a single param:
+ * 例如，提取单个参数:
  * ```typescript
  * findOne(@HostParam('id') id: string)
  * ```
- * @param property name of single property to extract from the `req` object
+ * @param property 要从 `req` 对象中提取的单个属性的名称
  *
- * @see [Request object](https://docs.nestjs.com/controllers#request-object)
+ * @see [请求对象](https://docs.nestjs.cn/controllers#request-object)
  *
  * @publicApi
  */

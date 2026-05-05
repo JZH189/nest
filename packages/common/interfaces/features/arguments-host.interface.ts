@@ -1,93 +1,92 @@
 export type ContextType = 'http' | 'ws' | 'rpc';
 
 /**
- * Methods to obtain request and response objects.
+ * 获取请求和响应对象的方法。
  *
  * @publicApi
  */
 export interface HttpArgumentsHost {
   /**
-   * Returns the in-flight `request` object.
+   * 返回飞行中的 `request` 对象。
    */
   getRequest<T = any>(): T;
   /**
-   * Returns the in-flight `response` object.
+   * 返回飞行中的 `response` 对象。
    */
   getResponse<T = any>(): T;
   getNext<T = any>(): T;
 }
 
 /**
- * Methods to obtain WebSocket data and client objects.
+ * 获取 WebSocket 数据和客户端对象的方法。
  *
  * @publicApi
  */
 export interface WsArgumentsHost {
   /**
-   * Returns the data object.
+   * 返回数据对象。
    */
   getData<T = any>(): T;
   /**
-   * Returns the client object.
+   * 返回客户端对象。
    */
   getClient<T = any>(): T;
   /**
-   * Returns the pattern for the event
+   * 返回事件的模式
    */
   getPattern(): string;
 }
 
 /**
- * Methods to obtain RPC data object.
+ * 获取 RPC 数据对象的方法。
  *
  * @publicApi
  */
 export interface RpcArgumentsHost {
   /**
-   * Returns the data object.
+   * 返回数据对象。
    */
   getData<T = any>(): T;
 
   /**
-   * Returns the context object.
+   * 返回上下文对象。
    */
   getContext<T = any>(): T;
 }
 
 /**
- * Provides methods for retrieving the arguments being passed to a handler.
- * Allows choosing the appropriate execution context (e.g., Http, RPC, or
- * WebSockets) to retrieve the arguments from.
+ * 提供用于检索传递给处理程序的参数的方法。
+ * 允许选择适当的执行上下文（例如 Http、RPC 或 WebSockets）来检索参数。
  *
  * @publicApi
  */
 export interface ArgumentsHost {
   /**
-   * Returns the array of arguments being passed to the handler.
+   * 返回传递给处理程序的参数数组。
    */
   getArgs<T extends Array<any> = any[]>(): T;
   /**
-   * Returns a particular argument by index.
-   * @param index index of argument to retrieve
+   * 按索引返回特定参数。
+   * @param index 要检索的参数索引
    */
   getArgByIndex<T = any>(index: number): T;
   /**
-   * Switch context to RPC.
-   * @returns interface with methods to retrieve RPC arguments
+   * 切换上下文到 RPC。
+   * @returns 提供检索 RPC 参数方法接口
    */
   switchToRpc(): RpcArgumentsHost;
   /**
-   * Switch context to HTTP.
-   * @returns interface with methods to retrieve HTTP arguments
+   * 切换上下文到 HTTP。
+   * @returns 提供检索 HTTP 参数方法接口
    */
   switchToHttp(): HttpArgumentsHost;
   /**
-   * Switch context to WebSockets.
-   * @returns interface with methods to retrieve WebSockets arguments
+   * 切换上下文到 WebSockets。
+   * @returns 提供检索 WebSockets 参数方法接口
    */
   switchToWs(): WsArgumentsHost;
   /**
-   * Returns the current execution context type (string)
+   * 返回当前执行上下文类型（字符串）
    */
   getType<TContext extends string = ContextType>(): TContext;
 }

@@ -5,7 +5,7 @@ import { Scope } from '../scope-options.interface';
  */
 export interface IntrospectionResult {
   /**
-   * Enum defining lifetime of host class or factory.
+   * 定义宿主类或工厂生命周期的枚举。
    */
   scope: Scope;
 }

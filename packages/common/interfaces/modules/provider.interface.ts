@@ -15,9 +15,9 @@ export type Provider<T = any> =
   | ExistingProvider<T>;
 
 /**
- * Interface defining a *Class* type provider.
+ * 定义*类*类型提供者的接口。
  *
- * For example:
+ * 例如：
  * ```typescript
  * const configServiceProvider = {
  * provide: ConfigService,
@@ -28,43 +28,43 @@ export type Provider<T = any> =
  * };
  * ```
  *
- * @see [Class providers](https://docs.nestjs.com/fundamentals/custom-providers#class-providers-useclass)
- * @see [Injection scopes](https://docs.nestjs.com/fundamentals/injection-scopes)
+ * @see [类提供者](https://docs.nestjs.cn/fundamentals/custom-providers#class-providers-useclass)
+ * @see [注入作用域](https://docs.nestjs.cn/fundamentals/injection-scopes)
  *
  * @publicApi
  */
 export interface ClassProvider<T = any> {
   /**
-   * Injection token
+   * 注入令牌
    */
   provide: InjectionToken;
   /**
-   * Type (class name) of provider (instance to be injected).
+   * 提供者的类型（类名）（要注入的实例）。
    */
   useClass: Type<T>;
   /**
-   * Optional enum defining lifetime of the provider that is injected.
+   * 可选的定义被注入提供者生命周期的枚举。
    */
   scope?: Scope;
   /**
-   * This option is only available on factory providers!
+   * 此选项仅在工厂提供者上可用！
    *
-   * @see [Use factory](https://docs.nestjs.com/fundamentals/custom-providers#factory-providers-usefactory)
+   * @see [使用工厂](https://docs.nestjs.cn/fundamentals/custom-providers#factory-providers-usefactory)
    */
   inject?: never;
   /**
-   * Flags provider as durable. This flag can be used in combination with custom context id
-   * factory strategy to construct lazy DI subtrees.
+   * 将提供者标记为持久的。此标志可与自定义上下文 ID 工厂策略结合使用，
+   * 以构建惰性 DI 子树。
    *
-   * This flag can be used only in conjunction with scope = Scope.REQUEST.
+   * 此标志只能与 scope = Scope.REQUEST 结合使用。
    */
   durable?: boolean;
 }
 
 /**
- * Interface defining a *Value* type provider.
+ * 定义*值*类型提供者的接口。
  *
- * For example:
+ * 例如：
  * ```typescript
  * const connectionProvider = {
  *   provide: 'CONNECTION',
@@ -72,31 +72,31 @@ export interface ClassProvider<T = any> {
  * };
  * ```
  *
- * @see [Value providers](https://docs.nestjs.com/fundamentals/custom-providers#value-providers-usevalue)
+ * @see [值提供者](https://docs.nestjs.cn/fundamentals/custom-providers#value-providers-usevalue)
  *
  * @publicApi
  */
 export interface ValueProvider<T = any> {
   /**
-   * Injection token
+   * 注入令牌
    */
   provide: InjectionToken;
   /**
-   * Instance of a provider to be injected.
+   * 要注入的提供者实例。
    */
   useValue: T;
   /**
-   * This option is only available on factory providers!
+   * 此选项仅在工厂提供者上可用！
    *
-   * @see [Use factory](https://docs.nestjs.com/fundamentals/custom-providers#factory-providers-usefactory)
+   * @see [使用工厂](https://docs.nestjs.cn/fundamentals/custom-providers#factory-providers-usefactory)
    */
   inject?: never;
 }
 
 /**
- * Interface defining a *Factory* type provider.
+ * 定义*工厂*类型提供者的接口。
  *
- * For example:
+ * 例如：
  * ```typescript
  * const connectionFactory = {
  *   provide: 'CONNECTION',
@@ -108,41 +108,41 @@ export interface ValueProvider<T = any> {
  * };
  * ```
  *
- * @see [Factory providers](https://docs.nestjs.com/fundamentals/custom-providers#factory-providers-usefactory)
- * @see [Injection scopes](https://docs.nestjs.com/fundamentals/injection-scopes)
+ * @see [工厂提供者](https://docs.nestjs.cn/fundamentals/custom-providers#factory-providers-usefactory)
+ * @see [注入作用域](https://docs.nestjs.cn/fundamentals/injection-scopes)
  *
  * @publicApi
  */
 export interface FactoryProvider<T = any> {
   /**
-   * Injection token
+   * 注入令牌
    */
   provide: InjectionToken;
   /**
-   * Factory function that returns an instance of the provider to be injected.
+   * 返回要注入的提供者实例的工厂函数。
    */
   useFactory: (...args: any[]) => T | Promise<T>;
   /**
-   * Optional list of providers to be injected into the context of the Factory function.
+   * 可选的提供者列表，将被注入到工厂函数的上下文中。
    */
   inject?: Array<InjectionToken | OptionalFactoryDependency>;
   /**
-   * Optional enum defining lifetime of the provider that is returned by the Factory function.
+   * 可选的枚举，定义工厂函数返回的提供者的生命周期。
    */
   scope?: Scope;
   /**
-   * Flags provider as durable. This flag can be used in combination with custom context id
-   * factory strategy to construct lazy DI subtrees.
+   * 将提供者标记为持久的。此标志可与自定义上下文 ID 工厂策略结合使用，
+   * 以构建惰性 DI 子树。
    *
-   * This flag can be used only in conjunction with scope = Scope.REQUEST.
+   * 此标志只能与 scope = Scope.REQUEST 结合使用。
    */
   durable?: boolean;
 }
 
 /**
- * Interface defining an *Existing* (aliased) type provider.
+ * 定义*现有*（别名）类型提供者的接口。
  *
- * For example:
+ * 例如：
  * ```typescript
  * const loggerAliasProvider = {
  *   provide: 'AliasedLoggerService',
@@ -150,17 +150,17 @@ export interface FactoryProvider<T = any> {
  * };
  * ```
  *
- * @see [Alias providers](https://docs.nestjs.com/fundamentals/custom-providers#alias-providers-useexisting)
+ * @see [别名提供者](https://docs.nestjs.cn/fundamentals/custom-providers#alias-providers-useexisting)
  *
  * @publicApi
  */
 export interface ExistingProvider<T = any> {
   /**
-   * Injection token
+   * 注入令牌
    */
   provide: InjectionToken;
   /**
-   * Provider to be aliased by the Injection token.
+   * 要被注入令牌别名的提供者。
    */
   useExisting: any;
 }

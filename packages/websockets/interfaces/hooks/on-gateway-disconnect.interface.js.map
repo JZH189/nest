@@ -1,0 +1,1 @@
+{"version":3,"file":"on-gateway-disconnect.interface.js","sourceRoot":"","sources":["on-gateway-disconnect.interface.ts"],"names":[],"mappings":"","sourcesContent":["/**\n * @publicApi\n */\nexport interface OnGatewayDisconnect<T = any> {\n  handleDisconnect(client: T): any;\n}\n"]}

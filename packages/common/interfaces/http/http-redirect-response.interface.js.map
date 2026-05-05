@@ -1,0 +1,1 @@
+{"version":3,"file":"http-redirect-response.interface.js","sourceRoot":"","sources":["http-redirect-response.interface.ts"],"names":[],"mappings":"","sourcesContent":["import { HttpStatus } from '../../enums';\n\nexport interface HttpRedirectResponse {\n  url: string;\n  statusCode: HttpStatus;\n}\n"]}

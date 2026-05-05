@@ -1,13 +1,12 @@
 import { GLOBAL_MODULE_METADATA } from '../../constants';
 
 /**
- * Decorator that makes a module global-scoped.
+ * 使模块成为全局作用域的装饰器。
  *
- * Once imported into any module, a global-scoped module will be visible
- * in all modules. Thereafter, modules that wish to inject a service exported
- * from a global module do not need to import the provider module.
+ * 一旦导入到任何模块中，全局作用域模块将在所有模块中可见。
+ * 此后，希望注入从全局模块导出的服务的模块不需要导入提供者模块。
  *
- * @see [Global modules](https://docs.nestjs.com/modules#global-modules)
+ * @see [全局模块](https://docs.nestjs.cn/modules#global-modules)
  *
  * @publicApi
  */

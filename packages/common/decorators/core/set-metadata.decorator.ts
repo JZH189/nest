@@ -4,18 +4,17 @@ export type CustomDecorator<TKey = string> = MethodDecorator &
   };
 
 /**
- * Decorator that assigns metadata to the class/function using the
- * specified `key`.
+ * 使用指定的 `key` 向类/函数分配元数据的装饰器。
  *
- * Requires two parameters:
- * - `key` - a value defining the key under which the metadata is stored
- * - `value` - metadata to be associated with `key`
+ * 需要两个参数:
+ * - `key` - 定义存储元数据的键的值
+ * - `value` - 与 `key` 关联的元数据
  *
- * This metadata can be reflected using the `Reflector` class.
+ * 此元数据可以使用 `Reflector` 类进行反射。
  *
- * Example: `@SetMetadata('roles', ['admin'])`
+ * 示例: `@SetMetadata('roles', ['admin'])`
  *
- * @see [Reflection](https://docs.nestjs.com/fundamentals/execution-context#reflection-and-metadata)
+ * @see [反射和元数据](https://docs.nestjs.cn/fundamentals/execution-context#reflection-and-metadata)
  *
  * @publicApi
  */

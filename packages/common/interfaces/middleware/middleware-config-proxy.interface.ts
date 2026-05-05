@@ -7,7 +7,7 @@ import { MiddlewareConsumer } from './middleware-consumer.interface';
  */
 export interface MiddlewareConfigProxy {
   /**
-   * Routes to exclude from the current middleware.
+   * 从当前中间件中排除的路由。
    *
    * @param {(string | RouteInfo)[]} routes
    * @returns {MiddlewareConfigProxy}
@@ -15,9 +15,8 @@ export interface MiddlewareConfigProxy {
   exclude(...routes: (string | RouteInfo)[]): MiddlewareConfigProxy;
 
   /**
-   * Attaches either routes or controllers to the current middleware.
-   * If you pass a controller class, Nest will attach the current middleware to every path
-   * defined within it.
+   * 将路由或控制器附加到当前中间件。
+   * 如果传递控制器类，Nest 将把当前中间件附加到其中定义的每个路径。
    *
    * @param {(string | Type | RouteInfo)[]} routes
    * @returns {MiddlewareConsumer}

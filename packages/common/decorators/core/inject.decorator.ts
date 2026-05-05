@@ -7,31 +7,25 @@ import { ForwardReference, InjectionToken } from '../../interfaces';
 import { isUndefined } from '../../utils/shared.utils';
 
 /**
- * Decorator that marks a constructor parameter as a target for
- * [Dependency Injection (DI)](https://docs.nestjs.com/providers#dependency-injection).
+ * 将构造函数参数标记为[依赖注入(DI)](https://docs.nestjs.cn/providers#dependency-injection)目标的装饰器。
  *
- * Any injected provider must be visible within the module scope (loosely
- * speaking, the containing module) of the class it is being injected into. This
- * can be done by:
+ * 任何被注入的提供者必须在被注入类的模块范围内可见(广义上说，是包含它的模块)。
+ * 这可以通过以下方式实现:
  *
- * - defining the provider in the same module scope
- * - exporting the provider from one module scope and importing that module into the
- *   module scope of the class being injected into
- * - exporting the provider from a module that is marked as global using the
- *   `@Global()` decorator
+ * - 在同一模块范围内定义提供者
+ * - 从一个模块范围导出提供者，并将其导入到被注入类的模块范围中
+ * - 从使用 `@Global()` 装饰器标记为全局的模块中导出提供者
  *
- * #### Injection tokens
- * Can be *types* (class names), *strings* or *symbols*. This depends on how the
- * provider with which it is associated was defined. Providers defined with the
- * `@Injectable()` decorator use the class name. Custom Providers may use strings
- * or symbols as the injection token.
+ * #### 注入令牌
+ * 可以是*类型*(类名)、*字符串*或*符号*。这取决于关联的提供者是如何定义的。
+ * 使用 `@Injectable()` 装饰器定义的提供者使用类名作为令牌。
+ * 自定义提供者可能使用字符串或符号作为注入令牌。
  *
- * @param token lookup key for the provider to be injected (assigned to the constructor
- * parameter).
+ * @param token 要注入的提供者的查找键(分配给构造函数参数)。
  *
- * @see [Providers](https://docs.nestjs.com/providers)
- * @see [Custom Providers](https://docs.nestjs.com/fundamentals/custom-providers)
- * @see [Injection Scopes](https://docs.nestjs.com/fundamentals/injection-scopes)
+ * @see [提供者](https://docs.nestjs.cn/providers)
+ * @see [自定义提供者](https://docs.nestjs.cn/fundamentals/custom-providers)
+ * @see [注入作用域](https://docs.nestjs.cn/fundamentals/injection-scopes)
  *
  * @publicApi
  */

@@ -1,22 +1,22 @@
 /**
- * Options for `StreamableFile`
+ * `StreamableFile` 的选项
  *
- * @see [Streaming files](https://docs.nestjs.com/techniques/streaming-files)
+ * @see [流式文件](https://docs.nestjs.cn/techniques/streaming-files)
  *
  * @publicApi
  */
 export interface StreamableFileOptions {
   /**
-   * The value that will be used for the `Content-Type` response header.
+   * 将用于 `Content-Type` 响应头的值。
    * @default `"application/octet-stream"`
    */
   type?: string;
   /**
-   * The value that will be used for the `Content-Disposition` response header.
+   * 将用于 `Content-Disposition` 响应头的值。
    */
   disposition?: string | string[];
   /**
-   * The value that will be used for the `Content-Length` response header.
+   * 将用于 `Content-Length` 响应头的值。
    */
   length?: number;
 }

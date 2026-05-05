@@ -1,0 +1,1 @@
+{"version":3,"file":"websockets-entrypoint-metadata.interface.js","sourceRoot":"","sources":["websockets-entrypoint-metadata.interface.ts"],"names":[],"mappings":"","sourcesContent":["export type WebsocketEntrypointMetadata = {\n  port: number;\n  message: unknown;\n};\n"]}

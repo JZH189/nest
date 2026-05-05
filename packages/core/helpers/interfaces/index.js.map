@@ -1,0 +1,1 @@
+{"version":3,"file":"index.js","sourceRoot":"","sources":["index.ts"],"names":[],"mappings":";;;AAAA,gFAAsD;AACtD,sEAA4C","sourcesContent":["export * from './external-handler-metadata.interface';\nexport * from './params-metadata.interface';\n"]}

@@ -39,144 +39,144 @@ const createMappingDecorator =
   };
 
 /**
- * Route handler (method) Decorator. Routes HTTP POST requests to the specified path.
+ * 路由处理程序(方法)装饰器。将 HTTP POST 请求路由到指定路径。
  *
- * @see [Routing](https://docs.nestjs.com/controllers#routing)
+ * @see [路由](https://docs.nestjs.cn/controllers#routing)
  *
  * @publicApi
  */
 export const Post = createMappingDecorator(RequestMethod.POST);
 
 /**
- * Route handler (method) Decorator. Routes HTTP GET requests to the specified path.
+ * 路由处理程序(方法)装饰器。将 HTTP GET 请求路由到指定路径。
  *
- * @see [Routing](https://docs.nestjs.com/controllers#routing)
+ * @see [路由](https://docs.nestjs.cn/controllers#routing)
  *
  * @publicApi
  */
 export const Get = createMappingDecorator(RequestMethod.GET);
 
 /**
- * Route handler (method) Decorator. Routes HTTP DELETE requests to the specified path.
+ * 路由处理程序(方法)装饰器。将 HTTP DELETE 请求路由到指定路径。
  *
- * @see [Routing](https://docs.nestjs.com/controllers#routing)
+ * @see [路由](https://docs.nestjs.cn/controllers#routing)
  *
  * @publicApi
  */
 export const Delete = createMappingDecorator(RequestMethod.DELETE);
 
 /**
- * Route handler (method) Decorator. Routes HTTP PUT requests to the specified path.
+ * 路由处理程序(方法)装饰器。将 HTTP PUT 请求路由到指定路径。
  *
- * @see [Routing](https://docs.nestjs.com/controllers#routing)
+ * @see [路由](https://docs.nestjs.cn/controllers#routing)
  *
  * @publicApi
  */
 export const Put = createMappingDecorator(RequestMethod.PUT);
 
 /**
- * Route handler (method) Decorator. Routes HTTP PATCH requests to the specified path.
+ * 路由处理程序(方法)装饰器。将 HTTP PATCH 请求路由到指定路径。
  *
- * @see [Routing](https://docs.nestjs.com/controllers#routing)
+ * @see [路由](https://docs.nestjs.cn/controllers#routing)
  *
  * @publicApi
  */
 export const Patch = createMappingDecorator(RequestMethod.PATCH);
 
 /**
- * Route handler (method) Decorator. Routes HTTP OPTIONS requests to the specified path.
+ * 路由处理程序(方法)装饰器。将 HTTP OPTIONS 请求路由到指定路径。
  *
- * @see [Routing](https://docs.nestjs.com/controllers#routing)
+ * @see [路由](https://docs.nestjs.cn/controllers#routing)
  *
  * @publicApi
  */
 export const Options = createMappingDecorator(RequestMethod.OPTIONS);
 
 /**
- * Route handler (method) Decorator. Routes HTTP HEAD requests to the specified path.
+ * 路由处理程序(方法)装饰器。将 HTTP HEAD 请求路由到指定路径。
  *
- * @see [Routing](https://docs.nestjs.com/controllers#routing)
+ * @see [路由](https://docs.nestjs.cn/controllers#routing)
  *
  * @publicApi
  */
 export const Head = createMappingDecorator(RequestMethod.HEAD);
 
 /**
- * Route handler (method) Decorator. Routes all HTTP requests to the specified path.
+ * 路由处理程序(方法)装饰器。将所有 HTTP 请求路由到指定路径。
  *
- * @see [Routing](https://docs.nestjs.com/controllers#routing)
+ * @see [路由](https://docs.nestjs.cn/controllers#routing)
  *
  * @publicApi
  */
 export const All = createMappingDecorator(RequestMethod.ALL);
 
 /**
- * Route handler (method) Decorator. Routes HTTP SEARCH requests to the specified path.
+ * 路由处理程序(方法)装饰器。将 HTTP SEARCH 请求路由到指定路径。
  *
- * @see [Routing](https://docs.nestjs.com/controllers#routing)
+ * @see [路由](https://docs.nestjs.cn/controllers#routing)
  *
  * @publicApi
  */
 export const Search = createMappingDecorator(RequestMethod.SEARCH);
 
 /**
- * Route handler (method) Decorator. Routes Webdav PROPFIND requests to the specified path.
+ * 路由处理程序(方法)装饰器。将 Webdav PROPFIND 请求路由到指定路径。
  *
- * @see [Routing](https://docs.nestjs.com/controllers#routing)
+ * @see [路由](https://docs.nestjs.cn/controllers#routing)
  *
  * @publicApi
  */
 export const Propfind = createMappingDecorator(RequestMethod.PROPFIND);
 
 /**
- * Route handler (method) Decorator. Routes Webdav PROPPATCH requests to the specified path.
+ * 路由处理程序(方法)装饰器。将 Webdav PROPPATCH 请求路由到指定路径。
  *
- * @see [Routing](https://docs.nestjs.com/controllers#routing)
+ * @see [路由](https://docs.nestjs.cn/controllers#routing)
  *
  * @publicApi
  */
 export const Proppatch = createMappingDecorator(RequestMethod.PROPPATCH);
 
 /**
- * Route handler (method) Decorator. Routes Webdav MKCOL requests to the specified path.
+ * 路由处理程序(方法)装饰器。将 Webdav MKCOL 请求路由到指定路径。
  *
- * @see [Routing](https://docs.nestjs.com/controllers#routing)
+ * @see [路由](https://docs.nestjs.cn/controllers#routing)
  *
  * @publicApi
  */
 export const Mkcol = createMappingDecorator(RequestMethod.MKCOL);
 
 /**
- * Route handler (method) Decorator. Routes Webdav COPY requests to the specified path.
+ * 路由处理程序(方法)装饰器。将 Webdav COPY 请求路由到指定路径。
  *
- * @see [Routing](https://docs.nestjs.com/controllers#routing)
+ * @see [路由](https://docs.nestjs.cn/controllers#routing)
  *
  * @publicApi
  */
 export const Copy = createMappingDecorator(RequestMethod.COPY);
 
 /**
- * Route handler (method) Decorator. Routes Webdav MOVE requests to the specified path.
+ * 路由处理程序(方法)装饰器。将 Webdav MOVE 请求路由到指定路径。
  *
- * @see [Routing](https://docs.nestjs.com/controllers#routing)
+ * @see [路由](https://docs.nestjs.cn/controllers#routing)
  *
  * @publicApi
  */
 export const Move = createMappingDecorator(RequestMethod.MOVE);
 
 /**
- * Route handler (method) Decorator. Routes Webdav LOCK requests to the specified path.
+ * 路由处理程序(方法)装饰器。将 Webdav LOCK 请求路由到指定路径。
  *
- * @see [Routing](https://docs.nestjs.com/controllers#routing)
+ * @see [路由](https://docs.nestjs.cn/controllers#routing)
  *
  * @publicApi
  */
 export const Lock = createMappingDecorator(RequestMethod.LOCK);
 
 /**
- * Route handler (method) Decorator. Routes Webdav UNLOCK requests to the specified path.
+ * 路由处理程序(方法)装饰器。将 Webdav UNLOCK 请求路由到指定路径。
  *
- * @see [Routing](https://docs.nestjs.com/controllers#routing)
+ * @see [路由](https://docs.nestjs.cn/controllers#routing)
  *
  * @publicApi
  */

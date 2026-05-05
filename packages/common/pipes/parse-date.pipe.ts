@@ -9,23 +9,22 @@ import { isNil } from '../utils/shared.utils';
 
 export interface ParseDatePipeOptions {
   /**
-   * If true, the pipe will return null or undefined if the value is not provided
+   * 如果为 true，当未提供值时，管道将返回 null 或 undefined
    * @default false
    */
   optional?: boolean;
   /**
-   * Default value for the date
+   * 日期的默认值
    */
   default?: () => Date;
   /**
-   * The HTTP status code to be used in the response when the validation fails.
+   * 验证失败时在响应中使用的 HTTP 状态码。
    */
   errorHttpStatusCode?: ErrorHttpStatusCode;
   /**
-   * A factory function that returns an exception object to be thrown
-   * if validation fails.
-   * @param error Error message
-   * @returns The exception object
+   * 验证失败时返回要抛出的异常对象的工厂函数。
+   * @param error 错误信息
+   * @returns 异常对象
    */
   exceptionFactory?: (error: string) => any;
 }
@@ -46,11 +45,10 @@ export class ParseDatePipe implements PipeTransform<
   }
 
   /**
-   * Method that accesses and performs optional transformation on argument for
-   * in-flight requests.
+   * 访问并对正在处理的请求参数执行可选转换的方法。
    *
-   * @param value currently processed route argument
-   * @param metadata contains metadata about the currently processed route argument
+   * @param value 当前正在处理的路由参数
+   * @param metadata 包含有关当前正在处理的路由参数的元数据
    */
   transform(
     value: string | number | undefined | null,
@@ -60,13 +58,13 @@ export class ParseDatePipe implements PipeTransform<
     }
 
     if (isNil(value) || value === '') {
-      throw this.exceptionFactory('Validation failed (no Date provided)');
+      throw this.exceptionFactory('验证失败(未提供日期)');
     }
 
     const transformedValue = new Date(value);
 
     if (isNaN(transformedValue.getTime())) {
-      throw this.exceptionFactory('Validation failed (invalid date format)');
+      throw this.exceptionFactory('验证失败(无效的日期格式)');
     }
 
     return transformedValue;

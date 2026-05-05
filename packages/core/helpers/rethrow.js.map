@@ -1,0 +1,1 @@
+{"version":3,"file":"rethrow.js","sourceRoot":"","sources":["rethrow.ts"],"names":[],"mappings":";;;AAAO,MAAM,OAAO,GAAG,CAAC,GAAY,EAAE,EAAE;IACtC,MAAM,GAAG,CAAC;AACZ,CAAC,CAAC;AAFW,QAAA,OAAO,WAElB","sourcesContent":["export const rethrow = (err: unknown) => {\n  throw err;\n};\n"]}

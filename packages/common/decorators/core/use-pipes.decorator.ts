@@ -5,23 +5,19 @@ import { isFunction } from '../../utils/shared.utils';
 import { validateEach } from '../../utils/validate-each.util';
 
 /**
- * Decorator that binds pipes to the scope of the controller or method,
- * depending on its context.
+ * 根据其上下文，将管道绑定到控制器或方法作用域的装饰器。
  *
- * When `@UsePipes` is used at the controller level, the pipe will be
- * applied to every handler (method) in the controller.
+ * 当在控制器级别使用 `@UsePipes` 时，管道将被应用到控制器中的每个处理程序(方法)。
  *
- * When `@UsePipes` is used at the individual handler level, the pipe
- * will apply only to that specific method.
+ * 当在单独的处理程序级别使用 `@UsePipes` 时，管道将只应用于该特定方法。
  *
- * @param pipes a single pipe instance or class, or a list of pipe instances or
- * classes.
+ * @param pipes 单个管道实例或类，或管道实例或类的列表。
  *
- * @see [Pipes](https://docs.nestjs.com/pipes)
+ * @see [管道](https://docs.nestjs.cn/pipes)
  *
  * @usageNotes
- * Pipes can also be set up globally for all controllers and routes
- * using `app.useGlobalPipes()`.  [See here for details](https://docs.nestjs.com/pipes#class-validator)
+ * 管道也可以使用 `app.useGlobalPipes()` 全局设置到所有控制器和路由。
+ * [详见此处](https://docs.nestjs.cn/pipes#class-validator)
  *
  * @publicApi
  */

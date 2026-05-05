@@ -1,5 +1,5 @@
 /**
- * Options passed to validator during validation.
+ * 验证期间传递给验证器的选项。
  * @see https://github.com/typestack/class-validator
  *
  * class-validator@0.13.0
@@ -8,69 +8,69 @@
  */
 export interface ValidatorOptions {
   /**
-   * If set to true then class-validator will print extra warning messages to the console when something is not right.
+   * 如果设置为 true，则当出现问题时，class-validator 将向控制台打印额外的警告消息。
    */
   enableDebugMessages?: boolean;
   /**
-   * If set to true then validator will skip validation of all properties that are undefined in the validating object.
+   * 如果设置为 true，则验证器将跳过验证被验证对象中所有未定义的属性。
    */
   skipUndefinedProperties?: boolean;
   /**
-   * If set to true then validator will skip validation of all properties that are null in the validating object.
+   * 如果设置为 true，则验证器将跳过验证被验证对象中所有为 null 的属性。
    */
   skipNullProperties?: boolean;
   /**
-   * If set to true then validator will skip validation of all properties that are null or undefined in the validating object.
+   * 如果设置为 true，则验证器将跳过验证被验证对象中所有为 null 或 undefined 的属性。
    */
   skipMissingProperties?: boolean;
   /**
-   * If set to true validator will strip validated object of any properties that do not have any decorators.
+   * 如果设置为 true，验证器将剥离被验证对象中没有任何装饰器的任何属性。
    *
-   * Tip: if no other decorator is suitable for your property use @Allow decorator.
+   * 提示：如果没有其他装饰器适合你的属性，请使用 @Allow 装饰器。
    */
   whitelist?: boolean;
   /**
-   * If set to true, instead of stripping non-whitelisted properties validator will throw an error
+   * 如果设置为 true，验证器将抛出错误而不是剥离非白名单属性。
    */
   forbidNonWhitelisted?: boolean;
   /**
-   * Groups to be used during validation of the object.
+   * 对象验证期间要使用的组。
    */
   groups?: string[];
   /**
-   * Set default for `always` option of decorators. Default can be overridden in decorator options.
+   * 设置装饰器 `always` 选项的默认值。可以在装饰器选项中覆盖默认值。
    */
   always?: boolean;
   /**
-   * If [groups]{@link ValidatorOptions#groups} is not given or is empty,
-   * ignore decorators with at least one group.
+   * 如果未给出 [groups]{@link ValidatorOptions#groups} 或为空，
+   * 则忽略至少有一个组的装饰器。
    */
   strictGroups?: boolean;
   /**
-   * If set to true, the validation will not use default messages.
-   * Error message always will be undefined if its not explicitly set.
+   * 如果设置为 true，验证将不使用默认消息。
+   * 如果未明确设置，错误消息将始终为 undefined。
    */
   dismissDefaultMessages?: boolean;
   /**
-   * ValidationError special options.
+   * ValidationError 特殊选项。
    */
   validationError?: {
     /**
-     * Indicates if target should be exposed in ValidationError.
+     * 指示是否应在 ValidationError 中暴露 target。
      */
     target?: boolean;
     /**
-     * Indicates if validated value should be exposed in ValidationError.
+     * 指示是否应在 ValidationError 中暴露验证值。
      */
     value?: boolean;
   };
   /**
-   * Settings true will cause fail validation of unknown objects.
+   * 设置为 true 将导致未知对象的验证失败。
    */
   forbidUnknownValues?: boolean;
   /**
-   * When set to true, validation of the given property will stop after encountering the first error.
-   * This is enabled by default.
+   * 设置为 true 时，遇到第一个错误后验证将停止。
+   * 默认启用。
    */
   stopAtFirstError?: boolean;
 }

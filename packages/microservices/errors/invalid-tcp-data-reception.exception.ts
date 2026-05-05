@@ -12,8 +12,8 @@ export class InvalidTcpDataReceptionException extends RuntimeException {
           ? (err as any).message
           : String(err);
     const _errMsg = errMsgStr.includes('Corrupted length value')
-      ? `Corrupted length value of the received data supplied in a packet`
-      : `The invalid received message from tcp server`;
+      ? `包中提供的接收数据的长度值已损坏`
+      : `TCP 服务器接收到的消息无效`;
     super(_errMsg);
   }
 }
