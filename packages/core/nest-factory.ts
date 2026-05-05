@@ -32,7 +32,7 @@ import { NestApplicationContext } from './nest-application-context';
 import { DependenciesScanner } from './scanner';
 
 /**
- * Represents the entry (root) module type accepted by the NestFactory methods.
+ * 表示 NestFactory 方法接受的入口（根）模块类型。
  *
  * @publicApi
  */
@@ -53,28 +53,25 @@ export class NestFactoryStatic {
   private autoFlushLogs = false;
 
   /**
-   * Creates an instance of NestApplication.
+   * 创建 NestApplication 实例。
    *
-   * @param module Entry (root) application module class
-   * @param options List of options to initialize NestApplication
+   * @param module 入口（根）应用模块类
+   * @param options 初始化 NestApplication 的配置项列表
    *
-   * @returns A promise that, when resolved,
-   * contains a reference to the NestApplication instance.
+   * @returns 一个 Promise，解析后包含 NestApplication 实例的引用。
    */
   public async create<T extends INestApplication = INestApplication>(
     module: IEntryNestModule,
     options?: NestApplicationOptions,
   ): Promise<T>;
   /**
-   * Creates an instance of NestApplication with the specified `httpAdapter`.
+   * 使用指定的 `httpAdapter` 创建 NestApplication 实例。
    *
-   * @param module Entry (root) application module class
-   * @param httpAdapter Adapter to proxy the request/response cycle to
-   *    the underlying HTTP server
-   * @param options List of options to initialize NestApplication
+   * @param module 入口（根）应用模块类
+   * @param httpAdapter 用于将请求/响应周期代理到底层 HTTP 服务器的适配器
+   * @param options 初始化 NestApplication 的配置项列表
    *
-   * @returns A promise that, when resolved,
-   * contains a reference to the NestApplication instance.
+   * @returns 一个 Promise，解析后包含 NestApplication 实例的引用。
    */
   public async create<T extends INestApplication = INestApplication>(
     module: IEntryNestModule,
@@ -118,13 +115,12 @@ export class NestFactoryStatic {
   }
 
   /**
-   * Creates an instance of NestMicroservice.
+   * 创建 NestMicroservice 实例。
    *
-   * @param moduleCls Entry (root) application module class
-   * @param options Optional microservice configuration
+   * @param moduleCls 入口（根）应用模块类
+   * @param options 可选的微服务配置
    *
-   * @returns A promise that, when resolved,
-   * contains a reference to the NestMicroservice instance.
+   * @returns 一个 Promise，解析后包含 NestMicroservice 实例的引用。
    */
   public async createMicroservice<T extends object>(
     moduleCls: IEntryNestModule,
@@ -160,13 +156,12 @@ export class NestFactoryStatic {
   }
 
   /**
-   * Creates an instance of NestApplicationContext.
+   * 创建 NestApplicationContext 实例。
    *
-   * @param moduleCls Entry (root) application module class
-   * @param options Optional Nest application configuration
+   * @param moduleCls 入口（根）应用模块类
+   * @param options 可选的 Nest 应用配置
    *
-   * @returns A promise that, when resolved,
-   * contains a reference to the NestApplicationContext instance.
+   * @returns 一个 Promise，解析后包含 NestApplicationContext 实例的引用。
    */
   public async createApplicationContext(
     moduleCls: IEntryNestModule,
@@ -309,8 +304,8 @@ export class NestFactoryStatic {
     if ((logger as boolean) !== true && !isNil(logger)) {
       Logger.overrideLogger(logger);
     } else if (forceConsole) {
-      // If no custom logger is provided but forceConsole is true,
-      // create a ConsoleLogger with forceConsole option
+      // 如果未提供自定义日志器但 forceConsole 为 true，
+      // 则创建一个带有 forceConsole 选项的 ConsoleLogger
       const consoleLogger = new ConsoleLogger({ forceConsole: true });
       Logger.overrideLogger(consoleLogger);
     }
@@ -386,15 +381,14 @@ export class NestFactoryStatic {
 }
 
 /**
- * Use NestFactory to create an application instance.
+ * 使用 NestFactory 创建应用程序实例。
  *
- * ### Specifying an entry module
+ * ### 指定入口模块
  *
- * Pass the required *root module* for the application via the module parameter.
- * By convention, it is usually called `ApplicationModule`.  Starting with this
- * module, Nest assembles the dependency graph and begins the process of
- * Dependency Injection and instantiates the classes needed to launch your
- * application.
+ * 通过 module 参数传入应用程序所需的*根模块*。
+ * 按照惯例，它通常称为 `ApplicationModule`。Nest 从该模块开始，
+ * 组装依赖关系图并启动依赖注入过程，
+ * 实例化启动应用程序所需的所有类。
  *
  * @publicApi
  */
