@@ -7,33 +7,33 @@ export class ModulesContainer extends Map<string, Module> {
   private readonly _rpcTargetRegistry$ = new ReplaySubject<any>();
 
   /**
-   * Unique identifier of the application instance.
+   * 应用程序实例的唯一标识符。
    */
   get applicationId(): string {
     return this._applicationId;
   }
 
   /**
-   * Retrieves a module by its identifier.
-   * @param id The identifier of the module to retrieve.
-   * @returns The module instance if found, otherwise undefined.
+   * 根据标识符获取模块。
+   * @param id 要检索的模块标识符。
+   * @returns 如果找到则返回模块实例，否则返回 undefined。
    */
   public getById(id: string): Module | undefined {
     return Array.from(this.values()).find(moduleRef => moduleRef.id === id);
   }
 
   /**
-   * Returns the RPC target registry as an observable.
-   * This registry contains all RPC targets registered in the application.
-   * @returns An observable that emits the RPC target registry.
+   * 将 RPC 目标注册表作为可观察对象返回。
+   * 此注册表包含应用程序中注册的所有 RPC 目标。
+   * @returns 一个发出 RPC 目标注册表的可观察对象。
    */
   public getRpcTargetRegistry<T>(): Observable<T> {
     return this._rpcTargetRegistry$.asObservable();
   }
 
   /**
-   * Adds an RPC target to the registry.
-   * @param target The RPC target to add.
+   * 向注册表添加一个 RPC 目标。
+   * @param target 要添加的 RPC 目标。
    */
   public addRpcTarget<T>(target: T): void {
     this._rpcTargetRegistry$.next(target);

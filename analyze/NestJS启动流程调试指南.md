@@ -257,6 +257,148 @@ const app = await NestFactory.create(AppModule, {
    └── 设置全局异常处理器
 ```
 
+### 6.4 HTTP 适配器创建流程 (createHttpAdapter)
+
+这段代码位于 `nest-factory.ts` 第 318-325 行，是 NestJS 创建 HTTP 适配器的核心逻辑：
+
+```typescript
+// nest-factory.ts:318-325
+private createHttpAdapter<T = any>(httpServer?: T): AbstractHttpAdapter {
+  const { ExpressAdapter } = loadAdapter(
+    '@nestjs/platform-express',
+    'HTTP',
+    () => require('@nestjs/platform-express'),
+  );
+  return new ExpressAdapter(httpServer);
+}
+```
+
+#### 1. 为什么需要 HTTP 适配器？
+
+NestJS 是一个**平台无关**的框架，它不直接绑定到 Express 或 Fastify，而是通过抽象的适配器模式来实现。这种设计带来了两个关键优势：
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                      NestJS 核心                            │
+│  ┌─────────────────────────────────────────────────────┐    │
+│  │              AbstractHttpAdapter                     │    │
+│  │         (抽象 HTTP 适配器接口)                        │    │
+│  └─────────────────────────────────────────────────────┘    │
+│                            ↑                                  │
+│              ┌─────────────┴─────────────┐                   │
+│              ↓                           ↓                   │
+│  ┌───────────────────────┐   ┌───────────────────────┐      │
+│  │   ExpressAdapter      │   │   FastifyAdapter      │      │
+│  │ (@nestjs/platform-express) │ │ (@nestjs/platform-fastify) │
+│  └───────────────────────┘   └───────────────────────┘      │
+│              ↓                           ↓                   │
+│         Express.js                 Fastify                   │
+└─────────────────────────────────────────────────────────────┘
+```
+
+#### 2. `loadAdapter` 函数详解
+
+`loadAdapter` 定义在 `packages/core/helpers/load-adapter.ts`：
+
+```typescript
+// load-adapter.ts:11-22
+export function loadAdapter(
+  defaultPlatform: string,    // 包名，如 '@nestjs/platform-express'
+  transport: string,          // 传输类型，如 'HTTP'
+  loaderFn?: Function,        // 可选的加载函数
+) {
+  try {
+    // 优先使用传入的 loaderFn，否则直接 require
+    return loaderFn ? loaderFn() : require(defaultPlatform);
+  } catch (e) {
+    // 如果加载失败，输出错误并退出进程
+    logger.error(MISSING_REQUIRED_DEPENDENCY(defaultPlatform, transport));
+    process.exit(1);
+  }
+}
+```
+
+#### 3. 参数解析
+
+| 参数 | 值 | 含义 |
+|------|-----|------|
+| `defaultPlatform` | `'@nestjs/platform-express'` | 默认的 HTTP 平台包 |
+| `transport` | `'HTTP'` | 传输类型标识，用于错误消息 |
+| `loaderFn` | `() => require('@nestjs/platform-express')` | 动态加载函数 |
+
+#### 4. 执行流程图
+
+```
+NestFactory.create()
+    │
+    ├─► isHttpServer(serverOrOptions)?
+    │       │
+    │       ├─► 是: 使用传入的 httpAdapter
+    │       │
+    │       └─► 否: 调用 createHttpAdapter()
+    │               │
+    │               ├─► loadAdapter('@nestjs/platform-express', 'HTTP')
+    │               │       │
+    │               │       ├─► require('@nestjs/platform-express')
+    │               │       │
+    │               │       ├─► 成功: 返回 { ExpressAdapter }
+    │               │       │
+    │               │       └─► 失败: 输出错误并 exit(1)
+    │               │
+    │               └─► new ExpressAdapter(httpServer)
+    │
+    └─► 返回配置好的适配器实例
+```
+
+#### 5. 懒加载机制
+
+这段代码采用了**懒加载**模式：
+
+```typescript
+// 这里的 () => require(...) 是一个延迟执行的函数
+// 只有在调用 loadAdapter 时才会真正执行 require
+const { ExpressAdapter } = loadAdapter(
+  '@nestjs/platform-express',
+  'HTTP',
+  () => require('@nestjs/platform-express'),  // 箭头函数，延迟加载
+);
+```
+
+**好处**：
+- 如果用户不使用某个平台（如只用微服务），就不需要加载对应的包
+- 减少应用启动时的内存占用
+- 支持 Tree-shaking 优化
+
+#### 6. 错误处理
+
+当 `@nestjs/platform-express` 包未安装时：
+
+```
+错误消息示例：
+[Nest] 12345 - 2026/05/07 00:08:31 ERROR [PackageLoader] 
+No driver (@nestjs/platform-express) has been selected. 
+In order to take advantage of the default driver, please, 
+ensure to install the "@nestjs/platform-express" package 
+($ npm install @nestjs/platform-express).
+```
+
+#### 7. 如何切换到其他平台
+
+如果想使用 Fastify 而不是 Express：
+
+```typescript
+import { FastifyAdapter } from '@nestjs/platform-fastify';
+
+// 方式一：手动传入适配器
+const app = await NestFactory.create(
+  AppModule,
+  new FastifyAdapter(),
+);
+
+// 方式二：安装 @nestjs/platform-fastify 并自动使用
+// npm install @nestjs/platform-fastify
+```
+
 ---
 
 ## 七、调试技巧

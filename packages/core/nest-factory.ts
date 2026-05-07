@@ -87,6 +87,7 @@ export class NestFactoryStatic {
       ? [serverOrOptions, options]
       : [this.createHttpAdapter(), serverOrOptions];
 
+    // 创建应用配置实例，用于存储全局 pipes、filters、guards、interceptors 等
     const applicationConfig = new ApplicationConfig();
     const container = new NestContainer(applicationConfig, appOptions);
     const graphInspector = this.createGraphInspector(appOptions!, container);

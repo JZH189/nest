@@ -30,6 +30,7 @@ type ModuleScope = Type<any>[];
 
 export class NestContainer {
   private readonly globalModules = new Set<Module>();
+  //用于存储和管理 NestJS 应用中所有已注册的模块实例。
   private readonly modules = new ModulesContainer();
   private readonly dynamicModulesMetadata = new Map<
     string,
@@ -48,13 +49,15 @@ export class NestContainer {
       | NestApplicationContextOptions
       | undefined = undefined,
   ) {
+    // 选择模块不透明键工厂（用于生成模块的唯一标识符）
     const moduleOpaqueKeyFactory =
       this._contextOptions?.moduleIdGeneratorAlgorithm === 'deep-hash'
-        ? new DeepHashedModuleOpaqueKeyFactory()
+        ? new DeepHashedModuleOpaqueKeyFactory() // 深度哈希策略：基于模块内容生成稳定 ID
         : new ByReferenceModuleOpaqueKeyFactory({
+            // 引用策略：根据快照模式选择键生成方式
             keyGenerationStrategy: this._contextOptions?.snapshot
-              ? 'shallow'
-              : 'random',
+              ? 'shallow' // 快照模式：生成确定性 ID（用于序列化/快照）
+              : 'random', // 非快照：生成随机 ID（用于热重载/开发）
           });
     this.moduleCompiler = new ModuleCompiler(moduleOpaqueKeyFactory);
   }
