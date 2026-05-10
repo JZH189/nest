@@ -89,12 +89,17 @@ export class NestFactoryStatic {
 
     // 创建应用配置实例，用于存储全局 pipes、filters、guards、interceptors 等
     const applicationConfig = new ApplicationConfig();
+    // 创建依赖注入容器，存储所有模块、providers、controllers 的实例
     const container = new NestContainer(applicationConfig, appOptions);
+    // 创建依赖关系图检查器（快照模式下用于序列化和验证依赖关系）
     const graphInspector = this.createGraphInspector(appOptions!, container);
 
+    // 设置错误处理策略（abortOnError）
     this.setAbortOnError(serverOrOptions, options);
+    // 配置日志系统
     this.registerLoggerConfiguration(appOptions);
 
+    // 初始化：扫描模块 + 实例化依赖
     await this.initialize(
       moduleCls,
       container,
@@ -104,6 +109,7 @@ export class NestFactoryStatic {
       httpServer,
     );
 
+    // 创建 NestApplication 实例，整合容器、HTTP 适配器和配置
     const instance = new NestApplication(
       container,
       httpServer,
@@ -111,7 +117,9 @@ export class NestFactoryStatic {
       graphInspector,
       appOptions,
     );
+    // 创建 Nest 实例的代理（用于异常捕获和懒加载）
     const target = this.createNestInstance(instance);
+    // 创建适配器代理，将 HTTP 适配器的方法代理到 NestApplication
     return this.createAdapterProxy<T>(target, httpServer);
   }
 
@@ -199,6 +207,17 @@ export class NestFactoryStatic {
     return this.createProxy(instance);
   }
 
+  /**
+   * 初始化 Nest 应用的核心方法
+   *
+   * 执行顺序：
+   * 1. 设置 UUID 生成模式（确定性/随机）
+   * 2. 创建依赖注入所需的核心组件（Injector、InstanceLoader、DependenciesScanner）
+   * 3. 设置 HTTP 适配器到容器
+   * 4. 扫描模块依赖关系
+   * 5. 实例化所有依赖
+   * 6. 应用全局提供者（@APP_GUARD、@APP_PIPE 等）
+   */
   private async initialize(
     module: any,
     container: NestContainer,
@@ -207,37 +226,48 @@ export class NestFactoryStatic {
     options: NestApplicationContextOptions = {},
     httpServer: HttpServer | null = null,
   ) {
+    // 设置 UUID 生成模式：快照模式用确定性 ID（可复现），其他用随机 ID（支持热重载）
     UuidFactory.mode = options.snapshot
       ? UuidFactoryMode.Deterministic
       : UuidFactoryMode.Random;
 
+    // 创建注入器 - 负责实例化 providers 和解析依赖关系
     const injector = new Injector({
       preview: options.preview!,
       instanceDecorator: options.instrument?.instanceDecorator,
     });
+    // 创建实例加载器 - 根据扫描结果实例化所有依赖
     const instanceLoader = new InstanceLoader(
       container,
       injector,
       graphInspector,
     );
+    // 创建元数据扫描器 - 扫描模块、controller、provider 上的装饰器
     const metadataScanner = new MetadataScanner();
+    // 创建依赖扫描器 - 扫描模块间的导入关系，构建依赖图
     const dependenciesScanner = new DependenciesScanner(
       container,
       metadataScanner,
       graphInspector,
       config,
     );
+    // 将 HTTP 适配器注入到容器，供后续路由注册使用
     container.setHttpAdapter(httpServer);
 
     const teardown = this.abortOnError === false ? rethrow : undefined;
+    // 初始化 HTTP 适配器（如 Express）
     await httpServer?.init?.();
     try {
       this.logger.log(MESSAGES.APPLICATION_START);
 
+      // 在异常区域中执行核心初始化逻辑
       await ExceptionsZone.asyncRun(
         async () => {
+          // 1. 扫描模块：遍历模块、识别 providers/controllers、构建依赖图
           await dependenciesScanner.scan(module);
+          // 2. 实例化依赖：根据依赖图实例化所有 providers 和 controllers
           await instanceLoader.createInstancesOfDependencies();
+          // 3. 应用全局提供者：注册 @APP_GUARD、@APP_PIPE、@APP_FILTER、@APP_INTERCEPTOR
           dependenciesScanner.applyApplicationProviders();
         },
         teardown,

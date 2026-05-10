@@ -59,6 +59,7 @@ export class NestContainer {
               ? 'shallow' // 快照模式：生成确定性 ID（用于序列化/快照）
               : 'random', // 非快照：生成随机 ID（用于热重载/开发）
           });
+    //模块编译器
     this.moduleCompiler = new ModuleCompiler(moduleOpaqueKeyFactory);
   }
 
