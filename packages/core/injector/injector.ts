@@ -45,12 +45,12 @@ import { Module } from './module';
 import { SettlementSignal } from './settlement-signal';
 
 /**
- * The type of an injectable dependency
+ * 可注入依赖的类型
  */
 export type InjectorDependency = InjectionToken;
 
 /**
- * The property-based dependency
+ * 基于属性的依赖
  */
 export interface PropertyDependency {
   key: symbol | string;
@@ -60,29 +60,52 @@ export interface PropertyDependency {
 }
 
 /**
- * Context of a dependency which gets injected by
- * the injector
+ * 依赖注入的上下文
  */
 export interface InjectorDependencyContext {
   /**
-   * The name of the property key (property-based injection)
+   * 属性键的名称（基于属性的注入）
    */
   key?: string | symbol;
   /**
-   * The function itself, the name of the function, or injection token.
+   * 函数本身、函数名称或注入令牌
    */
   name?: Function | string | symbol;
   /**
-   * The index of the dependency which gets injected
-   * from the dependencies array
+   * 从依赖数组中注入的依赖索引
    */
   index?: number;
   /**
-   * The dependency array which gets injected
+   * 被注入的依赖数组
    */
   dependencies?: InjectorDependency[];
 }
 
+/**
+ * 依赖注入器（Injector）
+ *
+ * 负责实例化和注入 NestJS 应用中的所有依赖。
+ *
+ * 主要职责：
+ * 1. **实例化类**：根据依赖关系图实例化 providers、controllers、injectables
+ * 2. **解析依赖**：处理构造函数参数、属性注入
+ * 3. **循环依赖检测**：检测并处理循环依赖情况
+ * 4. **作用域管理**：处理 SINGLETON、REQUEST、TRANSIENT 作用域
+ *
+ * 核心方法：
+ * - loadProvider()      加载 Provider
+ * - loadController()    加载 Controller
+ * - loadInjectable()    加载 Injectable
+ * - loadInstance()       实例化单个依赖
+ * - resolveConstructorParams() 解析构造函数参数
+ * - resolveProperties()  解析属性注入
+ *
+ * @example
+ * ```typescript
+ * const injector = new Injector();
+ * await injector.loadProvider(wrapper, moduleRef);
+ * ```
+ */
 export class Injector {
   private logger: LoggerService = new Logger('InjectorLogger');
   private readonly instanceDecorator: (target: unknown) => unknown = (
@@ -92,11 +115,11 @@ export class Injector {
   constructor(
     private readonly options?: {
       /**
-       * Whether to enable preview mode.
+       * 是否启用预览模式。
        */
       preview: boolean;
       /**
-       * Function to decorate a freshly created instance.
+       * 用于装饰新创建实例的函数。
        */
       instanceDecorator?: (target: unknown) => unknown;
     },
@@ -318,17 +341,16 @@ export class Injector {
     const resolveParam = async (param: unknown, index: number) => {
       try {
         if (this.isInquirer(param, parentInquirer)) {
-          /*
-           * Signal the barrier to make sure other dependencies do not get stuck waiting forever.
-           */
+        /*
+         * 向屏障发送信号以确保其他依赖不会永远等待。
+         */
           paramBarrier.signal();
 
           return parentInquirer && parentInquirer.instance;
         }
         if (inquirer?.isTransient && parentInquirer) {
-          // When `inquirer` is transient too, inherit the parent inquirer
-          // This is required to ensure that transient providers are only resolved
-          // when requested
+          // 当 `inquirer` 也是 transient 时，继承父级询问者
+          // 这是必需的，以确保 transient providers 仅在请求时才解析
           inquirer.attachRootInquirer(parentInquirer);
         }
         const paramWrapper = await this.resolveSingleParam<T>(
@@ -342,9 +364,8 @@ export class Injector {
         );
 
         /*
-         * Ensure that all instance wrappers are resolved at this point before we continue.
-         * Otherwise the staticity of `wrapper`'s dependency tree may be evaluated incorrectly
-         * and result in undefined / null injection.
+         * 确保在此点之前所有实例包装器都已解析，否则 `wrapper` 的依赖树
+         * 静态性可能被错误评估，导致 undefined / null 注入。
          */
         await paramBarrier.signalAndWait();
 
@@ -370,9 +391,9 @@ export class Injector {
         return instanceHost?.instance;
       } catch (err) {
         /*
-         * Signal the barrier to make sure other dependencies do not get stuck waiting forever. We
-         * do not care if this occurs after `Barrier.signalAndWait()` is called in the `try` block
-         * because the barrier will always have been resolved by then.
+         * 向屏障发送信号以确保其他依赖不会永远等待。
+         * 我们不在乎这是否发生在 `try` 块中的 `Barrier.signalAndWait()` 之后，
+         * 因为屏障在那时总是会被解析。
          */
         paramBarrier.signal();
 
@@ -403,8 +424,8 @@ export class Injector {
     const optionalDependenciesIds: number[] = [];
 
     /**
-     * Same as the internal utility function `isOptionalFactoryDependency` from `@nestjs/common`.
-     * We are duplicating it here because that one is not supposed to be exported.
+     * 与 `@nestjs/common` 中的内部工具函数 `isOptionalFactoryDependency` 相同。
+     * 我们在这里重复定义是因为那个函数不应该被导出。
      */
     function isOptionalFactoryDependency(
       value: InjectionToken | OptionalFactoryDependency,
@@ -546,11 +567,9 @@ export class Injector {
       (contextId !== STATIC_CONTEXT || !!inquirerId)
     ) {
       /**
-       * When circular dependency has been detected between
-       * either request/transient providers, we have to asynchronously
-       * resolve instance host for a specific contextId or inquirer, to ensure
-       * that eventual lazily created instance will be merged with the prototype
-       * instantiated beforehand.
+       * 当检测到 request/transient providers 之间的循环依赖时，
+       * 我们必须异步解析特定 contextId 或 inquirer 的实例主机，
+       * 以确保最终惰性创建的实例能够与预先实例化的原型合并。
        */
       instanceHost.donePromise &&
         void instanceHost.donePromise
@@ -692,9 +711,9 @@ export class Injector {
       );
       if (!instanceHost.isResolved && !instanceWrapperRef.forwardRef) {
         /*
-         * Provider will be loaded shortly in resolveComponentHost() once we pass the current
-         * Barrier. We cannot load it here because doing so could incorrectly evaluate the
-         * staticity of the dependency tree and lead to undefined / null injection.
+         * Provider 将在我们通过当前 Barrier 后不久在 resolveComponentHost() 中加载。
+         * 我们不能在这里加载它，因为这样做可能会错误地评估依赖树的
+         * 静态性并导致 undefined / null 注入。
          */
         break;
       }
@@ -728,7 +747,7 @@ export class Injector {
           };
           if (this.isInquirer(item.name, parentInquirer)) {
             /*
-             * Signal the barrier to make sure other dependencies do not get stuck waiting forever.
+             * 向屏障发送信号以确保其他依赖不会永远等待。
              */
             propertyBarrier.signal();
 
@@ -745,9 +764,8 @@ export class Injector {
           );
 
           /*
-           * Ensure that all instance wrappers are resolved at this point before we continue.
-           * Otherwise the staticity of `wrapper`'s dependency tree may be evaluated incorrectly
-           * and result in undefined / null injection.
+           * 确保在此点之前所有实例包装器都已解析，否则 `wrapper` 的依赖树
+           * 静态性可能被错误评估，导致 undefined / null 注入。
            */
           await propertyBarrier.signalAndWait();
 
@@ -774,8 +792,8 @@ export class Injector {
         } catch (err) {
           /*
            * Signal the barrier to make sure other dependencies do not get stuck waiting forever. We
-           * do not care if this occurs after `Barrier.signalAndWait()` is called in the `try` block
-           * because the barrier will always have been resolved by then.
+           * 我们不在乎这是否发生在 `try` 块中的 `Barrier.signalAndWait()` 之后，
+           * 因为屏障在那时总是会被解析。
            */
           propertyBarrier.signal();
 
@@ -968,11 +986,12 @@ export class Injector {
   }
 
   /**
-   * For nested TRANSIENT dependencies (TRANSIENT -> TRANSIENT) in non-static contexts,
-   * returns parentInquirer to ensure each parent TRANSIENT gets its own instance.
-   * This is necessary because in REQUEST/DURABLE scopes, the same TRANSIENT wrapper
-   * can be used by multiple parents, causing nested TRANSIENTs to be shared incorrectly.
-   * For non-TRANSIENT -> TRANSIENT, returns inquirer (current wrapper being created).
+   * 对于非静态上下文中的嵌套 TRANSIENT 依赖（TRANSIENT -> TRANSIENT），
+   * 返回 parentInquirer 以确保每个父级 TRANSIENT 获取自己的实例。
+   * 这是必需的，因为在 REQUEST/DURABLE 作用域中，
+   * 同一个 TRANSIENT wrapper 可以被多个父级使用，
+   * 导致嵌套的 TRANSIENT 被错误地共享。
+   * 对于 non-TRANSIENT -> TRANSIENT，返回 inquirer（当前正在创建的 wrapper）。
    */
   private getEffectiveInquirer(
     dependency: InstanceWrapper | undefined,
