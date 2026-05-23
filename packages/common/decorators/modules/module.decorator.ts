@@ -16,11 +16,15 @@ import { validateModuleKeys } from '../../utils/validate-module-keys.util';
  */
 export function Module(metadata: ModuleMetadata): ClassDecorator {
   const propsKeys = Object.keys(metadata);
+  //校验是否是预期的参数
   validateModuleKeys(propsKeys);
 
   return (target: Function) => {
+    // 遍历 metadata 对象，将每个属性存入 target 类的 Reflect Metadata 中
     for (const property in metadata) {
+      // 安全检查：仅处理 metadata 自身的属性，排除原型链上继承的
       if (Object.hasOwnProperty.call(metadata, property)) {
+        // 存入反射元数据：即给target设置property属性，值为metadata[property]
         Reflect.defineMetadata(property, (metadata as any)[property], target);
       }
     }

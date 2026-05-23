@@ -605,7 +605,15 @@ export class DependenciesScanner {
     return Reflect.getMetadata(metadataKey, metatype) || [];
   }
 
+  /**
+   * 注册框架内部核心模块
+   *
+   * 1. 使用 InternalCoreModuleFactory 创建模块定义（含 Reflector、HttpAdapterHost 等核心服务）
+   * 2. 通过 scanForModules 将核心模块注册到容器中
+   * 3. 保存核心模块引用，供后续使用
+   */
   public async registerCoreModule(overrides?: ModuleOverride[]) {
+    // 创建 InternalCoreModule 的模块定义（DynamicModule 格式）
     const moduleDefinition = InternalCoreModuleFactory.create(
       this.container,
       this,
@@ -614,10 +622,12 @@ export class DependenciesScanner {
       this.graphInspector,
       overrides,
     );
+    // 将核心模块扫描并注册到容器
     const [instance] = await this.scanForModules({
       moduleDefinition,
       overrides,
     });
+    // 保存核心模块引用到容器
     this.container.registerCoreModuleRef(instance);
   }
 
