@@ -102,6 +102,17 @@ export class DependenciesScanner {
     this.container.bindGlobalScope();
   }
 
+  /**
+   * 递归扫描模块树
+   *
+   * 深度优先遍历模块的 imports 属性，将每个模块注册到容器中。
+   *
+   * @param moduleDefinition - 模块定义（类、DynamicModule 或 ForwardReference）
+   * @param lazy - 是否为懒加载模块
+   * @param scope - 当前模块的父级作用域链（用于循环依赖检测的错误提示）
+   * @param ctxRegistry - 已注册的模块上下文（用于循环依赖检测）
+   * @param overrides - 模块覆盖配置
+   */
   public async scanForModules({
     moduleDefinition,
     lazy,
@@ -109,24 +120,34 @@ export class DependenciesScanner {
     ctxRegistry = [],
     overrides = [],
   }: ModulesScanParameters): Promise<Module[]> {
+    //todo
+    // 1. 将模块插入容器（如果已存在则返回已有实例）
     const { moduleRef: moduleInstance, inserted: moduleInserted } =
       (await this.insertOrOverrideModule(moduleDefinition, overrides, scope)) ??
       {};
 
+    // 2. 检查模块覆盖配置（允许用户用自定义模块替换原模块）
     moduleDefinition =
       this.getOverrideModuleByModule(moduleDefinition, overrides)?.newModule ??
       moduleDefinition;
 
+    // 3. 处理异步模块（Promise 类型的 DynamicModule）
     moduleDefinition =
       moduleDefinition instanceof Promise
         ? await moduleDefinition
         : moduleDefinition;
 
+    // 4. 将当前模块加入上下文注册表（用于防止循环依赖）
     ctxRegistry.push(moduleDefinition);
 
+    // 5. 解析 forwardRef（循环依赖引用）
     if (this.isForwardReference(moduleDefinition)) {
       moduleDefinition = (moduleDefinition as ForwardReference).forwardRef();
     }
+
+    // 6. 获取模块的 imports 列表
+    //    静态模块 → 从 Reflect Metadata 读取
+    //    动态模块 → 合并装饰器和 DynamicModule 中的 imports
     const modules = !this.isDynamicModule(
       moduleDefinition as Type<any> | DynamicModule,
     )
@@ -142,6 +163,7 @@ export class DependenciesScanner {
           ...((moduleDefinition as DynamicModule).imports || []),
         ];
 
+    // 7. 递归扫描子模块（深度优先）
     let registeredModuleRefs: Module[] = [];
     for (const [index, innerModule] of modules.entries()) {
       // 在循环依赖的情况下（ES 模块系统），JavaScript 会将类型解析为 `undefined`。
@@ -151,9 +173,11 @@ export class DependenciesScanner {
       if (!innerModule) {
         throw new InvalidModuleException(moduleDefinition, index, scope);
       }
+      // 已注册过的模块跳过（防止循环依赖导致死循环）
       if (ctxRegistry.includes(innerModule)) {
         continue;
       }
+      // 递归扫描子模块，传递当前 context 和更新后的 scope 链
       const moduleRefs = await this.scanForModules({
         moduleDefinition: innerModule,
         scope: ([] as Array<Type>).concat(scope, moduleDefinition as Type),
@@ -163,13 +187,18 @@ export class DependenciesScanner {
       });
       registeredModuleRefs = registeredModuleRefs.concat(moduleRefs);
     }
+
+    // 8. 如果模块已存在（非首次插入），只返回子模块引用
     if (!moduleInstance) {
       return registeredModuleRefs;
     }
 
+    // 9. 懒加载模块：绑定全局模块到 imports
     if (lazy && moduleInserted) {
       this.container.bindGlobalsToImports(moduleInstance);
     }
+
+    // 10. 返回当前模块及其所有子模块的引用
     return [moduleInstance].concat(registeredModuleRefs);
   }
 
