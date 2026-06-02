@@ -87,6 +87,7 @@ export class DependenciesScanner {
     module: Type<any>,
     options?: { overrides?: ModuleOverride[] },
   ) {
+    // 注册全局的InternalCoreModule
     await this.registerCoreModule(options?.overrides);
     await this.scanForModules({
       moduleDefinition: module,
@@ -780,6 +781,17 @@ export class DependenciesScanner {
     return !!Reflect.getMetadata(CATCH_WATERMARK, metatype);
   }
 
+  /**
+   * 检查其 forwardRef 属性是否为真值
+   * 为什么需要这个？
+   * 在 NestJS 中，模块之间可能存在循环依赖。例如模块 A 依赖模块 B，模块 B 又依赖模块 A。这时需要 forwardRef() 来延迟模块的引用解析：
+   * 
+   * @Module({
+   * imports: [forwardRef(() => ModuleB)],
+   * })
+   * export class ModuleA {}
+   * 
+   */
   private isForwardReference(
     module: ModuleDefinition,
   ): module is ForwardReference {
