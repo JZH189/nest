@@ -703,17 +703,33 @@ export class DependenciesScanner {
   }
 
   /**
-   * 将请求或瞬态全局作用域的增强器添加到所有控制器的元数据存储中
+   * 将请求/瞬态作用域的全局增强器（APP_GUARD/APP_PIPE/APP_INTERCEPTOR/APP_FILTER）
+   * 附加到所有模块的所有控制器与 entryProvider 上
+   *
+   * 为什么只处理请求/瞬态作用域？
+   * - 默认（单例）作用域的增强器在 `applyApplicationProviders` 阶段
+   *   直接以实例形式注册到 applicationConfig 即可，无需写入每个控制器。
+   * - 而请求/瞬态作用域的增强器每次请求都会重新创建实例，必须在每个
+   *   控制器的元数据中持有其 InstanceWrapper 引用，以便请求处理时按需解析。
+   *
+   * 为什么要在扫描阶段提前写入？
+   * 因为运行期控制器处理请求时已无法再回头补元数据，必须在容器绑定完成前
+   * 把这些"全局但每请求新建"的增强器铺到所有控制器上。
+   * 详细用例参考 C:\Users\Admin\Desktop\nest\analyze\addScopedEnhancersMetadata-demo.md
    */
   public addScopedEnhancersMetadata() {
+    // 只挑选作用域为 REQUEST 或 TRANSIENT 的全局增强器
     iterate(this.applicationProvidersApplyMap)
       .filter(wrapper => this.isRequestOrTransient(wrapper.scope!))
       .forEach(({ moduleKey, providerKey }) => {
         const modulesContainer = this.container.getModules();
+        // 根据模块 token 取出该增强器所属模块，并从 injectables 集合中拿到其 InstanceWrapper
         const { injectables } = modulesContainer.get(moduleKey)!;
         const instanceWrapper = injectables.get(providerKey);
 
         const iterableIterator = modulesContainer.values();
+        // 遍历容器内所有模块，收集每个模块的 controllers 与 entryProviders，
+        // 合并扁平化后，给每一个控制器/入口 provider 挂载该增强器元数据
         iterate(iterableIterator)
           .map(moduleRef =>
             Array.from<InstanceWrapper>(moduleRef.controllers.values()).concat(
