@@ -83,23 +83,41 @@ export class DependenciesScanner {
     private readonly applicationConfig = new ApplicationConfig(),
   ) {}
 
+  /**
+   * 应用启动入口：扫描并构建整个依赖注入容器
+   *
+   * 执行顺序：
+   * 1. 注册框架内部核心模块（Reflector、HttpAdapterHost 等）
+   * 2. 递归扫描用户模块树，将所有模块注册进容器
+   * 3. 反射每个模块的 imports/providers/controllers/exports，建立依赖关系
+   * 4. 将请求/瞬态作用域的全局增强器附加到所有控制器
+   * 5. 计算模块距离（必须在全局模块链接前完成）
+   * 6. 链接全局模块到所有模块的作用域
+   *
+   * @param module - 应用根模块
+   * @param options - 可选的模块覆盖配置
+   */
   public async scan(
     module: Type<any>,
     options?: { overrides?: ModuleOverride[] },
   ) {
-    // 注册全局的InternalCoreModule
+    // 1. 注册全局的 InternalCoreModule（框架内置服务）
     await this.registerCoreModule(options?.overrides);
+    // 2. 递归扫描模块树，将每个模块注册到容器
     await this.scanForModules({
       moduleDefinition: module,
       overrides: options?.overrides,
     });
+    // 3. 反射每个模块的依赖项，建立 providers/controllers/imports/exports 关系
     await this.scanModulesForDependencies();
+    // 4. 将请求/瞬态作用域的全局增强器元数据附加到所有控制器
     this.addScopedEnhancersMetadata();
 
-    // 模块距离计算应在所有模块扫描完成后但在全局模块注册（链接到所有模块）之前进行。
-    // 全局模块的距离无论如何都会设置为 MAX。
+    // 5. 模块距离计算应在所有模块扫描完成后但在全局模块注册（链接到所有模块）之前进行。
+    //    全局模块的距离无论如何都会设置为 MAX。
     this.calculateModulesDistance();
 
+    // 6. 将全局模块链接到所有模块的作用域
     this.container.bindGlobalScope();
   }
 
@@ -121,7 +139,6 @@ export class DependenciesScanner {
     ctxRegistry = [],
     overrides = [],
   }: ModulesScanParameters): Promise<Module[]> {
-    //todo
     // 1. 将模块插入容器（如果已存在则返回已有实例）
     const { moduleRef: moduleInstance, inserted: moduleInserted } =
       (await this.insertOrOverrideModule(moduleDefinition, overrides, scope)) ??
@@ -228,13 +245,30 @@ export class DependenciesScanner {
     return this.container.addModule(moduleToAdd, scope);
   }
 
+  /**
+   * 扫描所有已注册模块的依赖项
+   *
+   * 在 `scanForModules` 完成模块树注册之后调用，遍历容器中的每一个模块，
+   * 依次反射读取其装饰器上标注的 imports / providers / controllers / exports，
+   * 并将它们插入到对应的模块实例中，从而构建出完整的依赖注入图谱。
+   *
+   * @param modules - 待扫描的模块集合，默认为容器中当前所有模块
+   */
   public async scanModulesForDependencies(
     modules: Map<string, Module> = this.container.getModules(),
   ) {
+    // 解构 Map entries：token 为模块的唯一标识，metatype 为模块类的原始构造函数
+    // 等同于 let [key, value] of map；其中 value 解构出 metatype
     for (const [token, { metatype }] of modules) {
+      // 1. 反射并注册当前模块的子模块导入（imports）
+      //    将 imports 中的模块通过 container.addImport 关联到当前模块
       await this.reflectImports(metatype, token, metatype.name);
+      // 2. 反射并注册当前模块的 providers（含自定义 provider 与增强器）
+      //    同时反射 provider 类上的 guards/interceptors/filters/pipes 等动态元数据
       this.reflectProviders(metatype, token);
+      // 3. 反射并注册当前模块的 controllers，并为每个控制器反射其方法级增强器元数据
       this.reflectControllers(metatype, token);
+      // 4. 反射并注册当前模块的 exports，使对应 provider / 模块可被其他模块注入
       this.reflectExports(metatype, token);
     }
   }
@@ -628,6 +662,13 @@ export class DependenciesScanner {
     );
   }
 
+  /**
+   *
+   * reflectMetadata 是扫描器用来**从装饰器标注的类上"读出"
+   * 模块依赖关系（imports/providers/controllers/exports）和
+   * 增强器配置（guards、interceptors 等）**的底层反射工具，
+   * 是整个依赖扫描（DI 容器构建）的起点。没有它，Nest 就无法知道一个模块里装了什么、依赖了什么。
+   */
   public reflectMetadata<T = any>(
     metadataKey: string,
     metatype: Type<any>,
@@ -785,12 +826,12 @@ export class DependenciesScanner {
    * 检查其 forwardRef 属性是否为真值
    * 为什么需要这个？
    * 在 NestJS 中，模块之间可能存在循环依赖。例如模块 A 依赖模块 B，模块 B 又依赖模块 A。这时需要 forwardRef() 来延迟模块的引用解析：
-   * 
+   *
    * @Module({
    * imports: [forwardRef(() => ModuleB)],
    * })
    * export class ModuleA {}
-   * 
+   *
    */
   private isForwardReference(
     module: ModuleDefinition,
