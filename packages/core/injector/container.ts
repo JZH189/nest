@@ -336,6 +336,7 @@ export class NestContainer {
     target.addImport(globalModule);
   }
 
+  //K 必须是 DynamicModule 的属性名，但是不能是'global' | 'module'
   public getDynamicMetadataByToken(token: string): Partial<DynamicModule>;
   public getDynamicMetadataByToken<
     K extends Exclude<keyof DynamicModule, 'global' | 'module'>,
