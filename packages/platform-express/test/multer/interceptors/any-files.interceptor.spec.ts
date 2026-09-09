@@ -5,6 +5,7 @@ import { of } from 'rxjs';
 import * as sinon from 'sinon';
 import { AnyFilesInterceptor } from '../../../multer/interceptors/any-files.interceptor';
 
+// 验证 AnyFilesInterceptor（接收任意文件上传）的拦截行为
 describe('FilesInterceptor', () => {
   it('should return metatype with expected structure', async () => {
     const targetClass = AnyFilesInterceptor();

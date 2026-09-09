@@ -17,6 +17,7 @@ import { PipesConsumer } from '../../pipes/pipes-consumer';
 import { PipesContextCreator } from '../../pipes/pipes-context-creator';
 import { RouteParamsFactory } from '../../router/route-params-factory';
 
+// 验证 ExternalContextCreator 为非 HTTP 传输层组装守卫、管道、拦截器与异常处理的调用上下文
 describe('ExternalContextCreator', () => {
   let contextCreator: ExternalContextCreator;
   let callback: any;

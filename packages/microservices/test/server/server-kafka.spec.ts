@@ -17,6 +17,7 @@ class NoopLogger extends Logger {
   warn(message: any, context?: string): void {}
 }
 
+// ServerKafka 单元测试：验证 Kafka 服务器对 eachMessage 的处理、correlationId 匹配与异常回写。
 describe('ServerKafka', () => {
   const topic = 'test.topic';
   const replyTopic = 'test.topic.reply';

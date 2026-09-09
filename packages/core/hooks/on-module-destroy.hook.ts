@@ -33,10 +33,15 @@ function callOperator(instances: InstanceWrapper[]): Promise<any>[] {
 }
 
 /**
- * Calls the `onModuleDestroy` function on the module and its children
- * (providers / controllers).
+ * on-module-destroy 钩子调用器：模块销毁阶段的生命周期钩子。
  *
- * @param module The module which will be initialized
+ * 在框架中的角色：应用关闭（app.close()）或模块卸载时，在
+ * onApplicationShutdown 之后、实例被容器真正销毁之前，调用所有实现了
+ * OnModuleDestroy 接口实例的 onModuleDestroy()，用于释放该模块持有的资源。
+ * 钩子按“非瞬态实例 → 瞬态实例 → 模块类自身（仅静态依赖树）”的顺序并行触发。
+ *
+ * @param module - 待触发钩子的模块
+ * @returns 所有钩子执行完成后兑现的 Promise
  */
 export async function callModuleDestroyHook(module: Module): Promise<any> {
   const providers = module.getNonAliasProviders();

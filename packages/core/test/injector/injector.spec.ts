@@ -15,6 +15,7 @@ import { SettlementSignal } from '../../injector/settlement-signal';
 
 chai.use(chaiAsPromised);
 
+// 验证 Injector 加载实例的过程：构造函数参数注入、属性注入、可选依赖及增强器（守卫/拦截器等）的解析
 describe('Injector', () => {
   let injector: Injector;
 

@@ -129,6 +129,14 @@ export class Injector {
     }
   }
 
+  /**
+   * 预创建实例原型：为指定 wrapper 创建一个只挂了原型链的"空壳"实例，
+   * 并替换集合中该 token 对应的 wrapper（预览模式/提前暴露实例时使用）。
+   *
+   * @param wrapper - 目标实例包装器
+   * @param collection - wrapper 所在的登记表
+   * @param contextId - 请求上下文 ID
+   */
   public loadPrototype<T>(
     { token }: InstanceWrapper<T>,
     collection: Map<InjectionToken, InstanceWrapper<T>>,
@@ -148,6 +156,25 @@ export class Injector {
     }
   }
 
+  /**
+   * 加载（实例化）单个实例 —— DI 实例化的主入口
+   *
+   * 处理流程：
+   * 1. 取出当前上下文下的实例记录（instanceHost），若已有挂起的实例化 Promise：
+   *    - 存在循环依赖（settlementSignal 判定）时抛出 CircularDependencyException
+   *    - 否则等待完成中的 donePromise（并发请求共享同一次实例化）
+   * 2. 挂载 SettlementSignal（完成信号），并从集合中取出目标 wrapper
+   * 3. 已解析则直接完成信号返回
+   * 4. 否则依次执行：解析构造参数 -> 解析属性依赖 -> 实例化类 -> 应用属性注入，
+   *    并记录初始化耗时、完成信号
+   * 5. 失败时移除该上下文的实例记录、标记信号错误并向上抛出
+   *
+   * @param wrapper - 待实例化的实例包装器
+   * @param collection - wrapper 所在的登记表（providers/controllers/injectables）
+   * @param moduleRef - 宿主模块
+   * @param contextId - 请求上下文 ID
+   * @param inquirer - 询问者（发起依赖请求的宿主 wrapper）
+   */
   public async loadInstance<T>(
     wrapper: InstanceWrapper<T>,
     collection: Map<InjectionToken, InstanceWrapper>,
@@ -227,6 +254,16 @@ export class Injector {
     }
   }
 
+  /**
+   * 加载中间件：先为目标 wrapper 写入一个原型空壳实例（供路由提前引用），
+   * 再复用 loadInstance 完成真正的实例化。
+   *
+   * @param wrapper - 中间件的实例包装器
+   * @param collection - 中间件登记表
+   * @param moduleRef - 宿主模块
+   * @param contextId - 请求上下文 ID
+   * @param inquirer - 询问者
+   */
   public async loadMiddleware(
     wrapper: InstanceWrapper,
     collection: Map<InjectionToken, InstanceWrapper>,
@@ -249,6 +286,14 @@ export class Injector {
     );
   }
 
+  /**
+   * 加载 controller：实例化 controller 本身，
+   * 然后加载其元数据中记录的所有增强器（guard/interceptor/pipe/filter）。
+   *
+   * @param wrapper - controller 的实例包装器
+   * @param moduleRef - 宿主模块
+   * @param contextId - 请求上下文 ID
+   */
   public async loadController(
     wrapper: InstanceWrapper<Controller>,
     moduleRef: Module,
@@ -265,6 +310,14 @@ export class Injector {
     await this.loadEnhancersPerContext(wrapper, contextId, wrapper);
   }
 
+  /**
+   * 加载增强器类可注入对象（guard/interceptor/pipe/filter）
+   *
+   * @param wrapper - 增强器的实例包装器
+   * @param moduleRef - 宿主模块
+   * @param contextId - 请求上下文 ID
+   * @param inquirer - 询问者
+   */
   public async loadInjectable<T = any>(
     wrapper: InstanceWrapper<T>,
     moduleRef: Module,
@@ -281,6 +334,15 @@ export class Injector {
     );
   }
 
+  /**
+   * 加载 provider：实例化 provider 本身，
+   * 然后加载其上应用的增强器（如使用 @UseGuards 的 provider）。
+   *
+   * @param wrapper - provider 的实例包装器
+   * @param moduleRef - 宿主模块
+   * @param contextId - 请求上下文 ID
+   * @param inquirer - 询问者
+   */
   public async loadProvider(
     wrapper: InstanceWrapper<Injectable>,
     moduleRef: Module,
@@ -298,6 +360,15 @@ export class Injector {
     await this.loadEnhancersPerContext(wrapper, contextId, wrapper);
   }
 
+  /**
+   * 为实例记录挂载完成信号（SettlementSignal）：
+   * - donePromise：供并发请求等待同一次实例化
+   * - isPending：标记实例化进行中
+   *
+   * @param instancePerContext - 上下文实例记录
+   * @param host - 宿主实例包装器
+   * @returns 新创建的完成信号
+   */
   public applySettlementSignal<T>(
     instancePerContext: InstancePerContext<T>,
     host: InstanceWrapper<T>,
@@ -310,6 +381,29 @@ export class Injector {
     return settlementSignal;
   }
 
+  /**
+   * 解析构造函数参数（DI 的核心步骤之一）
+   *
+   * 处理流程：
+   * 1. 请求作用域下若已有缓存的构造参数元数据，直接按元数据加载并回调
+   * 2. 读取依赖列表：工厂 provider 取 inject 数组，普通类取反射元数据
+   * 3. 创建参数屏障（Barrier），并行解析每个参数：
+   *    - 参数为 INQUIRER 标识时直接返回父询问者实例
+   *    - transient 询问者需要继承父询问者（保证延迟到请求时才解析）
+   *    - resolveSingleParam 找到参数 wrapper，屏障同步后由 resolveComponentHost
+   *      触发其递归实例化，取回最终实例
+   *    - 任一参数未真正解析（非 forwardRef）时标记 isResolved = false
+   *    - 失败且参数为 @Optional 时回退为 undefined
+   * 4. 全部解析成功后以参数数组执行回调（完成实例化）
+   *
+   * @param wrapper - 待实例化的包装器
+   * @param moduleRef - 宿主模块
+   * @param inject - 工厂 provider 的依赖列表（普通类为 undefined）
+   * @param callback - 参数解析完成后的回调（接收实例数组）
+   * @param contextId - 请求上下文 ID
+   * @param inquirer - 当前询问者
+   * @param parentInquirer - 父级询问者（嵌套 transient / INQUIRER 场景）
+   */
   public async resolveConstructorParams<T>(
     wrapper: InstanceWrapper<T>,
     moduleRef: Module,
@@ -408,6 +502,12 @@ export class Injector {
     isResolved && (await callback(instances));
   }
 
+  /**
+   * 获取类 provider 的构造依赖列表与可选依赖下标
+   *
+   * @param wrapper - 类 provider 的实例包装器
+   * @returns [依赖 token 数组, 可选依赖参数下标数组]
+   */
   public getClassDependencies<T>(
     wrapper: InstanceWrapper<T>,
   ): [InjectorDependency[], number[]] {
@@ -418,6 +518,13 @@ export class Injector {
     ];
   }
 
+  /**
+   * 获取工厂 provider 的依赖列表与可选依赖下标
+   * （inject 数组中形如 { token, optional } 的项会被展开，optional 项记录下标）
+   *
+   * @param wrapper - 工厂 provider 的实例包装器
+   * @returns [依赖 token 数组, 可选依赖下标数组]
+   */
   public getFactoryProviderDependencies<T>(
     wrapper: InstanceWrapper<T>,
   ): [InjectorDependency[], number[]] {
@@ -458,6 +565,13 @@ export class Injector {
     ];
   }
 
+  /**
+   * 反射读取类的构造参数类型元数据，
+   * 并用 @Inject 自声明的依赖（SELF_DECLARED_DEPS_METADATA）覆盖对应下标。
+   *
+   * @param type - 目标类
+   * @returns 构造参数类型/token 数组
+   */
   public reflectConstructorParams<T>(type: Type<T>): any[] {
     const paramtypes = [
       ...(Reflect.getMetadata(PARAMTYPES_METADATA, type) || []),
@@ -468,14 +582,29 @@ export class Injector {
     return Array.from(paramtypes);
   }
 
+  /** 反射读取 @Optional 标记的构造参数下标列表 */
   public reflectOptionalParams<T>(type: Type<T>): any[] {
     return Reflect.getMetadata(OPTIONAL_DEPS_METADATA, type) || [];
   }
 
+  /** 反射读取 @Inject 自声明的依赖元数据（参数下标 + token） */
   public reflectSelfParams<T>(type: Type<T>): any[] {
     return Reflect.getMetadata(SELF_DECLARED_DEPS_METADATA, type) || [];
   }
 
+  /**
+   * 解析单个依赖参数：token 未定义时抛出 UndefinedDependencyException
+   * （常见于循环导入），否则解析 token 并查找对应的组件包装器。
+   *
+   * @param wrapper - 依赖方（宿主）的实例包装器
+   * @param param - 依赖 token（类/字符串/Symbol）
+   * @param dependencyContext - 依赖上下文（用于错误信息定位）
+   * @param moduleRef - 宿主模块
+   * @param contextId - 请求上下文 ID
+   * @param inquirer - 当前询问者
+   * @param keyOrIndex - 参数下标或属性键
+   * @returns 依赖对应的实例包装器
+   */
   public async resolveSingleParam<T>(
     wrapper: InstanceWrapper<T>,
     param: Type<any> | string | symbol,
@@ -507,6 +636,14 @@ export class Injector {
     );
   }
 
+  /**
+   * 解析参数 token：forwardRef 包装的依赖会被解包（调用 forwardRef()），
+   * 并在宿主 wrapper 上标记 forwardRef = true（循环引用延迟解析用）。
+   *
+   * @param wrapper - 依赖方的实例包装器
+   * @param param - 参数（可能是 ForwardReference）
+   * @returns 真实的注入 token
+   */
   public resolveParamToken<T>(
     wrapper: InstanceWrapper<T>,
     param: Type<any> | string | symbol | ForwardReference,
@@ -518,6 +655,19 @@ export class Injector {
     return param;
   }
 
+  /**
+   * 解析依赖对应的组件包装器：先打印调试日志，
+   * 然后在宿主模块的 providers 表中查找该 token（lookupComponent）。
+   *
+   * @param moduleRef - 宿主模块
+   * @param token - 依赖注入 token
+   * @param dependencyContext - 依赖上下文
+   * @param wrapper - 依赖方的实例包装器
+   * @param contextId - 请求上下文 ID
+   * @param inquirer - 当前询问者
+   * @param keyOrIndex - 参数下标或属性键
+   * @returns 依赖的实例包装器
+   */
   public async resolveComponentWrapper<T>(
     moduleRef: Module,
     token: InjectionToken,
@@ -541,6 +691,22 @@ export class Injector {
     );
   }
 
+  /**
+   * 解析依赖组件的"宿主"：确保依赖 wrapper 在当前上下文中被真正实例化
+   *
+   * 处理流程：
+   * 1. 实例未解析且非 forwardRef：先在询问者的信号中登记依赖引用（循环检测用），
+   *    然后递归调用 loadProvider 触发依赖的实例化
+   * 2. 未解析但是 forwardRef（请求/transient 作用域间的循环依赖）：
+   *    异步等待 donePromise 后再加载，使惰性创建的实例与预创建的原型合并
+   * 3. 异步 provider（值是 Promise）：等待 Promise 完成并回写实例
+   *
+   * @param moduleRef - 宿主模块
+   * @param instanceWrapper - 依赖的实例包装器
+   * @param contextId - 请求上下文 ID
+   * @param inquirer - 询问者
+   * @returns 依赖的实例包装器（其实例此时应已可用）
+   */
   public async resolveComponentHost<T>(
     moduleRef: Module,
     instanceWrapper: InstanceWrapper<T | Promise<T>>,
@@ -591,6 +757,24 @@ export class Injector {
     return instanceWrapper;
   }
 
+  /**
+   * 在模块的 providers 表中查找依赖组件（依赖查找的第一站）
+   *
+   * 处理流程：
+   * 1. 若依赖 token 与当前 wrapper 自身相同（自己注入自己），抛出循环依赖异常
+   * 2. 本模块 providers 表命中：登记依赖元数据并返回
+   * 3. 未命中：转向上层模块继续查找（lookupComponentInParentModules）
+   *
+   * @param providers - 宿主模块的 provider 表
+   * @param moduleRef - 宿主模块
+   * @param dependencyContext - 依赖上下文（含依赖 token）
+   * @param wrapper - 依赖方的实例包装器
+   * @param contextId - 请求上下文 ID
+   * @param inquirer - 询问者
+   * @param keyOrIndex - 参数下标或属性键
+   * @returns 依赖的实例包装器
+   * @throws UnknownDependenciesException - 所有模块都找不到该依赖时抛出
+   */
   public async lookupComponent<T = any>(
     providers: Map<Function | string | symbol, InstanceWrapper>,
     moduleRef: Module,
@@ -626,6 +810,18 @@ export class Injector {
     );
   }
 
+  /**
+   * 在父模块（imports）中查找依赖组件；
+   * 全部查找失败时抛出 UnknownDependenciesException。
+   *
+   * @param dependencyContext - 依赖上下文
+   * @param moduleRef - 当前模块
+   * @param wrapper - 依赖方的实例包装器
+   * @param contextId - 请求上下文 ID
+   * @param inquirer - 询问者
+   * @param keyOrIndex - 参数下标或属性键
+   * @returns 找到的实例包装器
+   */
   public async lookupComponentInParentModules<T = any>(
     dependencyContext: InjectorDependencyContext,
     moduleRef: Module,
@@ -654,6 +850,28 @@ export class Injector {
     return instanceWrapper;
   }
 
+  /**
+   * 深度遍历导入模块图查找依赖 provider
+   *
+   * 处理流程：
+   * 1. 取当前模块的导入集合；若处于"遍历中"（isTraversing），
+   *    则只保留被显式导出（re-export）的子模块（保证导出可见性规则）
+   * 2. 逐个访问未访问过的子模块（moduleRegistry 防环）：
+   *    - 子模块导出且提供该 token：命中，登记依赖元数据；
+   *      若其实例尚未解析则中断遍历（交给 resolveComponentHost 统一加载，
+   *      避免错误评估依赖树静态性导致 undefined 注入）
+   *    - 未命中：继续向子模块的导入递归查找
+   *
+   * @param moduleRef - 当前模块
+   * @param name - 依赖 token
+   * @param wrapper - 依赖方的实例包装器
+   * @param moduleRegistry - 已访问模块 ID 集合（防循环遍历）
+   * @param contextId - 请求上下文 ID
+   * @param inquirer - 询问者
+   * @param keyOrIndex - 参数下标或属性键
+   * @param isTraversing - 是否处于递归遍历中（启用导出可见性过滤）
+   * @returns 找到的实例包装器；未找到返回 null
+   */
   public async lookupComponentInImports(
     moduleRef: Module,
     name: InjectionToken,
@@ -721,6 +939,23 @@ export class Injector {
     return instanceWrapperRef;
   }
 
+  /**
+   * 解析属性注入依赖（@Inject 装饰在属性上的依赖）
+   *
+   * 处理流程与 resolveConstructorParams 类似：
+   * 1. 工厂 provider（有 inject 列表）没有属性注入，直接返回空数组
+   * 2. 请求作用域下已有缓存元数据时按元数据加载
+   * 3. 否则反射读取属性依赖元数据，经屏障同步后并行解析各属性依赖，
+   *    失败且为可选属性时回退 undefined
+   *
+   * @param wrapper - 依赖方的实例包装器
+   * @param moduleRef - 宿主模块
+   * @param inject - 工厂依赖列表（可选）
+   * @param contextId - 请求上下文 ID
+   * @param inquirer - 询问者
+   * @param parentInquirer - 父级询问者
+   * @returns 属性依赖数组（含解析出的实例）
+   */
   public async resolveProperties<T>(
     wrapper: InstanceWrapper<T>,
     moduleRef: Module,
@@ -810,6 +1045,13 @@ export class Injector {
     }));
   }
 
+  /**
+   * 反射读取类的属性注入元数据（PROPERTY_DEPS_METADATA），
+   * 并标记哪些属性为可选（OPTIONAL_PROPERTY_DEPS_METADATA）。
+   *
+   * @param type - 目标类
+   * @returns 属性依赖元数据数组
+   */
   public reflectProperties<T>(type: Type<T>): PropertyDependency[] {
     const properties = Reflect.getMetadata(PROPERTY_DEPS_METADATA, type) || [];
     const optionalKeys: string[] =
@@ -822,6 +1064,12 @@ export class Injector {
     }));
   }
 
+  /**
+   * 将解析好的属性依赖实例赋值到实例对象的对应属性上
+   *
+   * @param instance - 目标实例
+   * @param properties - 属性依赖数组（含已解析的实例）
+   */
   public applyProperties<T = any>(
     instance: T,
     properties: PropertyDependency[],
@@ -834,6 +1082,26 @@ export class Injector {
       .forEach(item => (instance[item.key] = item.instance));
   }
 
+  /**
+   * 实例化类（真正调用构造函数 / 工厂函数的一步）
+   *
+   * 处理流程：
+   * 1. 判断实例是否需要在当前上下文中创建（isInContext）：
+   *    静态、请求作用域、惰性 transient 或被显式请求
+   * 2. 预览模式且宿主模块未开启 initOnPreview：跳过实例化，仅标记已解析
+   * 3. 非工厂且在上下文中：new 调用构造函数（forwardRef 时与预创建的
+   *    原型实例 Object.assign 合并），经过 instanceDecorator 装饰并记录
+   *    isConstructorCalled
+   * 4. 工厂 provider：调用工厂函数并等待异步结果
+   * 5. 最终标记 isResolved 并返回实例
+   *
+   * @param instances - 已解析的构造参数实例数组
+   * @param wrapper - 被实例化的包装器
+   * @param targetMetatype - 集合中的目标包装器（承载实例缓存）
+   * @param contextId - 请求上下文 ID
+   * @param inquirer - 询问者
+   * @returns 创建（或复用）的实例
+   */
   public async instantiateClass<T = any>(
     instances: any[],
     wrapper: InstanceWrapper,
@@ -880,6 +1148,17 @@ export class Injector {
     return instanceHost.instance;
   }
 
+  /**
+   * 在指定请求上下文中加载实例（请求作用域运行时解析入口，
+   * 如 Provider 在请求中被 ModuleRef.resolve 触发时）
+   *
+   * @param instance - 现有实例（用于反查其构造 token 对应的 wrapper）
+   * @param moduleRef - 宿主模块
+   * @param collection - wrapper 登记表
+   * @param ctx - 请求上下文 ID
+   * @param wrapper - 可选的实例包装器（未传则按实例构造函数查找）
+   * @returns 该上下文下的实例
+   */
   public async loadPerContext<T = any>(
     instance: T,
     moduleRef: Module,
@@ -901,6 +1180,13 @@ export class Injector {
     return host && (host.instance as T);
   }
 
+  /**
+   * 在指定上下文中加载实例的所有增强器（guard/interceptor 等）
+   *
+   * @param wrapper - 宿主实例包装器
+   * @param ctx - 请求上下文 ID
+   * @param inquirer - 询问者
+   */
   public async loadEnhancersPerContext(
     wrapper: InstanceWrapper,
     ctx: ContextId,
@@ -920,6 +1206,15 @@ export class Injector {
     await Promise.all(enhancers.map(loadEnhancer));
   }
 
+  /**
+   * 按缓存的构造参数元数据（请求作用域下复用）加载各依赖实例
+   *
+   * @param metadata - 构造参数依赖的包装器数组
+   * @param contextId - 请求上下文 ID
+   * @param inquirer - 询问者
+   * @param parentInquirer - 父级询问者
+   * @returns 解析出的依赖实例数组
+   */
   public async loadCtorMetadata(
     metadata: InstanceWrapper<any>[],
     contextId: ContextId,
@@ -952,6 +1247,14 @@ export class Injector {
     });
   }
 
+  /**
+   * 按缓存的属性依赖元数据（请求作用域下复用）加载各属性实例
+   *
+   * @param metadata - 属性依赖元数据数组
+   * @param contextId - 请求上下文 ID
+   * @param inquirer - 询问者
+   * @returns 属性依赖数组（含解析出的实例）
+   */
   public async loadPropertiesMetadata(
     metadata: PropertyMetadata[],
     contextId: ContextId,
@@ -979,6 +1282,7 @@ export class Injector {
     }));
   }
 
+  /** 获取询问者的唯一 ID（transient 实例分桶用）；无询问者时返回 undefined */
   private getInquirerId(
     inquirer: InstanceWrapper | undefined,
   ): string | undefined {
@@ -1007,6 +1311,10 @@ export class Injector {
       : inquirer;
   }
 
+  /**
+   * 解析作用域组件宿主（缓存的元数据路径使用）：
+   * 参数是 INQUIRER 标识时直接返回父询问者，否则走 resolveComponentHost。
+   */
   private resolveScopedComponentHost(
     item: InstanceWrapper,
     contextId: ContextId,
@@ -1023,6 +1331,7 @@ export class Injector {
         );
   }
 
+  /** 判断依赖是否为 INQUIRER 标识（transient 且有父询问者时成立） */
   private isInquirerRequest(
     item: InstanceWrapper,
     parentInquirer: InstanceWrapper | undefined,
@@ -1030,6 +1339,7 @@ export class Injector {
     return item.isTransient && item.name === INQUIRER && parentInquirer;
   }
 
+  /** 判断参数是否为 INQUIRER token（且有父询问者可返回） */
   private isInquirer(
     param: unknown,
     parentInquirer: InstanceWrapper | undefined,
@@ -1037,6 +1347,13 @@ export class Injector {
     return param === INQUIRER && parentInquirer;
   }
 
+  /**
+   * 登记依赖元数据：字符串/Symbol 键记为属性依赖，数字记为构造参数依赖
+   *
+   * @param keyOrIndex - 参数下标或属性键
+   * @param hostWrapper - 依赖方（宿主）包装器
+   * @param instanceWrapper - 依赖的包装器
+   */
   protected addDependencyMetadata(
     keyOrIndex: symbol | string | number,
     hostWrapper: InstanceWrapper,
@@ -1049,10 +1366,12 @@ export class Injector {
     }
   }
 
+  /** 获取 token 的展示名（类取类名，字符串/Symbol 直接转字符串） */
   private getTokenName(token: InjectionToken): string {
     return isFunction(token) ? (token as Function).name : token.toString();
   }
 
+  /** 调试日志：正在为某个 provider 解析依赖 */
   private printResolvingDependenciesLog(
     token: InjectionToken,
     inquirer?: InstanceWrapper,
@@ -1074,6 +1393,7 @@ export class Injector {
     this.logger.log(messageToPrint);
   }
 
+  /** 调试日志：正在某个模块中查找 provider */
   private printLookingForProviderLog(
     token: InjectionToken,
     moduleRef: Module,
@@ -1090,6 +1410,7 @@ export class Injector {
     );
   }
 
+  /** 调试日志：在某个模块中找到了 provider */
   private printFoundInModuleLog(
     token: InjectionToken,
     moduleRef: Module,
@@ -1106,10 +1427,15 @@ export class Injector {
     );
   }
 
+  /** 是否处于调试模式（由环境变量 NEST_DEBUG 控制） */
   private isDebugMode(): boolean {
     return !!process.env.NEST_DEBUG;
   }
 
+  /**
+   * 获取实际使用的上下文 ID：durable 实例会通过 contextId.getParent
+   * 沿宿主链向上查找其所属的持久上下文（跨请求复用），其余直接透传。
+   */
   private getContextId(
     contextId: ContextId,
     instanceWrapper: InstanceWrapper,
@@ -1122,6 +1448,7 @@ export class Injector {
       : contextId;
   }
 
+  /** 获取当前高精度时间戳（用于统计实例初始化耗时） */
   private getNowTimestamp() {
     return performance.now();
   }

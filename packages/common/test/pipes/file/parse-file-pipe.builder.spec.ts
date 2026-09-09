@@ -6,6 +6,11 @@ import {
   FileTypeValidator,
 } from '../../../pipes';
 
+/**
+ * ParseFilePipeBuilder 的单元测试：
+ * 验证链式添加各种文件校验器（大小、类型、自定义）后 build 出的管道
+ * 收集了正确的校验器，且多次 build 不会复用旧校验器。
+ */
 describe('ParseFilePipeBuilder', () => {
   let parseFilePipeBuilder: ParseFilePipeBuilder;
 

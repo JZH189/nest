@@ -6,6 +6,7 @@ import { MessageHandler } from '../../interfaces/message-handler.interface';
 import { ServerRMQ } from '../../server/server-rmq';
 import { objectToMap } from './utils/object-to-map';
 
+// ServerRMQ 单元测试：验证 RabbitMQ 服务器的队列绑定、消息处理与应答逻辑。
 describe('ServerRMQ', () => {
   let server: ServerRMQ;
   let untypedServer: any;

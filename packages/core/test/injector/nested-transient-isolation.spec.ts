@@ -6,6 +6,7 @@ import { Injector } from '../../injector/injector';
 import { InstanceWrapper } from '../../injector/instance-wrapper';
 import { Module } from '../../injector/module';
 
+// 验证 TRANSIENT 提供者依赖其他 TRANSIENT 提供者时，实例在不同宿主（尤其请求作用域宿主）间相互隔离、互不共享
 describe('Nested Transient Isolation', () => {
   let injector: Injector;
   let module: Module;

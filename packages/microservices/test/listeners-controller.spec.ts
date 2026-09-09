@@ -19,6 +19,7 @@ import {
 } from '../listener-metadata-explorer';
 import { ListenersController } from '../listeners-controller';
 
+// ListenersController 单元测试：验证消息/事件监听器方法的扫描、包装与订阅绑定。
 describe('ListenersController', () => {
   let instance: ListenersController,
     explorer: sinon.SinonMock,

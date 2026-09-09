@@ -13,6 +13,7 @@ import {
 } from '../../decorators/message-pattern.decorator';
 import { Transport } from '../../enums/transport.enum';
 
+// @MessagePattern 方法装饰器单元测试：验证消息模式、传输方式及附加元数据的注册。
 describe('@MessagePattern', () => {
   const pattern = { role: 'test' };
   const extras = { param: 'value' };
@@ -163,6 +164,7 @@ ${PATTERN_EXTRAS_METADATA} metadata`, () => {
   });
 });
 
+// @GrpcMethod 装饰器单元测试：验证从方法/类名或显式参数推导 gRPC 服务与 rpc 方法名。
 describe('@GrpcMethod', () => {
   class TestService {
     @GrpcMethod()
@@ -206,6 +208,7 @@ describe('@GrpcMethod', () => {
   });
 });
 
+// @GrpcStreamMethod 装饰器单元测试：验证 RxJS 流式 gRPC 方法的元数据推导及 Observable 返回语义。
 describe('@GrpcStreamMethod', () => {
   class TestService {
     @GrpcStreamMethod()
@@ -261,6 +264,7 @@ describe('@GrpcStreamMethod', () => {
   });
 });
 
+// @GrpcStreamCall 装饰器单元测试：验证"可调用流"（原生流）式 gRPC 方法的元数据推导。
 describe('@GrpcStreamCall', () => {
   class TestService {
     @GrpcStreamCall()

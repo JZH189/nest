@@ -31,6 +31,7 @@ class TestPipe {
   }
 }
 
+// RpcContextCreator 单元测试：验证 RPC 处理程序代理的创建，串联守卫、拦截器、管道与异常过滤器。
 describe('RpcContextCreator', () => {
   let contextCreator: RpcContextCreator;
   let rpcProxy: RpcProxy;

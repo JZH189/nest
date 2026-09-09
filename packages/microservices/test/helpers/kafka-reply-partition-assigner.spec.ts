@@ -4,6 +4,7 @@ import * as Kafka from 'kafkajs';
 import { KafkaReplyPartitionAssigner } from '../../helpers/kafka-reply-partition-assigner';
 import { ClientKafka } from '../../client/client-kafka';
 
+// KafkaReplyPartitionAssigner 单元测试：验证为回复主题在消费者组间分配分区的策略。
 describe('kafka reply partition assigner', () => {
   let cluster, topics, metadata, assigner, client;
 

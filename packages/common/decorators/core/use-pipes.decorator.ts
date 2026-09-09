@@ -30,10 +30,13 @@ export function UsePipes(
     key?: string | symbol,
     descriptor?: TypedPropertyDescriptor<any>,
   ) => {
+    // 校验每个管道：要么是类/可调用对象，要么实现了 transform 方法
     const isPipeValid = <T extends Function | Record<string, any>>(pipe: T) =>
       pipe && (isFunction(pipe) || isFunction(pipe.transform));
 
+    // descriptor 存在说明用在方法上（方法级管道），否则用在类上（控制器级管道）
     if (descriptor) {
+      // 追加到方法的管道元数据数组，参数处理阶段按顺序执行转换/校验
       extendArrayMetadata(PIPES_METADATA, pipes, descriptor.value);
       return descriptor;
     }

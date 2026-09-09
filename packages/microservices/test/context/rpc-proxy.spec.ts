@@ -5,6 +5,7 @@ import { RpcProxy } from '../../context/rpc-proxy';
 import { RpcException } from '../../exceptions/rpc-exception';
 import { RpcExceptionsHandler } from '../../exceptions/rpc-exceptions-handler';
 
+// RpcProxy 单元测试：验证 RPC 代理对处理程序返回值的包装及异常处理器的调用。
 describe('RpcProxy', () => {
   let routerProxy: RpcProxy;
   let handlerMock: sinon.SinonMock;

@@ -17,6 +17,17 @@ function listAllCommands(replServer: REPLServer) {
     });
 }
 
+/**
+ * 在 REPL 服务器上定义默认的原生命令（目前只有 `.help`）。
+ *
+ * `.help` 支持两种用法：
+ * - `.help <name>`：打印指定命令或上下文函数的帮助信息；
+ * - `.help`（不带参数）：先列出所有 REPL 点命令，再调用上下文中的
+ *   `help()` 函数列出所有 NestJS 原生函数（get/resolve/select 等），
+ *   最后提示退出快捷键。
+ *
+ * @param replServer - Node.js 原生 REPL 服务器实例。
+ */
 export function defineDefaultCommandsOnRepl(replServer: REPLServer): void {
   replServer.defineCommand('help', {
     help: 'Show REPL options',

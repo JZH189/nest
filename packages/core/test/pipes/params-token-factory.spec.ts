@@ -2,6 +2,7 @@ import { expect } from 'chai';
 import { RouteParamtypes } from '../../../common/enums/route-paramtypes.enum';
 import { ParamsTokenFactory } from '../../pipes/params-token-factory';
 
+// 验证 ParamsTokenFactory 将 RouteParamtypes 枚举映射为参数类型字符串（未知类型归为 custom）
 describe('ParamsTokenFactory', () => {
   let factory: ParamsTokenFactory;
   beforeEach(() => {

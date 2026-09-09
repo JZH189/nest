@@ -132,6 +132,8 @@ export function Controller(
 ): ClassDecorator {
   const defaultPath = '/';
 
+  // 1. 解析参数：兼容三种重载形式（无参 / 路径前缀 / 选项对象），
+  //    统一提取出 [路径, 主机, 作用域选项, 版本选项]
   const [path, host, scopeOptions, versionOptions] = isUndefined(
     prefixOrOptions,
   )
@@ -143,15 +145,21 @@ export function Controller(
           prefixOrOptions.host,
           { scope: prefixOrOptions.scope, durable: prefixOrOptions.durable },
           Array.isArray(prefixOrOptions.version)
-            ? Array.from(new Set(prefixOrOptions.version))
+            ? Array.from(new Set(prefixOrOptions.version)) // 版本去重
             : prefixOrOptions.version,
         ];
 
+  // 2. 将解析结果写入控制器类的元数据，供路由扫描时（RoutesResolver）读取
   return (target: object) => {
+    // CONTROLLER_WATERMARK：标记该类为控制器，用于诊断/反射
     Reflect.defineMetadata(CONTROLLER_WATERMARK, true, target);
+    // PATH_METADATA：控制器路由前缀，最终与方法路径拼接成完整路由
     Reflect.defineMetadata(PATH_METADATA, path, target);
+    // HOST_METADATA：主机名过滤器，用于按请求 Host 匹配路由
     Reflect.defineMetadata(HOST_METADATA, host, target);
+    // SCOPE_OPTIONS_METADATA：依赖注入作用域（单例/请求/瞬态）
     Reflect.defineMetadata(SCOPE_OPTIONS_METADATA, scopeOptions, target);
+    // VERSION_METADATA：URI 版本控制信息
     Reflect.defineMetadata(VERSION_METADATA, versionOptions, target);
   };
 }

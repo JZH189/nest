@@ -6,6 +6,7 @@ import { ClientRMQ } from '../../client/client-rmq';
 import { ReadPacket } from '../../interfaces';
 import { RmqRecord } from '../../record-builders';
 
+// ClientRMQ 单元测试：验证 RabbitMQ 客户端的连接、通道创建、消息发布与消费绑定。
 describe('ClientRMQ', function () {
   this.retries(10);
 

@@ -2,6 +2,7 @@ import { expect } from 'chai';
 import { KafkaHeaders } from '../../enums/kafka-headers.enum';
 import { KafkaParser } from '../../helpers/kafka-parser';
 
+// KafkaParser 单元测试：验证将 Kafka 消息（值/键/头）解析为 Nest 消息结构的逻辑。
 describe('KafkaParser', () => {
   describe('parse', () => {
     let kafkaParser: any;

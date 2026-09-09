@@ -6,6 +6,7 @@ import {
   Producer,
 } from '../../external/kafka.interface';
 
+// KafkaContext 单元测试：验证 Kafka 上下文中消息、分区、消费者/生产者与心跳方法的访问。
 describe('KafkaContext', () => {
   const args = [
     'test',

@@ -5,6 +5,7 @@ import { NestContainer } from '../../../injector/container';
 import { MethodsReplFn } from '../../../repl/native-functions';
 import { ReplContext } from '../../../repl/repl-context';
 
+// 验证 REPL 内置函数 methods：列出提供者/控制器上可调用的方法
 describe('MethodsReplFn', () => {
   let methodsReplFn: MethodsReplFn;
 

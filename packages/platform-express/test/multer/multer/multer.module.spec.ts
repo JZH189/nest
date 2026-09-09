@@ -4,6 +4,7 @@ import * as sinon from 'sinon';
 import { MULTER_MODULE_OPTIONS } from '../../../multer/files.constants';
 import { MulterModule } from '../../../multer/multer.module';
 
+// 验证 MulterModule 动态模块的注册行为
 describe('MulterModule', () => {
   describe('register', () => {
     it('should provide an options', () => {

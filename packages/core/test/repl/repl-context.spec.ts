@@ -3,6 +3,7 @@ import * as sinon from 'sinon';
 import { NestContainer } from '../../injector/container';
 import { ReplContext } from '../../repl/repl-context';
 
+// 验证 ReplContext 初始化内置函数映射、注册用户输入别名及标准输出写入
 describe('ReplContext', () => {
   let replContext: ReplContext;
   let mockApp: {

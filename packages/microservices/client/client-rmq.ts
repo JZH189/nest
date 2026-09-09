@@ -52,25 +52,44 @@ let rmqPackage = {} as any; // typeof import('amqp-connection-manager');
 const REPLY_QUEUE = 'amq.rabbitmq.reply-to';
 
 /**
+ * 基于 RabbitMQ（amqp-connection-manager + amqplib）的客户端实现（ClientProxy 的子类）。
+ * 请求-响应通过 Direct Reply-To（amq.rabbitmq.reply-to 伪队列）与 correlationId 匹配实现；
+ * 支持 exchange/fanout/wildcards 路由模式。内置连接管理器的自动重连能力。
+ * 依赖 amqplib 与 amqp-connection-manager 包，首次使用时动态加载。
+ *
  * @publicApi
  */
 export class ClientRMQ extends ClientProxy<RmqEvents, RmqStatus> {
   protected readonly logger = new Logger(ClientProxy.name);
+  /** 连接状态重放主题（供 convertConnectionToPromise 使用） */
   protected connection$: ReplaySubject<any>;
+  /** 复用中的连接 Promise */
   protected connectionPromise: Promise<void>;
+  /** amqp 连接管理器实例（负责自动重连） */
   protected client: AmqpConnectionManager | null = null;
+  /** 通道包装器实例 */
   protected channel: ChannelWrapper | null = null;
+  /** 连接建立前注册的事件监听器缓存 */
   protected pendingEventListeners: Array<{
     event: keyof RmqEvents;
     callback: RmqEvents[keyof RmqEvents];
   }> = [];
+  /** 是否为首次连接（首次连接后创建 channel） */
   protected isInitialConnect = true;
+  /** 响应分发器：correlationId -> 响应监听器 */
   protected responseEmitter: EventEmitter;
+  /** 目标队列名 */
   protected queue: string;
+  /** 队列声明选项 */
   protected queueOptions: Record<string, any>;
+  /** 回复队列（默认 Direct Reply-To 伪队列） */
   protected replyQueue: string;
+  /** 是否跳过队列断言（assert） */
   protected noAssert: boolean;
 
+  /**
+   * @param options - RMQ 客户端选项（queue、urls、exchange、routingKey、wildcards 等）
+   */
   constructor(protected readonly options: Required<RmqOptions>['options']) {
     super();
     this.queue = this.getOptionsProp(this.options, 'queue', RQM_DEFAULT_QUEUE);
@@ -98,6 +117,9 @@ export class ClientRMQ extends ClientProxy<RmqEvents, RmqStatus> {
     this.initializeDeserializer(options);
   }
 
+  /**
+   * 关闭通道与连接管理器并清理状态与缓存监听器。
+   */
   public async close(): Promise<void> {
     this.channel && (await this.channel.close());
     this.client && (await this.client.close());
@@ -106,6 +128,15 @@ export class ClientRMQ extends ClientProxy<RmqEvents, RmqStatus> {
     this.pendingEventListeners = [];
   }
 
+  /**
+   * 连接 RabbitMQ，流程：
+   * 1. 已有连接管理器则复用 connectionPromise；
+   * 2. 创建连接管理器并注册错误/断开/连接/阻塞/解除阻塞五类监听器；
+   * 3. 补挂缓存的监听器，创建响应分发器（不限制监听器数量）；
+   * 4. 组装连接流：连接/断开事件触发后创建 channel；重连事件（跳过首次）并入同一流；
+   * 5. 将流写入 ReplaySubject 并转为 connectionPromise 返回。
+   * @returns 连接完成的 Promise
+   */
   public connect(): Promise<any> {
     if (this.client) {
       return this.connectionPromise;
@@ -143,6 +174,11 @@ export class ClientRMQ extends ClientProxy<RmqEvents, RmqStatus> {
     return this.connectionPromise;
   }
 
+  /**
+   * 创建通道：json 模式关闭（自行序列化），
+   * setup 回调中完成队列/交换机声明、prefetch 与消费订阅，完成后 resolve。
+   * @returns 通道建立完成的 Promise
+   */
   public createChannel(): Promise<void> {
     return new Promise(resolve => {
       this.channel = this.client!.createChannel({
@@ -152,12 +188,23 @@ export class ClientRMQ extends ClientProxy<RmqEvents, RmqStatus> {
     });
   }
 
+  /**
+   * 创建 amqp 连接管理器：合并 urls 与 socketOptions。
+   * @returns 连接管理器实例
+   */
   public createClient(): AmqpConnectionManager {
     const socketOptions = this.getOptionsProp(this.options, 'socketOptions');
     const urls = this.getOptionsProp(this.options, 'urls') || [RQM_DEFAULT_URL];
     return rmqPackage.connect(urls, socketOptions);
   }
 
+  /**
+   * 把 disconnect / connectFailed 事件并入连接流（转为错误）：
+   * connectFailed 会在遍历完所有 urls 后才真正抛错；最终流取第一个事件即完成。
+   * @param instance - 连接管理器实例
+   * @param source$ - 原连接流
+   * @returns 合并后的连接流
+   */
   public mergeDisconnectEvent<T = any>(
     instance: any,
     source$: Observable<T>,
@@ -189,6 +236,10 @@ export class ClientRMQ extends ClientProxy<RmqEvents, RmqStatus> {
     return merge(source$, disconnect$, connectFailed$).pipe(first());
   }
 
+  /**
+   * 等待 connection$ 的第一个值（连接结果），EmptyError 视为正常结束。
+   * @returns 连接完成的 Promise
+   */
   public async convertConnectionToPromise() {
     try {
       return await firstValueFrom(this.connection$);
@@ -200,6 +251,15 @@ export class ClientRMQ extends ClientProxy<RmqEvents, RmqStatus> {
     }
   }
 
+  /**
+   * 设置通道，流程：
+   * 1. 读取 prefetchCount 与 isGlobalPrefetchCount 配置；
+   * 2. 非 wildcards/fanout 模式：声明队列（除非 noAssert），并按需绑定 exchange；
+   * 3. wildcards 或 fanout 模式：改为声明 durable 的 exchange（topic 或 fanout 类型）；
+   * 4. 设置 prefetch，并启动对回复队列的消费，最后 resolve 连接 Promise。
+   * @param channel - amqp 原始通道
+   * @param resolve - 通道建立完成后调用的 resolve 函数
+   */
   public async setupChannel(channel: Channel, resolve: Function) {
     const prefetchCount =
       this.getOptionsProp(this.options, 'prefetchCount') ||
@@ -242,6 +302,11 @@ export class ClientRMQ extends ClientProxy<RmqEvents, RmqStatus> {
     resolve();
   }
 
+  /**
+   * 订阅回复队列：收到响应时以 correlationId 为事件名在 responseEmitter 上分发消息
+   * （publish 中注册的监听器按 correlationId 匹配消费）。
+   * @param channel - amqp 原始通道
+   */
   public async consumeChannel(channel: Channel) {
     const noAck = this.getOptionsProp(this.options, 'noAck', RQM_DEFAULT_NOACK);
     await channel.consume(
@@ -254,12 +319,21 @@ export class ClientRMQ extends ClientProxy<RmqEvents, RmqStatus> {
     );
   }
 
+  /**
+   * 注册错误监听器：记录错误日志。
+   * @param client - 连接管理器实例
+   */
   public registerErrorListener(client: AmqpConnectionManager): void {
     client.addListener(RmqEventsMap.ERROR, (err: any) =>
       this.logger.error(err),
     );
   }
 
+  /**
+   * 注册断开监听器：推送 DISCONNECTED 状态；非首次连接时置空 connectionPromise
+   * （等待重连），并打印断开日志。
+   * @param client - 连接管理器实例
+   */
   public registerDisconnectListener(client: AmqpConnectionManager): void {
     client.addListener(RmqEventsMap.DISCONNECT, (err: any) => {
       this._status$.next(RmqStatus.DISCONNECTED);
@@ -278,6 +352,11 @@ export class ClientRMQ extends ClientProxy<RmqEvents, RmqStatus> {
     });
   }
 
+  /**
+   * 注册连接成功监听器：推送 CONNECTED 状态；
+   * 首次连接时创建 channel；重连成功时恢复 connectionPromise。
+   * @param client - 连接管理器实例
+   */
   private registerConnectListener(client: AmqpConnectionManager): void {
     client.addListener(RmqEventsMap.CONNECT, () => {
       this._status$.next(RmqStatus.CONNECTED);
@@ -295,6 +374,10 @@ export class ClientRMQ extends ClientProxy<RmqEvents, RmqStatus> {
     });
   }
 
+  /**
+   * 注册 broker 阻塞（流控）监听器：推送 BLOCKED 状态并打印告警。
+   * @param client - 连接管理器实例
+   */
   public registerBlockedListener(client: AmqpConnectionManager): void {
     client.addListener(
       RmqEventsMap.BLOCKED,
@@ -305,6 +388,10 @@ export class ClientRMQ extends ClientProxy<RmqEvents, RmqStatus> {
     );
   }
 
+  /**
+   * 注册解除阻塞监听器：推送 UNBLOCKED 状态并打印日志。
+   * @param client - 连接管理器实例
+   */
   public registerUnblockedListener(client: AmqpConnectionManager): void {
     client.addListener(RmqEventsMap.UNBLOCKED, () => {
       this._status$.next(RmqStatus.UNBLOCKED);
@@ -312,6 +399,11 @@ export class ClientRMQ extends ClientProxy<RmqEvents, RmqStatus> {
     });
   }
 
+  /**
+   * 注册连接管理器事件监听器；尚未连接时先缓存，连接后补挂。
+   * @param event - 事件名
+   * @param callback - 事件回调
+   */
   public on<
     EventKey extends keyof RmqEvents = keyof RmqEvents,
     EventCallback extends RmqEvents[EventKey] = RmqEvents[EventKey],
@@ -323,6 +415,10 @@ export class ClientRMQ extends ClientProxy<RmqEvents, RmqStatus> {
     }
   }
 
+  /**
+   * 获取底层连接管理器实例。
+   * @returns AmqpConnectionManager 实例（未连接时抛出错误）
+   */
   public unwrap<T>(): T {
     if (!this.client) {
       throw new Error(
@@ -332,6 +428,13 @@ export class ClientRMQ extends ClientProxy<RmqEvents, RmqStatus> {
     return this.client as T;
   }
 
+  /**
+   * 处理回复队列中的响应消息（两个重载：options 可省略或为回调）：
+   * 反序列化后按 err / response / isDisposed 触发回调，结束或出错时终止 Observable。
+   * @param packet - 原始响应内容
+   * @param options - 消息选项（可为回调，见重载）
+   * @param callback - 响应回调
+   */
   public async handleMessage(
     packet: unknown,
     callback: (packet: WritePacket) => any,
@@ -371,6 +474,17 @@ export class ClientRMQ extends ClientProxy<RmqEvents, RmqStatus> {
     });
   }
 
+  /**
+   * 发布（请求-响应式）消息到队列/交换机，流程：
+   * 1. 生成 correlationId，注册 responseEmitter 监听器（回调反序列化后触发）；
+   * 2. 序列化消息并剥离 RmqRecord options，内容转为 JSON Buffer；
+   * 3. 组装 sendOptions（replyTo 指向回复队列、persistent、合并 headers、correlationId）；
+   * 4. wildcards/fanout 模式按 routingKey 发布到 exchange，否则直接 sendToQueue；
+   * 5. 返回清理函数（移除 correlationId 监听器）。
+   * @param message - 请求包
+   * @param callback - 响应回调
+   * @returns 取消订阅的清理函数
+   */
   protected publish(
     message: ReadPacket,
     callback: (packet: WritePacket) => any,
@@ -443,6 +557,12 @@ export class ClientRMQ extends ClientProxy<RmqEvents, RmqStatus> {
     }
   }
 
+  /**
+   * 发送事件（不等待响应）：序列化（剥离 options）后按 wildcards/fanout
+   * 发布到 exchange 或直接 sendToQueue，发送回调决定 resolve/reject。
+   * @param packet - 事件包
+   * @returns 发送完成的 Promise
+   */
   protected dispatchEvent(packet: ReadPacket): Promise<any> {
     const serializedPacket: ReadPacket & Partial<RmqRecord> =
       this.serializer.serialize(packet);
@@ -485,10 +605,19 @@ export class ClientRMQ extends ClientProxy<RmqEvents, RmqStatus> {
     });
   }
 
+  /**
+   * 初始化序列化器：优先使用 options.serializer，否则默认 RmqRecordSerializer。
+   * @param options - RMQ 客户端选项
+   */
   protected initializeSerializer(options: RmqOptions['options']) {
     this.serializer = options?.serializer ?? new RmqRecordSerializer();
   }
 
+  /**
+   * 合并请求级 headers 与全局 options.headers（请求级优先）。
+   * @param requestHeaders - 请求自带的 headers（可选）
+   * @returns 合并后的 headers，或两者均无时为 undefined
+   */
   protected mergeHeaders(
     requestHeaders?: Record<string, string>,
   ): Record<string, string> | undefined {
@@ -502,6 +631,11 @@ export class ClientRMQ extends ClientProxy<RmqEvents, RmqStatus> {
     };
   }
 
+  /**
+   * 解析消息内容：尝试 JSON.parse，失败则返回原始字符串。
+   * @param content - 原始消息 Buffer
+   * @returns 解析后的对象或原始字符串
+   */
   protected parseMessageContent(content: Buffer) {
     const rawContent = content.toString();
     try {

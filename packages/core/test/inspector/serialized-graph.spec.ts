@@ -5,6 +5,7 @@ import { Edge } from '../../inspector/interfaces/edge.interface';
 import { Node } from '../../inspector/interfaces/node.interface';
 import { SerializedGraph } from '../../inspector/serialized-graph';
 
+// 验证 SerializedGraph 插入与序列化依赖图节点、边，区分内部与外部元素并生成 JSON 结构
 describe('SerializedGraph', () => {
   let serializedGraph: SerializedGraph;
   let nodesCollection: Map<string, Node>;

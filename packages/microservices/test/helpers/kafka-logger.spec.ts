@@ -12,6 +12,7 @@ const entry = {
   },
 };
 
+// KafkaLogger 单元测试：验证将 kafkajs 日志事件桥接到 Nest Logger 的分发逻辑。
 describe('KafkaLogger', () => {
   let kafkaLogger: any;
 

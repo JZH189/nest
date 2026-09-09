@@ -17,8 +17,15 @@ import { transformException } from '../multer/multer.utils';
 type MulterInstance = any;
 
 /**
- * @param localOptions
+ * 任意文件上传拦截器工厂（@publicApi）。
  *
+ * 基于 mixin 模式动态创建拦截器类：实例化时把 MulterModule 全局配置与
+ * localOptions 合并后创建 multer 实例；拦截请求时调用 multer 的 any()
+ * 中间件接收任意字段名下的全部文件，解析结果挂到 req.files 上。
+ * 底层错误会经 transformException 转换为 NestJS HTTP 异常。
+ *
+ * @param localOptions - 当前拦截器私有的 multer 配置（覆盖全局配置）
+ * @returns 可直接挂载到路由的拦截器类型
  * @publicApi
  */
 export function AnyFilesInterceptor(

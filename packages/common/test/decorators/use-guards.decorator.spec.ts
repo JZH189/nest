@@ -5,6 +5,10 @@ import { InvalidDecoratorItemException } from '../../utils/validate-each.util';
 
 class Guard {}
 
+/**
+ * @UseGuards 装饰器的单元测试：
+ * 验证它在类/方法上写入守卫元数据、多次叠加时合并数组，并对非法参数抛出异常。
+ */
 describe('@UseGuards', () => {
   const guards = [Guard, Guard];
 

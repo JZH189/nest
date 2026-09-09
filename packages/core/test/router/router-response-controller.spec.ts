@@ -9,6 +9,7 @@ import { RouterResponseController } from '../../router/router-response-controlle
 import { SseStream } from '../../router/sse-stream';
 import { NoopHttpAdapter } from '../utils/noop-adapter.spec';
 
+// 验证 RouterResponseController 处理路由返回值：普通响应、自定义状态码/头、流及 SSE 推送
 describe('RouterResponseController', () => {
   let adapter: NoopHttpAdapter;
   let routerResponseController: RouterResponseController;

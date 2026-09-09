@@ -2,6 +2,10 @@ import { expect } from 'chai';
 import { LogLevel } from '../../../services/logger.service';
 import { isLogLevelEnabled } from '../../../services/utils';
 
+/**
+ * isLogLevelEnabled 工具函数的单元测试：
+ * 用参数化用例验证目标日志级别是否在启用的级别列表中。
+ */
 describe('isLogLevelEnabled', () => {
   const tests = [
     { inputArgs: ['log', ['log']], expectedReturnValue: true },

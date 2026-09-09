@@ -1,6 +1,7 @@
 import { expect } from 'chai';
 import { TreeNode } from '../../../injector/topology-tree/tree-node';
 
+// 验证 TreeNode 构建树形拓扑结构：父子关联、子节点集合及深度遍历能力
 describe('TreeNode', () => {
   describe('constructor', () => {
     it('should create a node with the given value', () => {

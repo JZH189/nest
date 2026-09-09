@@ -20,12 +20,34 @@ export interface ResponseDecoratorOptions {
   passthrough: boolean;
 }
 
+/**
+ * 参数装饰器可接收的数据类型：通常是从请求对象中提取的属性名
+ * （如 `@Body('role')` 中的 `'role'`），也可以是配置对象。
+ */
 export type ParamData = object | string | number;
+
+/**
+ * 单个路由参数的元数据记录：记录参数在方法签名中的下标、
+ * 装饰器数据与可选的管道列表，运行时据此解析并注入参数值。
+ */
 export interface RouteParamMetadata {
   index: number;
   data?: ParamData;
 }
 
+/**
+ * 将一个路由参数的元数据合并进已有的参数元数据集合。
+ *
+ * 元数据以 `"{paramtype}:{index}"` 为键存储在 `ROUTE_ARGS_METADATA` 中，
+ * 这样同一方法上的多个不同类型参数可以共存，运行时按下标还原参数顺序。
+ *
+ * @param args - 该方法已收集的参数元数据集合
+ * @param paramtype - 参数类型（RouteParamtypes 枚举值）
+ * @param index - 参数在方法签名中的下标
+ * @param data - 装饰器携带的数据（如属性名）
+ * @param pipes - 应用于该参数的管道列表
+ * @returns 合并后的新元数据集合
+ */
 export function assignMetadata<TParamtype = any, TArgs = any>(
   args: TArgs,
   paramtype: TParamtype,
@@ -43,12 +65,21 @@ export function assignMetadata<TParamtype = any, TArgs = any>(
   };
 }
 
+/**
+ * 路由参数装饰器的工厂工厂：接收一个内置参数类型（RouteParamtypes 枚举值），
+ * 返回一个接收装饰器数据的参数装饰器工厂。
+ * `@Request()`、`@Next()`、`@Ip()`、`@Session()` 等均由此派生。
+ *
+ * @param paramtype - 参数类型枚举值，运行时据此决定由哪个解析器提取请求对象属性
+ */
 function createRouteParamDecorator(paramtype: RouteParamtypes) {
   return (data?: ParamData): ParameterDecorator =>
     (target, key, index) => {
+      // 1. 读取该方法已收集的路由参数元数据
       const args =
         Reflect.getMetadata(ROUTE_ARGS_METADATA, target.constructor, key!) ||
         {};
+      // 2. 追加本参数的元数据并写回 ROUTE_ARGS_METADATA（挂在类上、以方法名为键）
       Reflect.defineMetadata(
         ROUTE_ARGS_METADATA,
         assignMetadata<RouteParamtypes, Record<number, RouteParamMetadata>>(
@@ -63,6 +94,13 @@ function createRouteParamDecorator(paramtype: RouteParamtypes) {
     };
 }
 
+/**
+ * 支持管道的内置参数装饰器工厂工厂：与 `createRouteParamDecorator` 类似，
+ * 但额外支持在装饰器中传入管道（如 `@Query('user', ParseIntPipe)`），
+ * `@Body()`、`@Query()`、`@Param()`、`@UploadedFile()` 等均由此派生。
+ *
+ * @param paramtype - 参数类型枚举值
+ */
 const createPipesRouteParamDecorator =
   (paramtype: RouteParamtypes) =>
   (
@@ -726,5 +764,15 @@ export function HostParam(
   return createRouteParamDecorator(RouteParamtypes.HOST)(property);
 }
 
+/**
+ * `@Request()` 的别名参数装饰器。
+ *
+ * 例如: `logout(@Req() req)`
+ */
 export const Req = Request;
+/**
+ * `@Response()` 的别名参数装饰器。
+ *
+ * 例如: `logout(@Res() res)`
+ */
 export const Res = Response;

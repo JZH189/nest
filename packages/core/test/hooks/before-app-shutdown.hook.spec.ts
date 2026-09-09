@@ -15,6 +15,7 @@ class SampleModule implements BeforeApplicationShutdown {
 
 class WithoutHookProvider {}
 
+// 验证 callBeforeAppShutdownHook 对模块内实现了 BeforeApplicationShutdown 接口的提供者及模块自身触发钩子
 describe('BeforeAppShutdown', () => {
   let moduleRef: Module;
   let sampleProvider: SampleProvider;

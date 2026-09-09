@@ -9,6 +9,11 @@ class CustomTestError extends HttpException {
   }
 }
 
+/**
+ * ParseIntPipe 的单元测试：
+ * 验证字符串到整数的转换（含负数）、optional 行为，
+ * 以及非十进制（如十六进制）等非法值时报错。
+ */
 describe('ParseIntPipe', () => {
   let target: ParseIntPipe;
   beforeEach(() => {

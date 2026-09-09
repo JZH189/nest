@@ -10,6 +10,7 @@ import { objectToMap } from './utils/object-to-map';
 // type NatsMsg = import('nats').Msg;
 type NatsMsg = any;
 
+// ServerNats 单元测试：验证 NATS 服务器的消息订阅、模式匹配与上下文包装。
 describe('ServerNats', () => {
   let server: ServerNats;
   let untypedServer: any;

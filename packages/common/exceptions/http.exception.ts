@@ -5,12 +5,21 @@ import {
 import { isNumber, isObject, isString } from '../utils/shared.utils';
 import { IntrinsicException } from './intrinsic.exception';
 
+/**
+ * HTTP 异常的额外选项。
+ * 允许在抛出异常时附带错误的原始原因（cause），便于问题排查与错误链追踪。
+ */
 export interface HttpExceptionOptions {
   /** 错误的原始原因 */
   cause?: unknown;
+  /** HTTP 错误的简短描述，将作为 JSON 响应体中的 `error` 属性返回 */
   description?: string;
 }
 
+/**
+ * 由 `extractDescriptionAndOptionsFrom` 解析后的结果：
+ * 同时包含错误描述与异常选项，供 `HttpException` 的各子类构造函数使用。
+ */
 export interface DescriptionAndOptions {
   description?: string;
   httpExceptionOptions?: HttpExceptionOptions;
@@ -86,6 +95,12 @@ export class HttpException extends IntrinsicException {
     }
   }
 
+  /**
+   * 初始化错误消息。
+   * 1. 若响应体是字符串，直接将其作为 message；
+   * 2. 若响应体是对象且含 message 属性，取该属性作为 message；
+   * 3. 否则，从异常类名（驼峰形式）中提取单词并以空格连接作为默认消息。
+   */
   public initMessage() {
     if (isString(this.response)) {
       this.message = this.response;
@@ -98,36 +113,76 @@ export class HttpException extends IntrinsicException {
     }
   }
 
+  /** 将异常的 name 设置为构造函数类名，便于日志与异常过滤器识别异常类型 */
   public initName(): void {
     this.name = this.constructor.name;
   }
 
+  /**
+   * 获取构造异常时传入的原始响应体（字符串或对象）。
+   * @returns 响应体字符串或 JSON 对象
+   */
   public getResponse(): string | object {
     return this.response;
   }
 
+  /**
+   * 获取该异常对应的 HTTP 状态码。
+   * @returns HTTP 状态码（如 400、404）
+   */
   public getStatus(): number {
     return this.status;
   }
 
+  /**
+   * 根据{@link HttpExceptionBody 响应体}结构构造标准化的 JSON 错误响应体。
+   * 各内置 HTTP 异常子类在构造函数中调用此方法生成响应体。
+   *
+   * @overload 传入 `nil`（null 或空字符串）时，仅由 message 与 statusCode 组成响应体
+   * @param nil - 占位参数，传 null 或空字符串
+   * @param message - 错误消息
+   * @param statusCode - HTTP 状态码
+   * @returns 包含 message 与 statusCode 的响应体对象
+   */
   public static createBody(
     nil: null | '',
     message: HttpExceptionBodyMessage,
     statusCode: number,
   ): HttpExceptionBody;
+  /**
+   * @overload 传入消息与错误描述时，生成包含 message、error、statusCode 的响应体
+   * @param message - 错误消息（字符串、数字或数组）
+   * @param error - HTTP 错误的简短描述
+   * @param statusCode - HTTP 状态码
+   * @returns 包含 message、error 与 statusCode 的响应体对象
+   */
   public static createBody(
     message: HttpExceptionBodyMessage,
     error: string,
     statusCode: number,
   ): HttpExceptionBody;
+  /**
+   * @overload 直接传入自定义对象时，原样作为响应体使用
+   * @param custom - 自定义响应体对象
+   * @returns 传入的响应体对象本身
+   */
   public static createBody<Body extends Record<string, unknown>>(
     custom: Body,
   ): Body;
+  /**
+   * createBody 的实现签名，根据第一个参数的类型分发到不同的构造逻辑。
+   *
+   * @param arg0 - null、错误消息或自定义响应体对象
+   * @param arg1 - 错误消息或错误描述（视重载形式而定）
+   * @param statusCode - HTTP 状态码
+   * @returns 标准化后的异常响应体对象
+   */
   public static createBody<Body extends Record<string, unknown>>(
     arg0: null | HttpExceptionBodyMessage | Body,
     arg1?: HttpExceptionBodyMessage | string,
     statusCode?: number,
   ): HttpExceptionBody | Body {
+    // 1. 第一个参数为空（null 或空字符串）时，仅用 message + statusCode 构造响应体
     if (!arg0) {
       return {
         message: arg1!,
@@ -135,6 +190,7 @@ export class HttpException extends IntrinsicException {
       };
     }
 
+    // 2. 第一个参数是字符串/数组/数字时，将其作为 message，第二个参数作为 error 描述
     if (isString(arg0) || Array.isArray(arg0) || isNumber(arg0)) {
       return {
         message: arg0,
@@ -143,9 +199,15 @@ export class HttpException extends IntrinsicException {
       };
     }
 
+    // 3. 否则视为自定义对象，直接原样返回作为响应体
     return arg0;
   }
 
+  /**
+   * 从 `descriptionOrOptions` 参数中提取错误描述字符串。
+   * @param descriptionOrOptions - 描述字符串或异常选项对象
+   * @returns 错误描述字符串；若传入的是选项对象则返回其中的 description 属性
+   */
   public static getDescriptionFrom(
     descriptionOrOptions: string | HttpExceptionOptions,
   ): string {
@@ -154,6 +216,11 @@ export class HttpException extends IntrinsicException {
       : (descriptionOrOptions?.description as string);
   }
 
+  /**
+   * 从 `descriptionOrOptions` 参数中提取异常选项对象。
+   * @param descriptionOrOptions - 描述字符串或异常选项对象
+   * @returns 异常选项对象；若传入的是字符串则返回空对象
+   */
   public static getHttpExceptionOptionsFrom(
     descriptionOrOptions: string | HttpExceptionOptions,
   ): HttpExceptionOptions {

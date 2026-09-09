@@ -9,6 +9,7 @@ import { ExceptionsHandler } from '../../exceptions/exceptions-handler';
 import { ExecutionContextHost } from '../../helpers/execution-context-host';
 import { NoopHttpAdapter } from '../utils/noop-adapter.spec';
 
+// 验证 ExceptionsHandler 将 HTTP 异常映射为响应状态码/响应体，并在无匹配过滤器时回退为 500 错误
 describe('ExceptionsHandler', () => {
   let adapter: AbstractHttpAdapter;
   let handler: ExceptionsHandler;

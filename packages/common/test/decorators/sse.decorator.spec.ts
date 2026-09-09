@@ -3,6 +3,10 @@ import { METHOD_METADATA, PATH_METADATA, SSE_METADATA } from '../../constants';
 import { Sse } from '../../decorators/http/sse.decorator';
 import { RequestMethod } from '../../enums/request-method.enum';
 
+/**
+ * @Sse 装饰器的单元测试：
+ * 验证它在方法上写入 SSE 路由元数据（默认 GET，可通过选项覆盖请求方法）。
+ */
 describe('@Sse', () => {
   const prefix = '/prefix';
   class Test {

@@ -3,6 +3,7 @@ import { of } from 'rxjs';
 import { GuardsConsumer } from '../../guards/guards-consumer';
 import { AsyncLocalStorage } from 'async_hooks';
 
+// 验证 GuardsConsumer 依次调用守卫的 canActivate，全部通过才放行，并保证守卫内 AsyncLocalStorage 上下文可访问
 describe('GuardsConsumer', () => {
   let consumer: GuardsConsumer;
   let guards: any[];

@@ -53,6 +53,12 @@ class TestModelNoValidation {
   public optionalProp: string;
 }
 
+/**
+ * ValidationPipe 的单元测试：
+ * 覆盖基于 class-validator/class-transformer 的校验、嵌套错误展平、
+ * transform/whitelist/forbidNonWhitelisted 等选项的行为，
+ * 以及 stripProtoKeys 对原型污染键（__proto__/constructor 等）的防护。
+ */
 describe('ValidationPipe', () => {
   let target: ValidationPipe;
   const metadata: ArgumentMetadata = {
@@ -653,7 +659,7 @@ describe('ValidationPipe', () => {
       it('should still strip constructor from regular objects', () => {
         const value = { nested: { constructor: 'malicious' } };
         target['stripProtoKeys'](value);
-        // Check if 'constructor' is NOT an own property
+        // 普通对象的 constructor 是自身可删属性，应被移除
         expect(value.nested).to.not.have.ownProperty('constructor');
       });
 

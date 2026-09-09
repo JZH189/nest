@@ -35,13 +35,18 @@ export function Inject(
   const injectCallHasArguments = arguments.length > 0;
 
   return (target: object, key: string | symbol | undefined, index?: number) => {
+    // 1. 确定注入令牌：优先使用显式传入的 token，
+    //    否则通过 TypeScript 编译器生成的 design:type 元数据推断参数类型
     let type = token || Reflect.getMetadata('design:type', target, key!);
     // Try to infer the token in a constructor-based injection
     if (!type && !injectCallHasArguments) {
       type = Reflect.getMetadata(PARAMTYPES_METADATA, target, key!)?.[index!];
     }
 
+    // index 存在说明用在构造函数参数上（构造函数注入）
     if (!isUndefined(index)) {
+      // 2. 追加到类的"自声明依赖"元数据中，运行时由 Injector 按 index 注入，
+      //    主要用于前端无 emitDecoratorMetadata 时的手动注入场景
       let dependencies =
         Reflect.getMetadata(SELF_DECLARED_DEPS_METADATA, target) || [];
 
@@ -49,6 +54,8 @@ export function Inject(
       Reflect.defineMetadata(SELF_DECLARED_DEPS_METADATA, dependencies, target);
       return;
     }
+    // 3. 否则用在属性上（属性注入）：追加到构造函数的属性依赖元数据中，
+    //    由 Injector 在实例化后通过反射赋值
     let properties =
       Reflect.getMetadata(PROPERTY_DEPS_METADATA, target.constructor) || [];
 

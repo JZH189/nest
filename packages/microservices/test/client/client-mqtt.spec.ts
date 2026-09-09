@@ -6,6 +6,7 @@ import { MqttEventsMap } from '../../events/mqtt.events';
 import { ReadPacket } from '../../interfaces';
 import { MqttRecord } from '../../record-builders';
 
+// ClientMqtt 单元测试：验证 MQTT 客户端的模式处理、消息发布与事件监听。
 describe('ClientMqtt', () => {
   const test = 'test';
   let client: ClientMqtt = new ClientMqtt({});

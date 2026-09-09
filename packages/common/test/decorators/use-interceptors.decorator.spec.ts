@@ -5,6 +5,10 @@ import { InvalidDecoratorItemException } from '../../utils/validate-each.util';
 
 class Interceptor {}
 
+/**
+ * @UseInterceptors 装饰器的单元测试：
+ * 验证它在类/方法上写入拦截器元数据，并按是否实现 intercept 接口校验参数合法性。
+ */
 describe('@UseInterceptors', () => {
   const interceptors = [Interceptor, Interceptor];
 

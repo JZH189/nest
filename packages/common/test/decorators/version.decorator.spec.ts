@@ -2,6 +2,10 @@ import { expect } from 'chai';
 import { VERSION_METADATA } from '../../constants';
 import { Version } from '../../decorators/core/version.decorator';
 
+/**
+ * @Version 装饰器的单元测试：
+ * 验证它在方法上写入接口版本元数据，数组形式会自动去重。
+ */
 describe('@Version', () => {
   const version = '1';
   const versions = ['1', '2', '2', '1', '2', '1'];

@@ -2,6 +2,11 @@ import { expect } from 'chai';
 import { BadRequestException } from '../../exceptions';
 import { ParseDatePipe } from '../../pipes/parse-date.pipe';
 
+/**
+ * ParseDatePipe 的单元测试：
+ * 验证 ISO 字符串与时间戳到 Date 的转换、默认值与 optional 行为，
+ * 以及非法格式和空值时报错。
+ */
 describe('ParseDatePipe', () => {
   let target: ParseDatePipe;
 

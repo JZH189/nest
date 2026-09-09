@@ -4,6 +4,7 @@ import { HttpException } from '../../../common/exceptions/http.exception';
 import { ExternalExceptionsHandler } from '../../exceptions/external-exceptions-handler';
 import { ExternalErrorProxy } from '../../helpers/external-proxy';
 
+// 验证 ExternalErrorProxy 将同步/异步回调中的异常转交 ExternalExceptionsHandler 处理
 describe('ExternalErrorProxy', () => {
   let externalErrorProxy: ExternalErrorProxy;
   let handlerMock: sinon.SinonMock;

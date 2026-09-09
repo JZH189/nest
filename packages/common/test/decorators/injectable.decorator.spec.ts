@@ -2,6 +2,10 @@ import { expect } from 'chai';
 import { SCOPE_OPTIONS_METADATA, INJECTABLE_WATERMARK } from '../../constants';
 import { Injectable, mixin } from '../../index';
 
+/**
+ * @Injectable 装饰器的单元测试：
+ * 验证它为可注入类写入水印、构造参数类型及作用域选项等元数据。
+ */
 describe('@Injectable', () => {
   const options = {};
 
@@ -39,6 +43,10 @@ describe('@Injectable', () => {
   });
 });
 
+/**
+ * mixin 工具函数的单元测试：
+ * 验证它动态生成的类不丢失原类的构造参数类型元数据（否则依赖注入会失效）。
+ */
 describe('mixin', () => {
   @Injectable()
   class Test {

@@ -4,6 +4,7 @@ import * as sinon from 'sinon';
 import { ExternalExceptionFilter } from '../../exceptions/external-exception-filter';
 import { ExternalExceptionsHandler } from '../../exceptions/external-exceptions-handler';
 
+// 验证 ExternalExceptionsHandler 处理非 HTTP 场景的异常分发：未匹配时抛出、命中自定义过滤器时返回对应流
 describe('ExternalExceptionsHandler', () => {
   let handler: ExternalExceptionsHandler;
 

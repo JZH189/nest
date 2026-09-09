@@ -7,6 +7,7 @@ import { TcpSocket } from '../../helpers/tcp-socket';
 import { ServerTCP } from '../../server/server-tcp';
 import { objectToMap } from './utils/object-to-map';
 
+// ServerTCP 单元测试：验证 TCP 服务器的套接字连接、消息收发与上下文包装。
 describe('ServerTCP', () => {
   let server: ServerTCP;
   let untypedServer: any;

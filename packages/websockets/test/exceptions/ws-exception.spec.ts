@@ -1,6 +1,9 @@
 import { expect } from 'chai';
 import { WsException } from '../../errors/ws-exception';
 
+/**
+ * WsException 的单元测试：验证不同入参下 message 的初始化与 getError 的返回值。
+ */
 describe('WsException', () => {
   describe('when string passed', () => {
     const error = 'test';

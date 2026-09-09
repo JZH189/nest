@@ -2,6 +2,7 @@ import { expect } from 'chai';
 import { IFile } from '../../../../common/pipes/file/interfaces';
 import { FileTypeValidator } from '../../../pipes';
 
+// PNG / JPEG 文件的真实二进制头（magic number），用于魔数校验
 const pngBuffer = Buffer.from([
   0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0x00, 0x00, 0x00, 0x0d, 0x49,
   0x48, 0x44, 0x52, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x01, 0x08, 0x06,
@@ -15,6 +16,11 @@ const jpegBuffer = Buffer.from([
   0xff, 0xd8, 0xff, 0xe0, 0x00, 0x10, 0x4a, 0x46, 0x49, 0x46,
 ]);
 
+/**
+ * FileTypeValidator 的单元测试：
+ * 验证基于魔数、扩展名、正则的文件类型校验，skipMagicNumbersValidation
+ * 与 fallbackToMimetype 选项，以及自定义错误消息的构造。
+ */
 describe('FileTypeValidator', () => {
   describe('isValid', () => {
     describe('support file types', () => {

@@ -2,6 +2,14 @@ import { Observable, ReplaySubject } from 'rxjs';
 import { uid } from 'uid';
 import { Module } from './module';
 
+/**
+ * 模块容器：以模块 token 为键、Module 实例为值的 Map 结构，
+ * 是 IoC 容器中"模块图"的存储介质（NestContainer#modules 即它）。
+ *
+ * 额外承载：
+ * - 应用实例唯一 ID（applicationId，区分同进程多个应用）
+ * - RPC 目标注册表的可观察流（供微服务相关组件订阅）
+ */
 export class ModulesContainer extends Map<string, Module> {
   private readonly _applicationId = uid(21);
   private readonly _rpcTargetRegistry$ = new ReplaySubject<any>();

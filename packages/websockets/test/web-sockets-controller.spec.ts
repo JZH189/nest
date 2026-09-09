@@ -31,6 +31,9 @@ class NoopAdapter extends AbstractWsAdapter {
   }
 }
 
+/**
+ * WebSocketsController 的单元测试：验证网关连接、事件订阅、消息分发与结果回传等核心流程。
+ */
 describe('WebSocketsController', () => {
   let instance: WebSocketsController;
   let untypedInstance: any;

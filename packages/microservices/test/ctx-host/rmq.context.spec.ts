@@ -1,6 +1,7 @@
 import { expect } from 'chai';
 import { RmqContext } from '../../ctx-host';
 
+// RmqContext 单元测试：验证 RabbitMQ 上下文中消息、原始消息与模式的访问。
 describe('RmqContext', () => {
   const args = [{ test: true }, 'test', 'pattern'];
   let context: RmqContext;

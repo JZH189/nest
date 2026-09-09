@@ -7,6 +7,7 @@ import { InstanceWrapper } from '../../injector/instance-wrapper';
 
 class TestClass {}
 
+// 验证 InstanceWrapper 封装提供者实例：初始化、依赖树静态性判断、按上下文获取实例及实例替换等能力
 describe('InstanceWrapper', () => {
   describe('initialize', () => {
     const partial = {

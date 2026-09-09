@@ -3,6 +3,9 @@ import { RouteInfo } from './middleware-configuration.interface';
 import { MiddlewareConsumer } from './middleware-consumer.interface';
 
 /**
+ * 中间件配置代理：由 `MiddlewareConsumer#apply()` 返回的链式配置对象，
+ * 通过 `forRoutes()` 指定中间件作用的路由，或用 `exclude()` 排除部分路由。
+ *
  * @publicApi
  */
 export interface MiddlewareConfigProxy {

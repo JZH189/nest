@@ -5,6 +5,7 @@ import { ClientNats } from '../../client/client-nats';
 import { ReadPacket } from '../../interfaces';
 import { NatsRecord } from '../../record-builders';
 
+// ClientNats 单元测试：验证 NATS 客户端的消息发布、NATS 消息头编码与关闭行为。
 describe('ClientNats', () => {
   let client: ClientNats;
   let untypedClient: any;

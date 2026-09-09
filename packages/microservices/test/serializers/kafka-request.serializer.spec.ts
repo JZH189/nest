@@ -2,6 +2,7 @@ import { expect } from 'chai';
 import { KafkaHeaders } from '../../enums/kafka-headers.enum';
 import { KafkaRequestSerializer } from '../../serializers/kafka-request.serializer';
 
+// KafkaRequestSerializer 单元测试：验证将请求序列化为 Kafka 消息（值与头）的逻辑。
 describe('KafkaRequestSerializer', () => {
   let instance: KafkaRequestSerializer;
   beforeEach(() => {

@@ -2,6 +2,10 @@ import { expect } from 'chai';
 import { RequestMapping } from '../../decorators/http/request-mapping.decorator';
 import { RequestMethod } from '../../enums/request-method.enum';
 
+/**
+ * @RequestMapping 装饰器的单元测试：
+ * 验证它在方法上写入请求路径与方法元数据，以及 GET 和 "/" 的默认值行为。
+ */
 describe('@RequestMapping', () => {
   const requestProps = {
     path: 'test',

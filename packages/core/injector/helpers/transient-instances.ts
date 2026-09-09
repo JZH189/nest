@@ -4,7 +4,11 @@ import { InstanceWrapper } from '../instance-wrapper';
 
 /**
  * Returns the instances which are transient
- * @param instances The instances which should be checked whether they are transient
+ *
+ * 筛选出静态依赖树下的 transient 实例（且构造函数已被调用），
+ * 主要供生命周期钩子初始化时遍历使用。
+ *
+ * @param instances 待检查的 [token, 包装器] 元组数组
  */
 export function getTransientInstances(
   instances: [InjectionToken, InstanceWrapper][],
@@ -20,7 +24,11 @@ export function getTransientInstances(
 
 /**
  * Returns the instances which are not transient
- * @param instances The instances which should be checked whether they are transient
+ *
+ * 筛选出静态依赖树下的非 transient（单例）实例，
+ * 供生命周期钩子初始化时遍历使用。
+ *
+ * @param instances 待检查的 [token, 包装器] 元组数组
  */
 export function getNonTransientInstances(
   instances: [InjectionToken, InstanceWrapper][],

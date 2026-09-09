@@ -10,6 +10,7 @@ import { InstanceWrapper } from '../../injector/instance-wrapper';
 import { Module } from '../../injector/module';
 import { MiddlewareContainer } from '../../middleware/container';
 
+// 验证 MiddlewareContainer 注册中间件并按模块聚合存储配置
 describe('MiddlewareContainer', () => {
   class ExampleModule {}
 

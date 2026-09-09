@@ -2,6 +2,7 @@ import { expect } from 'chai';
 import { RequestMethod } from '../../../common/enums/request-method.enum';
 import { RouterMethodFactory } from '../../helpers/router-method-factory';
 
+// 验证 RouterMethodFactory 将 RequestMethod 枚举映射到 HTTP 适配器上对应的方法（未知方法回退到 use）
 describe('RouterMethodFactory', () => {
   let factory: RouterMethodFactory;
 

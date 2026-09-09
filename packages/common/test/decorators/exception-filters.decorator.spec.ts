@@ -7,6 +7,10 @@ class Filter {
   catch() {}
 }
 
+/**
+ * @UseFilters 装饰器的单元测试：
+ * 验证它在类和方法上写入异常过滤器元数据，并对非法参数抛出异常。
+ */
 describe('@UseFilters', () => {
   const filters = [new Filter(), new Filter()];
 

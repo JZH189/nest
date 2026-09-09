@@ -1,3 +1,8 @@
+/**
+ * 自定义装饰器的返回类型：同时兼容类装饰器与方法装饰器，
+ * 并携带 `KEY` 静态属性（即元数据键），方便在守卫/拦截器等
+ * 中通过 `Reflector` 读取时引用同一个 key。
+ */
 export type CustomDecorator<TKey = string> = MethodDecorator &
   ClassDecorator & {
     KEY: TKey;
@@ -23,6 +28,7 @@ export const SetMetadata = <K = string, V = any>(
   metadataValue: V,
 ): CustomDecorator<K> => {
   const decoratorFactory = (target: object, key?: any, descriptor?: any) => {
+    // descriptor 存在说明用在方法上，元数据挂在方法函数上；否则挂在类上
     if (descriptor) {
       Reflect.defineMetadata(metadataKey, metadataValue, descriptor.value);
       return descriptor;
@@ -30,6 +36,7 @@ export const SetMetadata = <K = string, V = any>(
     Reflect.defineMetadata(metadataKey, metadataValue, target);
     return target;
   };
+  // 暴露元数据键，使用者可通过 XxxDecorator.KEY 引用，配合 Reflector 读取
   decoratorFactory.KEY = metadataKey;
   return decoratorFactory;
 };

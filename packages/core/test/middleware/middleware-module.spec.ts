@@ -23,6 +23,7 @@ import { NoopHttpAdapter } from '../utils/noop-adapter.spec';
 
 chai.use(chaiAsPromised);
 
+// 验证 MiddlewareModule 注册中间件配置、解析实例并处理路由映射的完整流程
 describe('MiddlewareModule', () => {
   let middlewareModule: MiddlewareModule;
   let graphInspector: GraphInspector;

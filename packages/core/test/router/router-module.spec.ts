@@ -10,6 +10,7 @@ import {
 
 class TestModuleClass {}
 
+// 验证 RouterModule.register 生成携带路由提供者的动态模块，并记录模块与路由的映射关系
 describe('RouterModule', () => {
   const routes: Routes = [{ path: 'test', module: TestModuleClass }];
 

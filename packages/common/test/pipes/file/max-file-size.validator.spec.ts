@@ -2,6 +2,10 @@ import { expect } from 'chai';
 import { MaxFileSizeValidator } from '../../../pipes';
 import { IFile } from '@nestjs/common/pipes/file/interfaces';
 
+/**
+ * MaxFileSizeValidator 的单元测试：
+ * 验证文件大小上限校验（等于上限也判定失败）及自定义错误消息的构造。
+ */
 describe('MaxFileSizeValidator', () => {
   const oneKb = 1024;
 

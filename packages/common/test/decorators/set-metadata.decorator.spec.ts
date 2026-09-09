@@ -1,6 +1,10 @@
 import { expect } from 'chai';
 import { SetMetadata } from '../../decorators/core/set-metadata.decorator';
 
+/**
+ * @SetMetadata 装饰器的单元测试：
+ * 验证它能以自定义键把任意值写入类或方法的元数据。
+ */
 describe('@SetMetadata', () => {
   const key = 'key',
     value = 'value';

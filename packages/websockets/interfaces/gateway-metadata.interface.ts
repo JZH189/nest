@@ -1,7 +1,10 @@
 import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface';
 
 /**
- * External interface
+ * 网关元数据接口：@WebSocketGateway 装饰器接受的选项，
+ * 字段与 socket.io 服务器的 ServerOptions 基本一一对应（外部接口）。
+ * SocketServerProvider 会把它透传给 IoAdapter.create 用于创建服务器。
+ *
  * @see https://github.com/socketio/socket.io/blob/master/lib/index.ts
  * @publicApi
  */

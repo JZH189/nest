@@ -2,6 +2,7 @@ import { expect } from 'chai';
 import { RouteParamtypes } from '../../../common/enums/route-paramtypes.enum';
 import { RouteParamsFactory } from '../../router/route-params-factory';
 
+// 验证 RouteParamsFactory 按 RouteParamtypes 从请求/响应对象中取出对应的参数值（含自定义装饰器）
 describe('RouteParamsFactory', () => {
   let factory: RouteParamsFactory;
   let untypedFactory: any;

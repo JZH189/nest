@@ -21,6 +21,7 @@ class TestClientProxy extends ClientProxy {
   public async close() {}
 }
 
+// ClientProxy 抽象基类单元测试：通过 TestClientProxy 桩实现验证 emit/send/路由等通用逻辑。
 describe('ClientProxy', function () {
   this.retries(10);
 

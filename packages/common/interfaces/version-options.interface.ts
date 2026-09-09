@@ -8,6 +8,9 @@ import { VersioningType } from '../enums/version-type.enum';
 export const VERSION_NEUTRAL = Symbol('VERSION_NEUTRAL');
 
 /**
+ * API 版本的取值类型：具体版本号字符串（如 '1'、'2'）、
+ * VERSION_NEUTRAL 符号（匹配无版本或任意版本的请求），或它们的数组。
+ *
  * @publicApi
  */
 export type VersionValue =
@@ -16,6 +19,8 @@ export type VersionValue =
   | Array<string | typeof VERSION_NEUTRAL>;
 
 /**
+ * 单个路由/控制器的版本配置选项（由 `@Controller({ version })` 或 `@Version()` 使用）。
+ *
  * @publicApi
  */
 export interface VersionOptions {
@@ -31,6 +36,8 @@ export interface VersionOptions {
 }
 
 /**
+ * 基于请求头（Header）的版本控制策略配置。
+ *
  * @publicApi
  */
 export interface HeaderVersioningOptions {
@@ -42,6 +49,8 @@ export interface HeaderVersioningOptions {
 }
 
 /**
+ * 基于 URI 路径的版本控制策略配置（默认策略，如 `/api/v1/route`）。
+ *
  * @publicApi
  */
 export interface UriVersioningOptions {
@@ -57,6 +66,8 @@ export interface UriVersioningOptions {
 }
 
 /**
+ * 基于 Media Type（Accept 头）的版本控制策略配置。
+ *
  * @publicApi
  */
 export interface MediaTypeVersioningOptions {
@@ -70,6 +81,8 @@ export interface MediaTypeVersioningOptions {
 }
 
 /**
+ * 自定义版本控制策略配置：由用户提供的提取函数决定请求版本。
+ *
  * @publicApi
  */
 export interface CustomVersioningOptions {
@@ -87,6 +100,8 @@ export interface CustomVersioningOptions {
 }
 
 /**
+ * 各版本控制策略共享的通用选项。
+ *
  * @publicApi
  */
 interface VersioningCommonOptions {
@@ -98,6 +113,9 @@ interface VersioningCommonOptions {
 }
 
 /**
+ * 应用全局版本控制的总配置，由 `app.enableVersioning()` 传入：
+ * 通用选项与四种策略之一（Header/URI/MediaType/Custom）的组合。
+ *
  * @publicApi
  */
 export type VersioningOptions = VersioningCommonOptions &

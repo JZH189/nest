@@ -11,6 +11,7 @@ import { ApplicationConfig } from '../../application-config';
 import { NestContainer } from '../../injector/container';
 import { RoutesMapper } from '../../middleware/routes-mapper';
 
+// 验证 RoutesMapper 将控制器类及其路由映射为可用于 forRoutes 的 RouteInfo 集合
 describe('RoutesMapper', () => {
   @Controller('test')
   class TestRoute {

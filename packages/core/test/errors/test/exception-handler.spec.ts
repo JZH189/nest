@@ -3,6 +3,7 @@ import * as sinon from 'sinon';
 import { ExceptionHandler } from '../../../errors/exception-handler';
 import { RuntimeException } from '../../../errors/exceptions/runtime.exception';
 
+// 验证 ExceptionHandler 将捕获到的异常交由 logger.error 记录
 describe('ExceptionHandler', () => {
   let instance: ExceptionHandler;
   beforeEach(() => {

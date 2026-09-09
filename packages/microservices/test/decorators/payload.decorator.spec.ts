@@ -8,6 +8,7 @@ class MessagePayloadTest {
   public test(@Payload(ValidationPipe) payload: any) {}
 }
 
+// @Payload 参数装饰器单元测试：验证负载参数（含管道）的元数据注册。
 describe('@Payload', () => {
   it('should enhance class with expected request metadata', () => {
     const argsMetadata = Reflect.getMetadata(

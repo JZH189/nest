@@ -15,6 +15,11 @@ import { ArgumentMetadata } from '../../interfaces/features/pipe-transform.inter
 import { ParseArrayPipe } from '../../pipes/parse-array.pipe';
 chai.use(chaiAsPromised);
 
+/**
+ * ParseArrayPipe 的单元测试：
+ * 覆盖 optional 行为、按分隔符解析字符串、items 类型转换与逐项校验，
+ * 以及 stopAtFirstError 关闭时聚合所有校验错误（含嵌套对象/数组）的场景。
+ */
 describe('ParseArrayPipe', () => {
   let target: ParseArrayPipe;
 
@@ -109,7 +114,7 @@ describe('ParseArrayPipe', () => {
 
           try {
             await target.transform('1.2.a.null.3', {} as ArgumentMetadata);
-            throw null;
+            throw null; // 未抛异常时使断言失败
           } catch (err) {
             expect(err).to.be.instanceOf(BadRequestException);
             expect(err.getResponse().message).to.deep.equal(

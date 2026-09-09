@@ -3,6 +3,10 @@ import { GUARDS_METADATA } from '../../constants';
 import { applyDecorators, UseGuards } from '../../decorators';
 import { CanActivate } from '../../interfaces';
 
+/**
+ * 组合装饰器 applyDecorators 的单元测试：
+ * 验证它能把多个装饰器组合成一个，且效果与逐个单独应用完全一致。
+ */
 describe('applyDecorators', () => {
   function testDecorator1(param: number) {
     return (target: any) => {
@@ -49,11 +53,13 @@ describe('applyDecorators', () => {
     customDecorator(customDecoratedTarget);
 
     const expectedTarget = {
+      // decorator1 与 decorator2 都会写入 myParam，验证按顺序累加
       myParam: testParams.decorator1.param + testParams.decorator2.param1,
       myParam2: testParams.decorator2.param2,
       myParam3: 0,
     };
 
+    // 手动逐个应用与通过 applyDecorators 组合应用，结果必须一致
     expect(decoratedTarget).to.be.deep.equal(expectedTarget);
     expect(customDecoratedTarget).to.be.deep.equal(expectedTarget);
   });
@@ -69,6 +75,10 @@ const GuardCompositeDecorator = () => {
   return applyDecorators(UseGuards(Guard));
 };
 
+/**
+ * 用组合装饰器包装 @UseGuards，验证组合后的装饰器
+ * 在类、实例方法、静态方法上都能正确写入守卫元数据。
+ */
 describe('applyDecorators @GuardCompositeDecorator', () => {
   @GuardCompositeDecorator()
   class Test {}

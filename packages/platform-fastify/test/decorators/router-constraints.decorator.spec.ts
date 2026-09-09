@@ -2,6 +2,7 @@ import { expect } from 'chai';
 import { FASTIFY_ROUTE_CONSTRAINTS_METADATA } from '../../constants';
 import { RouteConstraints } from '../../decorators/route-constraints.decorator';
 
+// 验证 @RouteConstraints 装饰器将路由约束元数据写入处理方法
 describe('@RouteConstraints', () => {
   describe('has version constraints', () => {
     const routeConstraints = { version: '1.2.x' };

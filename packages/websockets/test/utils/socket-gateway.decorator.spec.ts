@@ -2,6 +2,9 @@ import { expect } from 'chai';
 import { GATEWAY_METADATA, GATEWAY_OPTIONS } from '../../constants';
 import { WebSocketGateway } from '../../decorators/socket-gateway.decorator';
 
+/**
+ * @WebSocketGateway 装饰器的单元测试：验证网关标记、端口与选项元数据的写入。
+ */
 describe('@WebSocketGateway', () => {
   @WebSocketGateway(80, { namespace: '/' })
   class TestGateway {}

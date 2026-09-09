@@ -3,6 +3,8 @@ import { isObject } from '@nestjs/common/utils/shared.utils';
 import { IncomingMessage, OutgoingHttpHeaders } from 'http';
 import { Transform } from 'stream';
 
+// 把消息数据序列化为 SSE 的 data 字段格式：对象转 JSON，并按行拆分
+// 每行加 "data: " 前缀（SSE 协议要求每行都有独立前缀）
 function toDataString(data: string | object): string {
   if (isObject(data)) {
     return toDataString(JSON.stringify(data));
@@ -14,15 +16,20 @@ function toDataString(data: string | object): string {
     .join('');
 }
 
+/**
+ * 附加响应头类型：可向 SSE 响应追加的自定义头（支持字符串数组、字符串、数字等）。
+ */
 export type AdditionalHeaders = Record<
   string,
   string[] | string | number | undefined
 >;
 
+/** 可读取响应头的流接口（如 Express 的 res 提供 getHeaders）。 */
 interface ReadHeaders {
   getHeaders?(): AdditionalHeaders;
 }
 
+/** 可写入响应头的流接口（兼容 Express/Fastify 的 res）。 */
 interface WriteHeaders {
   writableEnded?: boolean;
   writeHead?(
@@ -34,7 +41,9 @@ interface WriteHeaders {
   flushHeaders?(): void;
 }
 
+/** 可写入响应头（且可判定是否已结束）的可写流类型。 */
 export type WritableHeaderStream = NodeJS.WritableStream & WriteHeaders;
+/** 同时支持读/写响应头的流类型（即完整的 HTTP 响应对象抽象）。 */
 export type HeaderStream = WritableHeaderStream & ReadHeaders;
 
 /**
@@ -57,6 +66,10 @@ export class SseStream extends Transform {
   private _statusCode = 200;
   private _additionalHeaders: AdditionalHeaders | undefined;
 
+  /**
+   * @param req - HTTP 请求对象；提供时会优化底层 socket 以适合流式传输
+   *              （开启 keep-alive、禁用 Nagle、关闭超时）。
+   */
   constructor(req?: IncomingMessage) {
     super({ objectMode: true });
     if (req && req.socket) {
@@ -66,10 +79,18 @@ export class SseStream extends Transform {
     }
   }
 
+  /** 响应头是否已提交（一旦写出状态码就不可再更改）。 */
   get headersCommitted(): boolean {
     return this._headersCommitted;
   }
 
+  /**
+   * 把 SSE 流接入目标可写流（HTTP 响应），并记录状态码与附加响应头配置。
+   *
+   * @param destination - 目标可写流（响应对象）。
+   * @param options - 可选配置：附加响应头、状态码、是否结束时关闭目标流。
+   * @returns 目标可写流本身（保持 pipe 的链式语义）。
+   */
   pipe<T extends WritableHeaderStream>(
     destination: T,
     options?: {
@@ -119,16 +140,27 @@ export class SseStream extends Transform {
     this._destination.write('\n');
   }
 
+  /**
+   * Transform 内部转换：把 MessageEvent 对象格式化为 SSE 文本
+   * （event/id/retry/data 字段），并在首条消息前提交响应头。
+   *
+   * @param message - 待转换的事件消息。
+   * @param encoding - 编码（objectMode 下不使用）。
+   * @param callback - 转换完成回调。
+   */
   _transform(
     message: MessageEvent,
     encoding: string,
     callback: (error?: Error | null, data?: any) => void,
   ) {
+    // 1. 首条消息写入前提交 SSE 响应头（延迟提交便于异常过滤器修改状态码）
     this.commitHeaders();
 
+    // 2. 清洗换行符的工具函数（SSE 协议要求字段值中不出现换行）
     const sanitize = (val: string | number) =>
       String(val).replace(/[\r\n]/g, '');
 
+    // 3. 拼接 event/id/retry/data 字段，格式化后推入下游流
     let data = message.type ? `event: ${sanitize(message.type)}\n` : '';
     data +=
       message.id !== undefined && message.id !== null

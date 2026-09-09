@@ -17,6 +17,7 @@ class NoopLogger extends Logger {
   warn(message: any, context?: string): void {}
 }
 
+// ServerGrpc 单元测试：验证 gRPC 服务器的 proto 加载、方法绑定（含流式）与错误处理。
 describe('ServerGrpc', () => {
   let server: ServerGrpc;
   let untypedServer: any;

@@ -23,6 +23,10 @@ import { createPipesWsParamDecorator } from '../utils/param.utils';
  *
  * @publicApi
  */
+/**
+ * 创建 ACK 参数装饰器：将参数类型标记为 WsParamtype.ACK（索引 2），
+ * 并通过 isAckHandledManually 标记由用户手动发送确认应答。
+ */
 export function Ack(): ParameterDecorator {
   return createPipesWsParamDecorator(WsParamtype.ACK)();
 }

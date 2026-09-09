@@ -2,6 +2,7 @@ import { expect } from 'chai';
 import * as sinon from 'sinon';
 import { DeepHashedModuleOpaqueKeyFactory } from '../../../injector/opaque-key-factory/deep-hashed-module-opaque-key-factory';
 
+// 验证 DeepHashedModuleOpaqueKeyFactory 通过深度哈希生成静态/动态模块的不透明 token
 describe('DeepHashedModuleOpaqueKeyFactory', () => {
   const moduleId = 'constId';
   let factory: DeepHashedModuleOpaqueKeyFactory;

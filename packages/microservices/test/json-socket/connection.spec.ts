@@ -8,6 +8,7 @@ import { ip } from './helpers';
 
 const MESSAGE_EVENT = 'message';
 
+// JsonSocket 连接集成测试：通过真实的 net 服务器/客户端验证消息的收发往返。
 describe('JsonSocket connection', () => {
   it('should connect, send and receive message', done => {
     helpers.createServerAndClient(

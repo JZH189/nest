@@ -35,6 +35,19 @@ import { ContextId } from './injector/instance-wrapper';
 import { Module } from './injector/module';
 
 /**
+ * Nest 应用上下文：NestApplication 的父类，提供"不含 HTTP 服务器"的
+ * 依赖注入容器访问与生命周期管理能力。
+ *
+ * 主要职责：
+ * - 实例解析：get / resolve / select（从容器中取出或创建实例）；
+ * - 生命周期编排：init → 触发 onModuleInit / onApplicationBootstrap；
+ *   close → 触发 onModuleDestroy / beforeApplicationShutdown / onApplicationShutdown；
+ * - 优雅停机：enableShutdownHooks 监听系统信号并按相反顺序调用销毁钩子；
+ * - 日志管理：useLogger / flushLogs。
+ *
+ * 可通过 NestFactory.createApplicationContext() 单独创建（无 HTTP 服务器，
+ * 适合 CLI、定时任务、消费消息等场景）。
+ *
  * @publicApi
  */
 export class NestApplicationContext<
@@ -65,6 +78,14 @@ export class NestApplicationContext<
     return this._instanceLinksHost;
   }
 
+  /**
+   * 构造函数。
+   *
+   * @param container 依赖注入容器
+   * @param appOptions 应用上下文配置项
+   * @param contextModule 当前上下文关联的模块（select() 派生的子上下文会指定）
+   * @param scope 模块作用域链（从根模块到当前模块的路径，用于错误提示）
+   */
   constructor(
     protected readonly container: NestContainer,
     protected readonly appOptions: TOptions = {} as TOptions,
@@ -80,6 +101,9 @@ export class NestApplicationContext<
     }
   }
 
+  /**
+   * 从容器中选出根模块作为上下文模块（get/resolve 等操作的默认起点）。
+   */
   public selectContextModule() {
     const modules = this.container.getModules().values();
     this.contextModule = modules.next().value!;
@@ -238,6 +262,10 @@ export class NestApplicationContext<
 
   /**
    * 为给定的上下文 ID（DI 容器子树）注册请求/上下文对象。
+   * 常用于在请求作用域之外手动注册 REQUEST provider。
+   *
+   * @param request 请求对象
+   * @param contextId 上下文 ID（标识一次请求/上下文）
    * @returns {void}
    */
   public registerRequestByContextId<T = any>(request: T, contextId: ContextId) {
@@ -245,8 +273,13 @@ export class NestApplicationContext<
   }
 
   /**
-   * 初始化 Nest 应用程序。
-   * 调用 Nest 生命周期事件。
+   * 初始化应用上下文（生命周期入口）。
+   *
+   * 执行顺序：
+   * 1. 按模块距离从近到远触发 onModuleInit 钩子；
+   * 2. 触发 onApplicationBootstrap 钩子。
+   * 初始化结果被缓存到 initializationPromise，供 close() 等待，
+   * 避免重复初始化（isInitialized 幂等保护）。
    *
    * @returns {Promise<this>} 返回 Promise 形式的 NestApplicationContext 实例
    */
@@ -254,10 +287,13 @@ export class NestApplicationContext<
     if (this.isInitialized) {
       return this;
     }
+    // 将初始化过程缓存为 Promise：close() 会先等待它完成，防止销毁早于初始化
     /* eslint-disable-next-line no-async-promise-executor */
     this.initializationPromise = new Promise(async (resolve, reject) => {
       try {
+        // 1. 触发 onModuleInit 钩子（按模块距离排序）
         await this.callInitHook();
+        // 2. 触发 onApplicationBootstrap 钩子
         await this.callBootstrapHook();
         resolve();
       } catch (err) {
@@ -271,7 +307,17 @@ export class NestApplicationContext<
   }
 
   /**
-   * 终止应用程序
+   * 终止应用程序。
+   *
+   * 执行顺序：
+   * 1. 等待初始化 Promise 完成（防止初始化与销毁并发）；
+   * 2. 触发 onModuleDestroy 钩子（按模块距离从远到近）；
+   * 3. 触发 beforeApplicationShutdown 钩子；
+   * 4. 释放资源（dispose，子类负责关闭服务器等）；
+   * 5. 触发 onApplicationShutdown 钩子；
+   * 6. 取消对系统关闭信号的监听。
+   *
+   * @param signal 触发关闭的系统信号（如 SIGTERM），可能为空
    * @returns {Promise<void>}
    */
   public async close(signal?: string): Promise<void> {
@@ -343,13 +389,20 @@ export class NestApplicationContext<
     return this;
   }
 
+  /**
+   * 释放资源（close 流程的内部步骤）。
+   * 纯上下文应用没有服务器需要释放，因此只执行空操作；
+   * HTTP 应用（NestApplication）会覆写此方法以关闭 WebSocket/微服务/HTTP 服务器。
+   */
   protected async dispose(): Promise<void> {
     // Nest 应用上下文没有服务器需要释放，因此只执行空操作
     return Promise.resolve();
   }
 
   /**
-   * 通过监听进程事件来监听关闭信号
+   * 通过监听进程事件来监听关闭信号（enableShutdownHooks 的内部实现）。
+   * 收到信号后按顺序执行：销毁钩子 → beforeShutdown 钩子 → dispose →
+   * shutdown 钩子，最后将信号转发回进程（或调用 process.exit）以完成正常退出流程。
    *
    * @param {string[]} signals 应该监听的系统信号
    * @param {ShutdownHooksOptions} options 配置关闭钩子行为的选项
@@ -399,7 +452,8 @@ export class NestApplicationContext<
   }
 
   /**
-   * 取消订阅关闭信号（进程事件）
+   * 取消订阅关闭信号（进程事件），
+   * 在 close() 完成或重复注册时避免重复触发销毁流程。
    */
   protected unsubscribeFromProcessSignals() {
     if (!this.shutdownCleanupRef) {
@@ -469,6 +523,12 @@ export class NestApplicationContext<
     }
   }
 
+  /**
+   * 断言当前不处于预览（preview）模式：预览模式不实例化依赖，
+   * 因此 listen/close 等涉及真实运行的方法不可用，调用即抛错。
+   *
+   * @param methodName 被调用的方法名（用于错误提示）
+   */
   protected assertNotInPreviewMode(methodName: string) {
     if (this.appOptions.preview) {
       const error = `Calling the "${methodName}" in the preview mode is not supported.`;
@@ -477,6 +537,15 @@ export class NestApplicationContext<
     }
   }
 
+  /**
+   * 获取需要触发生命周期钩子的模块列表：
+   * - 按模块"距离"（distance，离根模块的层级）从近到远排序，
+   *   保证初始化顺序与依赖顺序一致（销毁时取反）；
+   * - 结果会被缓存（_moduleRefsForHooksByDistance）；
+   * - 预览模式下只保留 initOnPreview 为 true 的模块。
+   *
+   * @returns 排序后的模块引用数组
+   */
   private getModulesToTriggerHooksOn(): Module[] {
     if (this._moduleRefsForHooksByDistance) {
       return this._moduleRefsForHooksByDistance;
@@ -493,6 +562,9 @@ export class NestApplicationContext<
     return this._moduleRefsForHooksByDistance;
   }
 
+  /**
+   * 打印预览模式警告：提示 providers/controllers 不会被实例化。
+   */
   private printInPreviewModeWarning() {
     this.logger.warn('------------------------------------------------');
     this.logger.warn('Application is running in the PREVIEW mode!');

@@ -2,6 +2,11 @@ import { expect } from 'chai';
 import { Provider } from '../../interfaces';
 import { ConfigurableModuleBuilder } from '../../module-utils';
 
+/**
+ * ConfigurableModuleBuilder 的单元测试：
+ * 验证 setExtras / setClassMethodName / setFactoryMethodName 等配置项
+ * 以及 build() 生成的动态模块类（register/registerAsync 等）的行为。
+ */
 describe('ConfigurableModuleBuilder', () => {
   describe('setExtras', () => {
     it('should apply module definition transformer function and return typed builder', () => {
@@ -145,6 +150,7 @@ describe('ConfigurableModuleBuilder', () => {
       );
 
       try {
+        // OPTIONS_TYPE / ASYNC_OPTIONS_TYPE 仅为类型别名，作为值访问时应抛出哨兵错误
         expect(ASYNC_OPTIONS_TYPE.imports).to.equal(undefined);
       } catch (err) {
         expect(err).to.be.instanceOf(Error);

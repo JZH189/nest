@@ -5,6 +5,7 @@ import { HelpReplFn } from '../../../repl/native-functions';
 import { ReplContext } from '../../../repl/repl-context';
 import { NestContainer } from '../../../injector/container';
 
+// 验证 REPL 内置函数 help：列出所有可用的内置函数及说明
 describe('HelpReplFn', () => {
   let helpReplFn: HelpReplFn;
 

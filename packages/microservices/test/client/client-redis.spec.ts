@@ -3,6 +3,7 @@ import * as sinon from 'sinon';
 import { ClientRedis } from '../../client/client-redis';
 import { RedisEventsMap } from '../../events/redis.events';
 
+// ClientRedis 单元测试：验证 Redis 客户端的模式处理、消息发布与事件监听。
 describe('ClientRedis', () => {
   const test = 'test';
   const client = new ClientRedis({});

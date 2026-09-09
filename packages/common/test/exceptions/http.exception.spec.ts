@@ -25,6 +25,11 @@ import {
   UnsupportedMediaTypeException,
 } from '../../exceptions';
 
+/**
+ * HttpException 及内置 HTTP 异常类的单元测试：
+ * 覆盖 getResponse/getStatus 的取值规则、字符串化输出、createBody 响应体构造，
+ * 以及通过 options.cause 保留原始错误（cause）的行为。
+ */
 describe('HttpException', () => {
   describe('getResponse', () => {
     it('should return a response as a string when input is a string', () => {
@@ -61,6 +66,7 @@ describe('HttpException', () => {
   });
 
   describe('built-in exceptions', () => {
+    // 用参数化用例批量校验每个内置异常类默认的状态码与错误消息
     describe('getStatus', () => {
       it('should return given status code', () => {
         const testCases: [Type<HttpException>, number][] = [
@@ -206,6 +212,7 @@ describe('HttpException', () => {
       });
     });
     it('should not override pre-defined body if message is array', () => {
+      // message 为数组时（如 validation pipe 的错误列表）原样保留，不与 error/statusCode 合并
       expect(
         HttpException.createBody(['a', 'random', 'array'], 'error', 200),
       ).to.eql({

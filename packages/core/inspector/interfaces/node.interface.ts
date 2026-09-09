@@ -1,6 +1,10 @@
 import { InjectionToken, Scope } from '@nestjs/common';
 import { EnhancerSubtype } from '@nestjs/common/constants';
 
+/**
+ * 模块节点：依赖图中代表一个模块（Module）的节点，
+ * 元数据描述模块是否全局、是否动态、是否框架内部模块。
+ */
 export type ModuleNode = {
   metadata: {
     type: 'module';
@@ -10,7 +14,12 @@ export type ModuleNode = {
   };
 };
 
+/**
+ * 类节点：依赖图中代表一个"类"（provider、controller、middleware、
+ * injectable）的节点，携带作用域、初始化耗时、是否导出等丰富元数据。
+ */
 export type ClassNode = {
+  /** 父节点 id（所属模块节点）。 */
   parent: string;
   metadata: {
     type: 'provider' | 'controller' | 'middleware' | 'injectable';
@@ -41,7 +50,13 @@ export type ClassNode = {
   };
 };
 
+/**
+ * 节点（Node）：依赖图中的顶点，分为模块节点（ModuleNode）与
+ * 类节点（ClassNode）两类，是 SerializedGraph 的基本组成单元。
+ */
 export type Node = {
+  /** 节点唯一 id。 */
   id: string;
+  /** 节点显示名称（模块名或类名）。 */
   label: string;
 } & (ClassNode | ModuleNode);

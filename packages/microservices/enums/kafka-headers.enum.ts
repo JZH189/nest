@@ -1,4 +1,8 @@
 /**
+ * Kafka 消息头键名集合（沿用 Spring Kafka 的命名约定）。
+ * 其中 CORRELATION_ID / REPLY_TOPIC / REPLY_PARTITION 用于实现
+ * ClientKafka 的请求-响应机制；NEST_ERR / NEST_IS_DISPOSED 为 Nest 框架专有头。
+ *
  * @see https://docs.spring.io/spring-kafka/api/org/springframework/kafka/support/KafkaHeaders.html
  *
  * @publicApi

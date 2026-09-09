@@ -2,6 +2,10 @@ import { RequestMethod, VersioningOptions } from '@nestjs/common';
 import { VersionValue } from '@nestjs/common/interfaces';
 import { AbstractHttpAdapter } from '../../adapters';
 
+/**
+ * 测试用空实现 HTTP 适配器：继承 AbstractHttpAdapter 并将所有方法实现为空操作，
+ * 便于在单元测试中替代真实的 Express/Fastify 适配器。
+ */
 export class NoopHttpAdapter extends AbstractHttpAdapter {
   constructor(instance: any) {
     super(instance);

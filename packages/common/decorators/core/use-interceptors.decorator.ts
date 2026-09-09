@@ -29,12 +29,14 @@ export function UseInterceptors(
     key?: string | symbol,
     descriptor?: TypedPropertyDescriptor<any>,
   ) => {
+    // 校验每个拦截器：要么是类/可调用对象，要么实现了 intercept 方法
     const isInterceptorValid = <T extends Function | Record<string, any>>(
       interceptor: T,
     ) =>
       interceptor &&
       (isFunction(interceptor) || isFunction(interceptor.intercept));
 
+    // descriptor 存在说明用在方法上（方法级拦截器），否则用在类上（控制器级拦截器）
     if (descriptor) {
       validateEach(
         target.constructor,
@@ -43,6 +45,7 @@ export function UseInterceptors(
         '@UseInterceptors',
         'interceptor',
       );
+      // 追加到方法的拦截器元数据数组，请求处理管道在守卫之后按顺序执行
       extendArrayMetadata(
         INTERCEPTORS_METADATA,
         interceptors,

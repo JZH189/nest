@@ -17,9 +17,16 @@ import { transformException } from '../multer/multer.utils';
 type MulterInstance = any;
 
 /**
- * @param fieldName
- * @param localOptions
+ * 单文件上传拦截器工厂（@publicApi）。
  *
+ * 基于 mixin 模式动态创建拦截器类：实例化时把 MulterModule 全局配置与
+ * localOptions 合并后创建 multer 实例；拦截请求时调用 multer 的 single()
+ * 中间件把指定字段的单个文件解析并挂到 req.file 上，随后放行到路由处理函数。
+ * 底层错误会经 transformException 转换为 NestJS HTTP 异常。
+ *
+ * @param fieldName - 表单中文件字段的名称
+ * @param localOptions - 当前拦截器私有的 multer 配置（覆盖全局配置）
+ * @returns 可直接挂载到路由的拦截器类型
  * @publicApi
  */
 export function FileInterceptor(

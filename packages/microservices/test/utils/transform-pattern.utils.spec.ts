@@ -8,6 +8,7 @@ function equalTest<R>(testPatterns: MsPattern[], expectedResults: R[]) {
     expect(testData).to.be.equal(expectedResults[index]);
   });
 }
+// transformPatternToRoute 单元测试：验证各种类型模式（数字/字符串/对象）到字符串路由的转换规则。
 describe('transformPatternToRoute', () => {
   describe(`when gets 'number' value`, () => {
     it(`should return the 'number' what is wrapped in a string`, () => {

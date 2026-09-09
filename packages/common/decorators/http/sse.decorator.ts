@@ -17,14 +17,18 @@ export function Sse(
     key: string | symbol,
     descriptor: TypedPropertyDescriptor<any>,
   ) => {
+    // 默认路径为根路径 '/'
     path = path && path.length ? path : '/';
 
+    // 写入路由路径与请求方法（默认 GET），与普通路由相同的方式注册
     Reflect.defineMetadata(PATH_METADATA, path, descriptor.value);
     Reflect.defineMetadata(
       METHOD_METADATA,
       options[METHOD_METADATA],
       descriptor.value,
     );
+    // SSE_METADATA：标记该路由为 Server-Sent-Events 端点，
+    // SSE 响应处理时会据此切换为事件流响应
     Reflect.defineMetadata(SSE_METADATA, true, descriptor.value);
     return descriptor;
   };

@@ -5,6 +5,12 @@ import { ClassSerializerInterceptor } from '../../serializer/class-serializer.in
 import { ExecutionContext, CallHandler } from '../../interfaces';
 import { StreamableFile } from '../../file-stream';
 
+/**
+ * ClassSerializerInterceptor 的单元测试：
+ * 通过 mock reflector 与 class-transformer 包，验证响应的序列化流程——
+ * 普通对象/数组/原始值的处理、上下文与默认序列化选项的合并、
+ * type 选项触发的 plainToInstance 二次转换，以及 @SerializeOptions 元数据的读取优先级。
+ */
 describe('ClassSerializerInterceptor', () => {
   let interceptor: ClassSerializerInterceptor;
   let mockReflector: any;
@@ -28,8 +34,7 @@ describe('ClassSerializerInterceptor', () => {
 
   describe('constructor', () => {
     it('should create interceptor with default transformer package', () => {
-      // This would normally load 'class-transformer' package
-      // For testing, we pass a mock transformer package
+      // 正常情况下由构造函数加载 'class-transformer' 包，测试中传入 mock 以便断言
       const options = {
         transformerPackage: mockTransformerPackage,
       };

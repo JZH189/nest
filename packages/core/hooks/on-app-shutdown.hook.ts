@@ -36,11 +36,16 @@ function callOperator(
 }
 
 /**
- * Calls the `onApplicationShutdown` function on the module and its children
- * (providers / controllers).
+ * on-app-shutdown 钩子调用器：应用关闭流程中的阶段（位于
+ * beforeApplicationShutdown 之后、onModuleDestroy 之前）。
  *
- * @param module The module which will be initialized
- * @param signal
+ * 在框架中的角色：app.close() / 收到系统信号后，Nest 调用所有实现了
+ * OnApplicationShutdown 接口实例的 onApplicationShutdown(signal)，
+ * 并传入导致关闭的系统信号，适合做连接池关闭、任务终止等清理。
+ *
+ * @param module - 待触发钩子的模块
+ * @param signal - 导致应用关闭的系统信号（如 'SIGTERM'）
+ * @returns 所有钩子执行完成后兑现的 Promise
  */
 export async function callAppShutdownHook(
   module: Module,

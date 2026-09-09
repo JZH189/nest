@@ -2,6 +2,10 @@ import { expect } from 'chai';
 import { VERSION_METADATA, CONTROLLER_WATERMARK } from '../../constants';
 import { Controller } from '../../decorators/core/controller.decorator';
 
+/**
+ * @Controller 装饰器的单元测试：
+ * 验证它将路径、主机、版本等路由信息以元数据形式附加到控制器类上。
+ */
 describe('@Controller', () => {
   const reflectedPath = 'test';
   const reflectedHost = 'api.example.com';
@@ -78,6 +82,7 @@ describe('@Controller', () => {
       VersionOnlyDecorator,
     );
     expect(version2).to.be.eql(reflectedVersion);
+    // 数组形式的 version 会自动去重
     const version3 = Reflect.getMetadata(
       VERSION_METADATA,
       VersionOnlyArrayDecorator,

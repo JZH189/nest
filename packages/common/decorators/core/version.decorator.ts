@@ -12,6 +12,8 @@ export function Version(version: VersionValue): MethodDecorator {
     version = Array.from(new Set(version));
   }
 
+  // 将版本信息写入方法的 VERSION_METADATA 元数据，
+  // 路由注册时与控制器级版本合并，用于 URI 版本匹配
   return (
     target: any,
     key: string | symbol,

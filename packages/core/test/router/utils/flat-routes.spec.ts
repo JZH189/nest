@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { expect } from 'chai';
 import { flattenRoutePaths } from '../../../router/utils';
 
+// 验证 flattenRoutePaths 递归展开模块树的嵌套路由为带完整前缀的扁平路径列表
 describe('flattenRoutePaths', () => {
   it('should flatten all route paths', () => {
     @Module({})

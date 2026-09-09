@@ -2,6 +2,7 @@ import { expect } from 'chai';
 import { RpcParamtype } from '../../enums/rpc-paramtype.enum';
 import { RpcParamsFactory } from '../../factories/rpc-params-factory';
 
+// RpcParamsFactory 单元测试：验证根据 RPC 参数类型（payload/ctx 等）从执行上下文中解析参数值。
 describe('RpcParamsFactory', () => {
   let factory: RpcParamsFactory;
   beforeEach(() => {

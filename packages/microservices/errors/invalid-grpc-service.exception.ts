@@ -1,6 +1,8 @@
 import { RuntimeException } from '@nestjs/core/errors/exceptions/runtime.exception';
 
 /**
+ * 当在 gRPC 包中找不到配置指定的服务定义时抛出。
+ *
  * @publicApi
  */
 export class InvalidGrpcServiceException extends RuntimeException {

@@ -5,6 +5,7 @@ import * as helpers from './helpers';
 
 const MESSAGE_EVENT = 'message';
 
+// JsonSocket 事件链式调用测试：验证事件订阅方法返回实例本身，支持链式注册。
 describe('JsonSocket chaining', () => {
   it('should return the instance when subscribing to event', done => {
     helpers.createServerAndClient((err, server, clientSocket, serverSocket) => {

@@ -5,8 +5,10 @@ import { NestApplicationContextOptions } from './nest-application-context-option
 import { ShutdownHooksOptions } from './shutdown-hooks-options.interface';
 import { Type } from './type.interface';
 
+/** `select()` 方法的选项：仅包含 abortOnError 配置 */
 export type SelectOptions = Pick<NestApplicationContextOptions, 'abortOnError'>;
 
+/** `get()` / `resolve()` 方法的选项 */
 export interface GetOrResolveOptions {
   /**
    * 如果启用，查找将仅在宿主模块中执行。

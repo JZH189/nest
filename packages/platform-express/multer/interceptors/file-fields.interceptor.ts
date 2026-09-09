@@ -20,8 +20,17 @@ import { transformException } from '../multer/multer.utils';
 type MulterInstance = any;
 
 /**
- * @param uploadFields
- * @param localOptions
+ * 多字段文件上传拦截器工厂（@publicApi）。
+ *
+ * 基于 mixin 模式动态创建拦截器类：实例化时把 MulterModule 全局配置与
+ * localOptions 合并后创建 multer 实例；拦截请求时调用 multer 的 fields()
+ * 中间件按字段名分别接收文件（可分别为每个字段限制数量），解析结果挂到
+ * req.files（以字段名为键的对象）上。底层错误经 transformException 转换为
+ * NestJS HTTP 异常。
+ *
+ * @param uploadFields - 字段描述数组（字段名及可选的最大文件数）
+ * @param localOptions - 当前拦截器私有的 multer 配置（覆盖全局配置）
+ * @returns 可直接挂载到路由的拦截器类型
  * @publicApi
  */
 export function FileFieldsInterceptor(

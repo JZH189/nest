@@ -6,6 +6,7 @@ import { ClientTCP } from '../../client/client-tcp';
 import { TcpEventsMap } from '../../events/tcp.events';
 import { TcpSocket } from '../../helpers/tcp-socket';
 
+// ClientTCP 单元测试：验证 TCP 客户端的套接字创建（含 TLS）、连接与消息收发逻辑。
 describe('ClientTCP', () => {
   let client: ClientTCP;
   let untypedClient: any;

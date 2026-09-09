@@ -6,6 +6,7 @@ import {
   isValueProvider,
 } from '../../../injector/helpers/provider-classifier';
 
+// 验证 provider-classifier 对类提供者、工厂提供者、值提供者三种类型的判断函数
 describe('provider classifier', () => {
   describe('isClassProvider', () => {
     it('should return true if useClass is present', () => {

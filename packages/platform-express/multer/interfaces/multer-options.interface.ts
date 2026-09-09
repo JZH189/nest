@@ -1,9 +1,14 @@
 /**
+ * multer 文件上传的配置选项接口。
+ * 既是各拦截器 localOptions 的类型，也是 MulterModule 全局配置的类型，
+ * 字段含义与 expressjs/multer 官方选项一致。
+ *
  * @see https://github.com/expressjs/multer
  *
  * @publicApi
  */
 export interface MulterOptions {
+  /** 上传文件的目标目录（DiskStorage 的简写形式）；也可传函数动态决定目录 */
   dest?: string | Function;
   /** The storage engine to use for uploaded files. */
   storage?: any;
@@ -34,6 +39,7 @@ export interface MulterOptions {
   /** Default character set for part header values (e.g. filename) (Default: 'latin1') */
   defParamCharset?: string;
 
+  /** 文件过滤函数：通过 callback(null, true/false) 决定是否接受该文件 */
   fileFilter?(
     req: any,
     file: {
@@ -61,6 +67,8 @@ export interface MulterOptions {
 }
 
 /**
+ * 文件字段描述（配合 FileFieldsInterceptor 使用）。
+ *
  * @publicApi
  */
 export interface MulterField {

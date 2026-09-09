@@ -7,6 +7,14 @@ import { multerExceptions, busboyExceptions } from './multer.constants';
 
 // Multer may add in a 'field' property to the error
 // https://github.com/expressjs/multer/blob/aa42bea6ac7d0cb8fcb279b15a7278cda805dc63/lib/multer-error.js#L19
+/**
+ * 把 multer/busboy 抛出的底层上传错误转换为 NestJS 的 HTTP 异常，
+ * 便于异常过滤器按 HTTP 语义处理（如文件过大返回 413、字段/文件数量等
+ * 问题返回 400）。非上传类错误原样返回，不做转换。
+ *
+ * @param error - 捕获到的错误对象（可能带有出错的字段名 field）
+ * @returns 转换后的 HttpException；无法识别的错误原样返回
+ */
 export function transformException(
   error: (Error & { field?: string }) | undefined,
 ) {

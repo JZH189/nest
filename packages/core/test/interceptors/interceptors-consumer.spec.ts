@@ -5,6 +5,7 @@ import { Observable, defer, lastValueFrom, merge, of, retry } from 'rxjs';
 import * as sinon from 'sinon';
 import { InterceptorsConsumer } from '../../interceptors/interceptors-consumer';
 
+// 验证 InterceptorsConsumer 组合并执行拦截器链（惰性求值、上下文切换及 AsyncLocalStorage 兼容）
 describe('InterceptorsConsumer', () => {
   let consumer: InterceptorsConsumer;
   let interceptors: any[];

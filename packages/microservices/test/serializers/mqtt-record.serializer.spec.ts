@@ -2,6 +2,7 @@ import { expect } from 'chai';
 import { MqttRecordBuilder } from '../../record-builders';
 import { MqttRecordSerializer } from '../../serializers/mqtt-record.serializer';
 
+// MqttRecordSerializer 单元测试：验证将普通负载或 MqttRecord 序列化为 MQTT 消息记录。
 describe('MqttRecordSerializer', () => {
   let instance: MqttRecordSerializer;
   beforeEach(() => {

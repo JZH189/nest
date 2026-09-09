@@ -33,11 +33,14 @@ function addExceptionFiltersMetadata(
     key?: string | symbol,
     descriptor?: TypedPropertyDescriptor<any>,
   ) => {
+    // 校验每个过滤器：要么是实现了 catch 方法的类/实例
     const isFilterValid = <T extends Function | Record<string, any>>(
       filter: T,
     ) => filter && (isFunction(filter) || isFunction(filter.catch));
 
+    // descriptor 存在说明用在方法上（方法级过滤器），否则用在类上（控制器级过滤器）
     if (descriptor) {
+      // 1. 校验传入的过滤器是否合法，不合法时抛出带装饰器名的错误
       validateEach(
         target.constructor,
         filters,
@@ -45,6 +48,8 @@ function addExceptionFiltersMetadata(
         '@UseFilters',
         'filter',
       );
+      // 2. 将过滤器追加到方法的异常过滤器元数据数组中，
+      //    供路由执行时（ExceptionsHandler）读取并实例化
       extendArrayMetadata(
         EXCEPTION_FILTERS_METADATA,
         filters,

@@ -57,21 +57,49 @@ import { ModuleDefinition } from './interfaces/module-definition.interface';
 import { ModuleOverride } from './interfaces/module-override.interface';
 import { MetadataScanner } from './metadata-scanner';
 
+/**
+ * 全局应用提供者包装器：记录一个通过 APP_GUARD/APP_PIPE/APP_INTERCEPTOR/APP_FILTER
+ * token 注册的全局增强器的位置信息，供扫描结束时统一应用到 applicationConfig。
+ */
 interface ApplicationProviderWrapper {
+  /** 增强器所在模块的 token */
   moduleKey: string;
+  /** 增强器在容器中的 provider 键（token + UUID） */
   providerKey: string;
+  /** 全局增强器的 token 类型（APP_GUARD 等） */
   type: InjectionToken;
+  /** 增强器的作用域（REQUEST/TRANSIENT 需特殊处理） */
   scope?: Scope;
 }
 
+/** scanForModules 的参数集合 */
 interface ModulesScanParameters {
+  /** 待扫描的模块定义（类、DynamicModule 或 ForwardReference） */
   moduleDefinition: ModuleDefinition;
+  /** 当前模块的父级作用域链（用于循环依赖检测的错误提示） */
   scope?: Type<unknown>[];
+  /** 已注册的模块上下文（用于循环依赖检测） */
   ctxRegistry?: (ForwardReference | DynamicModule | Type<unknown>)[];
+  /** 模块覆盖配置 */
   overrides?: ModuleOverride[];
+  /** 是否为懒加载模块 */
   lazy?: boolean;
 }
 
+/**
+ * 依赖扫描器：应用启动的"侦察兵"，负责把用户声明的模块树解析成
+ * 依赖注入容器（NestContainer）中的完整依赖图。
+ *
+ * 核心职责：
+ * - scan：注册内部核心模块 → 深度优先递归注册所有模块 → 反射模块的
+ *   imports/providers/controllers/exports → 附加请求作用域全局增强器 →
+ *   计算模块距离 → 绑定全局模块作用域；
+ * - insertProvider/insertController/insertInjectable：把扫描到的类
+ *   注册进对应模块的 provider/controller/injectable 集合；
+ * - applyApplicationProviders：把 APP_* 全局增强器实例注册到 ApplicationConfig。
+ *
+ * 由 NestFactory.initialize() 创建并调用，与 InstanceLoader 配合完成启动。
+ */
 export class DependenciesScanner {
   private readonly applicationProvidersApplyMap: ApplicationProviderWrapper[] =
     [];
@@ -220,6 +248,15 @@ export class DependenciesScanner {
     return [moduleInstance].concat(registeredModuleRefs);
   }
 
+  /**
+   * 将一个模块定义插入容器（如为 forwardRef 会先解引用）。
+   * 若该"模块"实际是 @Injectable/@Controller/@Catch 装饰的类，
+   * 抛出 InvalidClassModuleException 提示用户误将其放入 imports。
+   *
+   * @param moduleDefinition - 模块定义
+   * @param scope - 作用域链（用于错误提示）
+   * @returns 包含模块引用与是否首次插入的结果对象；被覆盖时可能为 undefined
+   */
   public async insertModule(
     moduleDefinition: any,
     scope: Type<unknown>[],
@@ -273,6 +310,14 @@ export class DependenciesScanner {
     }
   }
 
+  /**
+   * 反射读取模块的 imports 元数据，并将每个被导入模块注册为当前模块的导入。
+   * 合并了静态装饰器元数据与 DynamicModule 的动态元数据。
+   *
+   * @param module - 模块类
+   * @param token - 模块 token（容器中的唯一键）
+   * @param context - 上下文名称（用于循环依赖错误提示）
+   */
   public async reflectImports(
     module: Type<unknown>,
     token: string,
@@ -290,6 +335,13 @@ export class DependenciesScanner {
     }
   }
 
+  /**
+   * 反射读取模块的 providers 元数据并逐个插入容器；
+   * 同时对每个 provider 反射其类级/方法级的增强器元数据（guards 等）。
+   *
+   * @param module - 模块类
+   * @param token - 模块 token
+   */
   public reflectProviders(module: Type<any>, token: string) {
     const providers = [
       ...this.reflectMetadata(MODULE_METADATA.PROVIDERS, module),
@@ -304,6 +356,13 @@ export class DependenciesScanner {
     });
   }
 
+  /**
+   * 反射读取模块的 controllers 元数据并逐个插入容器；
+   * 同时对每个控制器反射其类级/方法级的增强器元数据。
+   *
+   * @param module - 模块类
+   * @param token - 模块 token
+   */
   public reflectControllers(module: Type<any>, token: string) {
     const controllers = [
       ...this.reflectMetadata(MODULE_METADATA.CONTROLLERS, module),
@@ -318,6 +377,14 @@ export class DependenciesScanner {
     });
   }
 
+  /**
+   * 反射一个类上的动态增强器元数据：
+   * 依次读取类级 guards/interceptors/exception filters/pipes，
+   * 以及方法参数级的 pipes（ROUTE_ARGS_METADATA）。
+   *
+   * @param cls - 被装饰的类（provider 或 controller）
+   * @param token - 所属模块 token
+   */
   public reflectDynamicMetadata(cls: Type<Injectable>, token: string) {
     if (!cls || !cls.prototype) {
       return;
@@ -329,6 +396,13 @@ export class DependenciesScanner {
     this.reflectParamInjectables(cls, token, ROUTE_ARGS_METADATA);
   }
 
+  /**
+   * 反射读取模块的 exports 元数据，
+   * 将导出的 provider 或模块标记为"可被其他模块注入"。
+   *
+   * @param module - 模块类
+   * @param token - 模块 token
+   */
   public reflectExports(module: Type<unknown>, token: string) {
     const exports = [
       ...this.reflectMetadata(MODULE_METADATA.EXPORTS, module),
@@ -342,6 +416,15 @@ export class DependenciesScanner {
     );
   }
 
+  /**
+   * 反射指定元数据键下的类级与方法级增强器（如 @UseGuards）：
+   * - 类级增强器直接插入；
+   * - 遍历原型链上所有方法，读取方法级增强器并逐个插入（带 methodKey）。
+   *
+   * @param component - 被装饰的类
+   * @param token - 所属模块 token
+   * @param metadataKey - 元数据键（GUARDS_METADATA 等）
+   */
   public reflectInjectables(
     component: Type<Injectable>,
     token: string,
@@ -394,6 +477,14 @@ export class DependenciesScanner {
     });
   }
 
+  /**
+   * 反射方法参数级管道元数据（@UsePipes 用在路由参数上时，
+   * 记录在 ROUTE_ARGS_METADATA 中）：把每个参数绑定的 pipe 插入容器。
+   *
+   * @param component - 被装饰的类（通常为 controller）
+   * @param token - 所属模块 token
+   * @param metadataKey - 元数据键（ROUTE_ARGS_METADATA）
+   */
   public reflectParamInjectables(
     component: Type<Injectable>,
     token: string,
@@ -433,6 +524,15 @@ export class DependenciesScanner {
     });
   }
 
+  /**
+   * 沿原型链向上查找某个方法上声明的元数据
+   * （子类方法可继承父类方法上的 @UseGuards 等装饰器元数据）。
+   *
+   * @param component - 被装饰的类
+   * @param key - 元数据键
+   * @param methodKey - 方法名
+   * @returns 方法名与元数据的组合；未找到时返回 undefined
+   */
   public reflectKeyMetadata(
     component: Type<Injectable>,
     key: string,
@@ -457,6 +557,12 @@ export class DependenciesScanner {
     return undefined;
   }
 
+  /**
+   * 计算每个模块到根模块的距离（distance）：
+   * 以根模块为起点构建拓扑树（TopologyTree）遍历，
+   * 距离用于决定生命周期钩子的触发顺序（先实例化依赖再实例化依赖方）。
+   * 全局模块被跳过（其距离固定为 MAX）。
+   */
   public calculateModulesDistance() {
     const modulesGenerator = this.container.getModules().values();
     // 跳过 "InternalCoreModule"
@@ -478,6 +584,14 @@ export class DependenciesScanner {
     });
   }
 
+  /**
+   * 将一个被导入模块关联到其宿主模块：
+   * 引用为 undefined 时抛出循环依赖异常（ES 模块循环导入的典型症状）。
+   *
+   * @param related - 被导入的模块定义
+   * @param token - 宿主模块 token
+   * @param context - 上下文名称（用于错误提示）
+   */
   public async insertImport(related: any, token: string, context: string) {
     if (isUndefined(related)) {
       throw new CircularDependencyException(context);
@@ -488,6 +602,13 @@ export class DependenciesScanner {
     await this.container.addImport(related, token);
   }
 
+  /**
+   * 判断是否为自定义 provider（类/值/工厂/别名 provider）：
+   * 通过是否携带 `provide` 属性区分自定义 provider 与普通类 provider。
+   *
+   * @param provider - 待判断的 provider 定义
+   * @returns 若为自定义 provider 则返回 true（类型守卫）
+   */
   public isCustomProvider(
     provider: Provider,
   ): provider is
@@ -498,6 +619,16 @@ export class DependenciesScanner {
     return provider && !isNil((provider as any).provide);
   }
 
+  /**
+   * 插入一个 provider：
+   * - 普通 provider 直接加入容器；
+   * - 全局增强器（APP_GUARD 等 token）则记录到 applicationProvidersApplyMap，
+   *   生成带 UUID 的新 token 延迟注册（等实例化后再应用到 ApplicationConfig），
+   *   请求/瞬态作用域的增强器以 injectable 形式注册；
+   *
+   * @param provider - provider 定义
+   * @param token - 所属模块 token
+   */
   public insertProvider(provider: Provider, token: string) {
     const isCustomProvider = this.isCustomProvider(provider);
     if (!isCustomProvider) {
@@ -547,6 +678,18 @@ export class DependenciesScanner {
     this.container.addProvider(newProvider, token, enhancerSubtype);
   }
 
+  /**
+   * 插入一个增强器（guard/pipe/interceptor/filter）：
+   * - 类类型的增强器注册为容器 injectable，并写入图检查器缓存；
+   * - 实例类型的增强器只记录到图检查器缓存（不需要 DI 实例化）。
+   *
+   * @param injectable - 增强器类或实例
+   * @param token - 所属模块 token
+   * @param host - 增强器挂载的宿主类（controller/provider）
+   * @param subtype - 增强器子类型（'guard'/'pipe'/'interceptor'/'filter'）
+   * @param methodKey - 方法级增强器所属的方法名（类级为 undefined）
+   * @returns 类类型时返回对应的 InstanceWrapper
+   */
   public insertInjectable(
     injectable: Type<Injectable> | object,
     token: string,
@@ -582,6 +725,13 @@ export class DependenciesScanner {
     }
   }
 
+  /**
+   * 将导出的 provider 或模块登记到容器的导出集合
+   * （forwardRef 会先解引用再登记）。
+   *
+   * @param toExport - 被导出的 provider/模块定义
+   * @param token - 所属模块 token
+   */
   public insertExportedProviderOrModule(
     toExport: ForwardReference | DynamicModule | Type<unknown>,
     token: string,
@@ -592,10 +742,24 @@ export class DependenciesScanner {
     this.container.addExportedProviderOrModule(fulfilledProvider, token);
   }
 
+  /**
+   * 将控制器插入所属模块的 controllers 集合。
+   *
+   * @param controller - 控制器类
+   * @param token - 所属模块 token
+   */
   public insertController(controller: Type<Controller>, token: string) {
     this.container.addController(controller, token);
   }
 
+  /**
+   * 插入或覆盖模块：若存在匹配的覆盖配置（replaceModule）则执行覆盖，否则普通插入。
+   *
+   * @param moduleDefinition - 模块定义
+   * @param overrides - 模块覆盖配置列表
+   * @param scope - 作用域链
+   * @returns 包含模块引用与是否首次插入的结果对象
+   */
   private insertOrOverrideModule(
     moduleDefinition: ModuleDefinition,
     overrides: ModuleOverride[],
@@ -622,6 +786,14 @@ export class DependenciesScanner {
     return this.insertModule(moduleDefinition, scope);
   }
 
+  /**
+   * 在覆盖配置中查找与给定模块匹配的覆盖项
+   * （支持 ForwardReference 形式的模块比较）。
+   *
+   * @param module - 待覆盖的模块定义
+   * @param overrides - 模块覆盖配置列表
+   * @returns 匹配到的覆盖项；不存在则返回 undefined
+   */
   private getOverrideModuleByModule(
     module: ModuleDefinition,
     overrides: ModuleOverride[],
@@ -642,6 +814,15 @@ export class DependenciesScanner {
     );
   }
 
+  /**
+   * 用新模块替换旧模块（forwardRef 会先解引用），
+   * 常用于测试场景中替换真实模块为 mock 模块。
+   *
+   * @param moduleToOverride - 被替换的模块定义
+   * @param newModule - 替换后的模块定义
+   * @param scope - 作用域链
+   * @returns 包含模块引用与是否首次插入的结果对象
+   */
   private async overrideModule(
     moduleToOverride: ModuleDefinition,
     newModule: ModuleDefinition,
@@ -743,6 +924,13 @@ export class DependenciesScanner {
       });
   }
 
+  /**
+   * 应用全局增强器（启动的最后一步，由 NestFactory.initialize 调用）：
+   * 遍历 insertProvider 阶段收集的 applicationProvidersApplyMap，
+   * - 单例作用域：从 providers 集合取实例，注册到 ApplicationConfig；
+   * - 请求/瞬态作用域：从 injectables 集合取 InstanceWrapper，
+   *   以 request provider 形式注册到 ApplicationConfig。
+   */
   public applyApplicationProviders() {
     const applyProvidersMap = this.getApplyProvidersMap();
     const applyRequestProvidersMap = this.getApplyRequestProvidersMap();
@@ -782,6 +970,12 @@ export class DependenciesScanner {
     );
   }
 
+  /**
+   * 构建"全局增强器 token → 注册函数"映射（单例作用域）：
+   * 将增强器实例注册到 ApplicationConfig 对应的全局集合中。
+   *
+   * @returns token 到注册函数的映射表
+   */
   public getApplyProvidersMap(): { [type: string]: Function } {
     return {
       [APP_INTERCEPTOR]: (interceptor: NestInterceptor) =>
@@ -795,6 +989,12 @@ export class DependenciesScanner {
     };
   }
 
+  /**
+   * 构建"全局增强器 token → 注册函数"映射（请求/瞬态作用域版本）：
+   * 注册的是 InstanceWrapper（每次请求时按需解析新实例）而非单例实例。
+   *
+   * @returns token 到注册函数的映射表
+   */
   public getApplyRequestProvidersMap(): { [type: string]: Function } {
     return {
       [APP_INTERCEPTOR]: (interceptor: InstanceWrapper<NestInterceptor>) =>
@@ -808,6 +1008,12 @@ export class DependenciesScanner {
     };
   }
 
+  /**
+   * 判断是否为动态模块（DynamicModule：带 `module` 属性的对象）。
+   *
+   * @param module - 待判断的模块定义
+   * @returns 若为 DynamicModule 则返回 true（类型守卫）
+   */
   public isDynamicModule(
     module: Type<any> | DynamicModule,
   ): module is DynamicModule {
@@ -855,6 +1061,12 @@ export class DependenciesScanner {
     return module && !!(module as ForwardReference).forwardRef;
   }
 
+  /**
+   * 判断作用域是否为请求（REQUEST）或瞬态（TRANSIENT）作用域，
+   * 这两类作用域的全局增强器需要特殊注册流程。
+   *
+   * @param scope - 待判断的作用域
+   */
   private isRequestOrTransient(scope: Scope): boolean {
     return scope === Scope.REQUEST || scope === Scope.TRANSIENT;
   }

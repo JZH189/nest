@@ -2,7 +2,13 @@ import { expect } from 'chai';
 import * as sinon from 'sinon';
 import { ConsoleLogger, Logger, LoggerService, LogLevel } from '../../services';
 
+/**
+ * Logger 与 ConsoleLogger 的单元测试：
+ * 通过监听 process.stdout/stderr 验证默认日志输出（含 JSON 模式、时间戳、上下文）、
+ * 静态/实例两种调用方式、overrideLogger 切换自定义日志器，以及格式化相关的可定制点。
+ */
 describe('Logger', () => {
+  // 测试 Logger 的静态方法（全局日志实例）
   describe('[static methods]', () => {
     describe('when the default logger is used', () => {
       let processStdoutWriteSpy: sinon.SinonSpy;
@@ -555,6 +561,7 @@ describe('Logger', () => {
     });
   });
 
+  // 测试 Logger 的实例方法（实例可持有自己的上下文与配置）
   describe('[instance methods]', () => {
     describe('when the default logger is used', () => {
       const logger = new Logger();
@@ -887,6 +894,7 @@ describe('Logger', () => {
       });
     });
   });
+  // ConsoleLogger 类本身的独立测试组：覆盖 inspect 选项与可覆写的格式化方法
   describe('ConsoleLogger', () => {
     let processStdoutWriteSpy: sinon.SinonSpy;
 
@@ -1019,6 +1027,7 @@ describe('Logger', () => {
   });
 });
 
+// 将 util.inspect 风格的输出转换为可 JSON.parse 的字符串（单引号、未加引号的键等）
 function convertInspectToJSON(inspectOutput: string) {
   const jsonLikeString = inspectOutput
     .replace(/'([^']+)'/g, '"$1"') // single-quoted strings

@@ -3,6 +3,10 @@ import { REDIRECT_METADATA } from '../../constants';
 import { Redirect } from '../../decorators/http/redirect.decorator';
 import { HttpStatus } from '../../index';
 
+/**
+ * @Redirect 装饰器的单元测试：
+ * 验证它在方法上写入重定向 URL 和响应状态码元数据。
+ */
 describe('@Redirect', () => {
   const url = 'http://test.com';
   const statusCode = HttpStatus.FOUND;

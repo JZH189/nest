@@ -10,6 +10,7 @@ import {
 } from '../../../multer/multer/multer.constants';
 import { transformException } from '../../../multer/multer/multer.utils';
 
+// 验证 transformException 工具：将 multer 错误转换为 Nest HttpException
 describe('transformException', () => {
   describe('if error does not exist', () => {
     it('should behave as identity', () => {

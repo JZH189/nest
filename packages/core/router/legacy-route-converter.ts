@@ -1,8 +1,17 @@
 import { Logger } from '@nestjs/common';
 
+// 旧版路径语法不再受支持的提示消息模板（日志复用同一模板生成错误/警告文案）
 const UNSUPPORTED_PATH_MESSAGE = (text: TemplateStringsArray, route: string) =>
   `Unsupported route path: "${route}". In previous versions, the symbols ?, *, and + were used to denote optional or repeating path parameters. The latest version of "path-to-regexp" now requires the use of named parameters. For example, instead of using a route like /users/* to capture all routes starting with "/users", you should use /users/*path. For more details, refer to the migration guide.`;
 
+/**
+ * 旧版路由语法转换器。
+ *
+ * 在框架中的角色：Express v5 及 @fastify/middie v9 以上使用的 path-to-regexp
+ * 不再支持未命名的通配符（?、*、+）。该工具类在注册路由前尝试把旧语法
+ * 自动转换为新语法（如 /* -> /*path），转换失败或无法转换时输出日志提示，
+ * 以便旧项目平滑迁移到新版本 HTTP 适配器。
+ */
 export class LegacyRouteConverter {
   private static readonly logger = new Logger(LegacyRouteConverter.name);
 
@@ -64,10 +73,12 @@ export class LegacyRouteConverter {
     return route;
   }
 
+  /** 以 error 级别输出"不支持的路由语法"日志。 */
   static printError(route: string): void {
     this.logger.error(UNSUPPORTED_PATH_MESSAGE`${route}`);
   }
 
+  /** 以 warn 级别输出"不支持的路由语法，正在尝试自动转换"日志。 */
   static printWarning(route: string): void {
     this.logger.warn(
       UNSUPPORTED_PATH_MESSAGE`${route}` + ' Attempting to auto-convert...',

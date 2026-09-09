@@ -5,6 +5,9 @@ import {
 } from '@nestjs/common/interfaces';
 import { ModuleOpaqueKeyFactory } from './opaque-key-factory/interfaces/module-opaque-key-factory.interface';
 
+/**
+ * 模块编译产物：编译器输出的标准化模块描述
+ */
 export interface ModuleFactory {
   type: Type<any>;
   token: string;

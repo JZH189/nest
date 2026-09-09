@@ -5,6 +5,9 @@ import { UseFilters } from '../../../common/decorators/core/exception-filters.de
 import { NestContainer } from '../../../core/injector/container';
 import { ExceptionFiltersContext } from '../../context/exception-filters-context';
 
+/**
+ * ExceptionFiltersContext 的单元测试：验证 @UseFilters/@Catch 异常过滤器的实例化与注入。
+ */
 describe('ExceptionFiltersContext', () => {
   let exceptionFilter: ExceptionFiltersContext;
 

@@ -4,6 +4,7 @@ import { GetReplFn } from '../../../repl/native-functions';
 import { ReplContext } from '../../../repl/repl-context';
 import { NestContainer } from '../../../injector/container';
 
+// 验证 REPL 内置函数 get：按 token 检索静态或请求作用域的提供者实例
 describe('GetReplFn', () => {
   let getReplFn: GetReplFn;
 

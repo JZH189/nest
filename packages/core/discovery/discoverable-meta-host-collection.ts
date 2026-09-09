@@ -2,6 +2,18 @@ import { Type } from '@nestjs/common';
 import { InstanceWrapper } from '../injector/instance-wrapper';
 import { ModulesContainer } from '../injector/modules-container';
 
+/**
+ * 可发现元数据"主机集合"：DiscoveryService 按元数据键筛选
+ * providers/controllers 时的全局注册表。
+ *
+ * 工作原理：
+ * - DiscoveryService.createDecorator() 创建装饰器时生成唯一 metadataKey，
+ *   并通过 addClassMetaHostLink 记录"类 → 元数据键"链接；
+ * - 容器实例化每个 provider/controller 时，框架回调 inspectProvider /
+ *   inspectController，将带该元数据键的实例包装器按
+ *   "应用（ModulesContainer）→ 元数据键 → 包装器集合"归类存储；
+ * - getProvidersByMetaKey / getControllersByMetaKey 随后可按键快速检索。
+ */
 export class DiscoverableMetaHostCollection {
   /**
    * A map of class references to metadata keys.
@@ -74,6 +86,14 @@ export class DiscoverableMetaHostCollection {
     );
   }
 
+  /**
+   * 将实例包装器按元数据键插入到指定集合
+   * （键不存在时先创建空集合）。
+   *
+   * @param metaKey - 元数据键
+   * @param instanceWrapper - 实例包装器
+   * @param collection - 键到包装器集合的映射
+   */
   public static insertByMetaKey(
     metaKey: string,
     instanceWrapper: InstanceWrapper,
@@ -89,6 +109,13 @@ export class DiscoverableMetaHostCollection {
     }
   }
 
+  /**
+   * 按元数据键检索指定应用中所有已登记的 provider 包装器。
+   *
+   * @param hostContainerRef - 模块容器引用（唯一标识一个应用）
+   * @param metaKey - 元数据键
+   * @returns 匹配的实例包装器集合（无匹配时为空集合）
+   */
   public static getProvidersByMetaKey(
     hostContainerRef: ModulesContainer,
     metaKey: string,
@@ -97,6 +124,13 @@ export class DiscoverableMetaHostCollection {
     return wrappersByMetaKey?.get(metaKey) ?? new Set<InstanceWrapper>();
   }
 
+  /**
+   * 按元数据键检索指定应用中所有已登记的 controller 包装器。
+   *
+   * @param hostContainerRef - 模块容器引用（唯一标识一个应用）
+   * @param metaKey - 元数据键
+   * @returns 匹配的实例包装器集合（无匹配时为空集合）
+   */
   public static getControllersByMetaKey(
     hostContainerRef: ModulesContainer,
     metaKey: string,
@@ -105,6 +139,14 @@ export class DiscoverableMetaHostCollection {
     return wrappersByMetaKey?.get(metaKey) ?? new Set<InstanceWrapper>();
   }
 
+  /**
+   * 检查实例包装器是否携带可发现元数据键：
+   * 有则归入按应用与元数据键组织的集合中。
+   *
+   * @param hostContainerRef - 模块容器引用
+   * @param instanceWrapper - 实例包装器
+   * @param wrapperByMetaKeyMap - 目标存储映射（providers 或 controllers）
+   */
   private static inspectInstanceWrapper(
     hostContainerRef: ModulesContainer,
     instanceWrapper: InstanceWrapper,
@@ -131,6 +173,14 @@ export class DiscoverableMetaHostCollection {
     this.insertByMetaKey(metaKey, instanceWrapper, collection);
   }
 
+  /**
+   * 从实例包装器解析出其类上的元数据键。
+   * 对 useValue/useFactory 场景需要回退到 instance.constructor
+   * 才能取到真正的类（见下方源码注释），但为避免性能开销尽量延迟该访问。
+   *
+   * @param instanceWrapper - 实例包装器
+   * @returns 元数据键；未登记时为 undefined
+   */
   private static getMetaKeyByInstanceWrapper(
     instanceWrapper: InstanceWrapper<any>,
   ) {

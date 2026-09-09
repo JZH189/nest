@@ -8,6 +8,8 @@ import {
 import { isNil } from '../utils/shared.utils';
 
 /**
+ * 解析浮点数参数的选项
+ *
  * @publicApi
  */
 export interface ParseFloatPipeOptions {
@@ -31,14 +33,26 @@ export interface ParseFloatPipeOptions {
 /**
  * 定义内置的 ParseFloat 管道
  *
+ * 属于解析型（Parse）管道：把数字字符串路由参数转换为浮点数（`number`）。
+ * 值不是有效数字字符串时默认抛出 400 Bad Request 异常。
+ * 该管道在路由处理方法被调用之前由框架自动执行。
+ *
  * @see [内置管道](https://docs.nestjs.cn/pipes#built-in-pipes)
  *
  * @publicApi
  */
 @Injectable()
 export class ParseFloatPipe implements PipeTransform<string> {
+  /**
+   * 校验失败时用于构造待抛出异常的工厂函数
+   */
   protected exceptionFactory: (error: string) => any;
 
+  /**
+   * 构造函数：初始化异常工厂（默认按 `errorHttpStatusCode` 生成对应 HTTP 异常）
+   *
+   * @param options 解析浮点数管道的配置项
+   */
   constructor(@Optional() protected readonly options?: ParseFloatPipeOptions) {
     options = options || {};
     const { exceptionFactory, errorHttpStatusCode = HttpStatus.BAD_REQUEST } =
@@ -54,6 +68,7 @@ export class ParseFloatPipe implements PipeTransform<string> {
    *
    * @param value 当前处理的路由参数
    * @param metadata 包含当前处理的路由参数的元数据
+   * @returns 转换后的浮点数
    */
   async transform(value: string, metadata: ArgumentMetadata): Promise<number> {
     if (isNil(value) && this.options?.optional) {

@@ -2,6 +2,7 @@ import { expect } from 'chai';
 import { RequestContextHost } from '../../context/request-context-host';
 import { BaseRpcContext } from '../../ctx-host/base-rpc.context';
 
+// RequestContextHost 单元测试：验证将 RPC 上下文切换为请求上下文的封装逻辑。
 describe('RequestContextHost', () => {
   const data = { test: true };
   const pattern = 'test';

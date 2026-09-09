@@ -1,3 +1,4 @@
+/** CORS 允许的 origin 取值：布尔值、字符串、正则或它们的数组 */
 type StaticOrigin = boolean | string | RegExp | (string | RegExp)[];
 
 /**
@@ -54,9 +55,11 @@ export interface CorsOptions {
   optionsSuccessStatus?: number;
 }
 
+/** CORS 选项异步回调，用于按请求动态返回 CorsOptions */
 export interface CorsOptionsCallback {
   (error: Error | null, options: CorsOptions): void;
 }
+/** CORS 选项委托：按请求动态决定 CORS 配置（`cors` 选项的函数形式） */
 export interface CorsOptionsDelegate<T> {
   (req: T, cb: CorsOptionsCallback): void;
 }

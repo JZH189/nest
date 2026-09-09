@@ -2,6 +2,7 @@ import { expect } from 'chai';
 import { KafkaResponseDeserializer } from '../../deserializers/kafka-response.deserializer';
 import { KafkaHeaders } from '../../enums/kafka-headers.enum';
 
+// KafkaResponseDeserializer 单元测试：验证从 Kafka 消息头与负载中解析出标准响应结构。
 describe('KafkaResponseDeserializer', () => {
   const id = '10';
 

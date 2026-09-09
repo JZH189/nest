@@ -12,6 +12,7 @@ import {
   KafkaMessage,
 } from '../../external/kafka.interface';
 
+// ClientKafka 单元测试：验证 Kafka 客户端的消息序列化/反序列化、回复分区与 correlationId 绑定及异常处理。
 describe('ClientKafka', () => {
   const topic = 'test.topic';
   const partition = 0;

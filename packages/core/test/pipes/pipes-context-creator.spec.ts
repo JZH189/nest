@@ -7,6 +7,7 @@ import { PipesContextCreator } from '../../pipes/pipes-context-creator';
 
 class Pipe {}
 
+// 验证 PipesContextCreator 根据参数元数据与全局管道创建具体管道实例列表
 describe('PipesContextCreator', () => {
   let creator: PipesContextCreator;
   let container: NestContainer;

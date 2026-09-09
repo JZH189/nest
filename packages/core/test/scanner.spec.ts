@@ -19,6 +19,7 @@ import { MetadataScanner } from '../metadata-scanner';
 import { DependenciesScanner } from '../scanner';
 import Sinon = require('sinon');
 
+// 验证 DependenciesScanner 扫描模块元数据并将提供者/控制器/导入/导出/全局增强器注册到容器
 describe('DependenciesScanner', () => {
   class Guard {}
 

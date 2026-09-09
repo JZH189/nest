@@ -5,6 +5,7 @@ import * as sinon from 'sinon';
 import { ApplicationConfig } from '../../application-config';
 import { RoutePathFactory } from '../../router/route-path-factory';
 
+// 验证 RoutePathFactory 拼接控制器路径与方法路径，并处理全局前缀与 URI 版本前缀
 describe('RoutePathFactory', () => {
   let routePathFactory: RoutePathFactory;
   let applicationConfig: ApplicationConfig;

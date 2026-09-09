@@ -4,6 +4,7 @@ import { ResolveReplFn } from '../../../repl/native-functions';
 import { ReplContext } from '../../../repl/repl-context';
 import { NestContainer } from '../../../injector/container';
 
+// 验证 REPL 内置函数 resolve：按 token 创建请求作用域提供者的新实例
 describe('ResolveReplFn', () => {
   let resolveReplFn: ResolveReplFn;
 

@@ -10,6 +10,9 @@ type FileTypeValidatorContext = FileValidatorContext<
   Omit<FileTypeValidatorOptions, 'errorMessage'>
 >;
 
+/**
+ * FileTypeValidator 的配置选项
+ */
 export type FileTypeValidatorOptions = {
   /**
    * 用于验证的期望文件类型。可以是字符串（MIME 类型）或正则表达式来匹配多种类型。
@@ -68,6 +71,14 @@ export class FileTypeValidator extends FileValidator<
   FileTypeValidatorOptions,
   IFile
 > {
+  /**
+   * 构建文件类型校验失败时的错误消息：
+   * 优先使用自定义 `errorMessage`（字符串或基于上下文的工厂函数），
+   * 否则拼装包含实际 mimetype 与期望类型的默认消息
+   *
+   * @param file 请求对象中的文件
+   * @returns 校验失败时显示的错误消息
+   */
   buildErrorMessage(file?: IFile): string {
     const { errorMessage, ...config } = this.validationOptions;
 
@@ -96,6 +107,19 @@ export class FileTypeValidator extends FileValidator<
     return `Validation failed (expected type is ${this.validationOptions.fileType})`;
   }
 
+  /**
+   * 校验上传文件是否为期望的文件类型。
+   *
+   * 处理流程：
+   * 1. 若未配置校验选项，直接视为有效；
+   * 2. 若开启 `skipMagicNumbersValidation`，仅用 mimetype 字符串与 `fileType` 匹配；
+   * 3. 否则用 file-type 包读取文件缓冲区魔数，检测真实 MIME 类型并匹配；
+   * 4. 魔数无法检测（文件太小/无签名）或 file-type 包加载失败时，
+   *    若开启 `fallbackToMimetype` 则回退到 mimetype 字符串比较。
+   *
+   * @param file 请求对象中的文件
+   * @returns 文件类型有效则返回 `true`
+   */
   async isValid(file?: IFile): Promise<boolean> {
     if (!this.validationOptions) {
       return true;

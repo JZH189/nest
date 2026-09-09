@@ -4,6 +4,7 @@ import { expect } from 'chai';
 import { ApplicationConfig } from '../application-config';
 import { ExcludeRouteMetadata } from '../router/interfaces/exclude-route-metadata.interface';
 
+// 验证 ApplicationConfig 对全局前缀、全局管道/过滤器/守卫/拦截器、IO 适配器及版本化配置的存取能力
 describe('ApplicationConfig', () => {
   let appConfig: ApplicationConfig;
 

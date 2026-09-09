@@ -8,6 +8,7 @@ import { InstanceWrapper } from '../../injector/instance-wrapper';
 import { RouterExceptionFilters } from '../../router/router-exception-filters';
 import { NoopHttpAdapter } from '../utils/noop-adapter.spec';
 
+// 验证 RouterExceptionFilters 为 HTTP 路由创建异常过滤器链并反射 @Catch 元数据
 describe('RouterExceptionFilters', () => {
   let applicationConfig: ApplicationConfig;
   let exceptionFilter: RouterExceptionFilters;

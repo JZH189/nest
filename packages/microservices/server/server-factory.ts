@@ -17,7 +17,20 @@ import { ServerRedis } from './server-redis';
 import { ServerRMQ } from './server-rmq';
 import { ServerTCP } from './server-tcp';
 
+/**
+ * 微服务服务端工厂：根据用户配置的传输器类型（transport 枚举）
+ * 创建对应的 Server 传输实现实例。
+ *
+ * 在 NestFactory.createMicroservice() 内部被调用，
+ * 例如 transport 为 Transport.KAFKA 时创建 ServerKafka。
+ * 未匹配到已知传输器时默认创建 ServerTCP（TCP 是默认传输方式）。
+ */
 export class ServerFactory {
+  /**
+   * 根据微服务配置创建对应的传输层服务端实例。
+   * @param microserviceOptions 微服务配置，包含 transport（传输器枚举）与 options（传输器选项）
+   * @returns 与传输器类型匹配的 Server 实例（ServerTCP/ServerRedis/ServerNATS/ServerMqtt/ServerGrpc/ServerKafka/ServerRMQ）
+   */
   public static create(microserviceOptions: MicroserviceOptions) {
     const { transport, options } = microserviceOptions as Exclude<
       MicroserviceOptions,

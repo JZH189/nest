@@ -9,6 +9,10 @@ class CustomTestError extends HttpException {
   }
 }
 
+/**
+ * ParseFloatPipe 的单元测试：
+ * 验证字符串到浮点数的转换、optional 行为以及非法值时报错。
+ */
 describe('ParseFloatPipe', () => {
   let target: ParseFloatPipe;
   beforeEach(() => {

@@ -1,6 +1,7 @@
 import { expect } from 'chai';
 import { NatsContext } from '../../ctx-host';
 
+// NatsContext 单元测试：验证 NATS 上下文中消息主题与原始消息的访问。
 describe('NatsContext', () => {
   const args: [string, any] = ['test', {}];
   let context: NatsContext;

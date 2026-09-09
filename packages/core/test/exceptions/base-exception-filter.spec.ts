@@ -5,6 +5,7 @@ import { NestContainer } from '../../injector/container';
 
 export class Filter {}
 
+// 验证 BaseExceptionFilterContext 根据传入对象或构造器从容器中解析过滤器实例的逻辑
 describe('BaseExceptionFilterContext', () => {
   let filter: BaseExceptionFilterContext;
   let container: NestContainer;

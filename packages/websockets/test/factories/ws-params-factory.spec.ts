@@ -2,6 +2,9 @@ import { expect } from 'chai';
 import { WsParamtype } from '../../enums/ws-paramtype.enum';
 import { WsParamsFactory } from '../../factories/ws-params-factory';
 
+/**
+ * WsParamsFactory 的单元测试：验证按参数类型从运行时参数提取值（socket/payload/ack）。
+ */
 describe('WsParamsFactory', () => {
   let factory: WsParamsFactory;
   beforeEach(() => {

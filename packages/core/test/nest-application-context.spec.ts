@@ -9,6 +9,7 @@ import { InstanceLoader } from '../injector/instance-loader';
 import { GraphInspector } from '../inspector/graph-inspector';
 import { NestApplicationContext } from '../nest-application-context';
 
+// 验证 NestApplicationContext 的依赖检索（get/resolve）、请求作用域实例创建及关闭/初始化钩子等容器级能力
 describe('NestApplicationContext', () => {
   class A {}
 

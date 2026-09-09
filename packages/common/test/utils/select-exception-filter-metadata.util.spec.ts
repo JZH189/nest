@@ -9,6 +9,11 @@ class ThirdError {}
 
 class FourthError {}
 
+/**
+ * selectExceptionFilterMetadata 工具函数的单元测试：
+ * 验证按声明顺序选取第一个能处理该异常的过滤器，
+ * 空异常类型列表的过滤器作为兜底处理器。
+ */
 describe('selectExceptionFilterMetadata', () => {
   it('should pass error handling to first suitable error handler', () => {
     const metadataList = [

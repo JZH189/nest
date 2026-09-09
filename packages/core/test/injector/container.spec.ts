@@ -7,6 +7,7 @@ import { UnknownModuleException } from '../../errors/exceptions/unknown-module.e
 import { NestContainer } from '../../injector/container';
 import { NoopHttpAdapter } from '../utils/noop-adapter.spec';
 
+// 验证 NestContainer 注册模块/提供者/控制器/可注入项及全局模块标记、替换实例等容器管理能力
 describe('NestContainer', () => {
   let container: NestContainer;
   let untypedContainer: any;

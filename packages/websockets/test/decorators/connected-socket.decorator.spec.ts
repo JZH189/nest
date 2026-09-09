@@ -7,6 +7,9 @@ class ConnectedSocketTest {
   public test(@ConnectedSocket() socket: any) {}
 }
 
+/**
+ * @ConnectedSocket 装饰器的单元测试：验证 SOCKET 参数元数据的写入。
+ */
 describe('@ConnectedSocket', () => {
   it('should enhance class with expected request metadata', () => {
     const argsMetadata = Reflect.getMetadata(

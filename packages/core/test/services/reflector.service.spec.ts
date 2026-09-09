@@ -11,6 +11,7 @@ type TestObject = {
   both: string;
 };
 
+// 验证 Reflector 按 key 或装饰器读取元数据，以及 getAll/getAllAndMerge/getAllAndOverride 的合并逻辑
 describe('Reflector', () => {
   const key = 'key';
   let reflector: Reflector;

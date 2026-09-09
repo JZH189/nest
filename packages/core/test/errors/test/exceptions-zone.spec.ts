@@ -3,6 +3,7 @@ import * as sinon from 'sinon';
 import { Logger } from '@nestjs/common';
 import { ExceptionsZone } from '../../../errors/exceptions-zone';
 
+// 验证 ExceptionsZone 的 run/asyncRun 在回调抛出异常时调用异常处理器、重新抛出错误，并按 autoFlushLogs 决定是否刷新日志
 describe('ExceptionsZone', () => {
   const rethrow = err => {
     throw err;

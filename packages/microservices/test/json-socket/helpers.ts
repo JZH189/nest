@@ -9,6 +9,9 @@ import { JsonSocket } from '../../helpers/json-socket';
 
 export const ip = '127.0.0.1';
 
+/**
+ * 创建一个监听随机端口的 net 服务器，成功后通过回调返回。
+ */
 export function createServer(callback: (err?: any, server?: Server) => void) {
   const server = netCreateServer();
   server.listen();
@@ -22,6 +25,9 @@ export function createServer(callback: (err?: any, server?: Server) => void) {
   });
 }
 
+/**
+ * 连接到指定服务器，返回包装为 JsonSocket 的客户端与服务器端套接字。
+ */
 export function createClient(
   server: Server,
   callback: (
@@ -50,6 +56,9 @@ export function createClient(
   });
 }
 
+/**
+ * 一次性创建服务器与客户端，并在两端套接字就绪后回调。
+ */
 export function createServerAndClient(
   callback: (
     err?: any,
@@ -73,6 +82,9 @@ export function createServerAndClient(
   });
 }
 
+/**
+ * 生成 [start, end] 闭区间的连续整数数组。
+ */
 export function range(start: number, end: number) {
   const r = [] as number[];
   for (let i = start; i <= end; i++) {

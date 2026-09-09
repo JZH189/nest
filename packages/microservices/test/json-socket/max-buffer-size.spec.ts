@@ -7,6 +7,7 @@ import { JsonSocket } from '../../helpers/json-socket';
 
 const DEFAULT_MAX_BUFFER_SIZE = (512 * 1024 * 1024) / 4; // 512 MBs in characters with 4 bytes per character (32-bit)
 
+// JsonSocket maxBufferSize 测试：验证缓冲区上限的默认值、自定义配置及超限时的异常。
 describe('JsonSocket maxBufferSize', () => {
   describe('default maxBufferSize', () => {
     it('should use default maxBufferSize when not provided', () => {

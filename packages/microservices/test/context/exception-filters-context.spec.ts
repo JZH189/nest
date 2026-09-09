@@ -7,6 +7,7 @@ import { ApplicationConfig } from '../../../core/application-config';
 import { InstanceWrapper } from '../../../core/injector/instance-wrapper';
 import { ExceptionFiltersContext } from '../../context/exception-filters-context';
 
+// ExceptionFiltersContext 单元测试：验证 RPC 场景下异常过滤器的创建与匹配。
 describe('ExceptionFiltersContext', () => {
   let applicationConfig: ApplicationConfig;
   let exceptionFilter: ExceptionFiltersContext;

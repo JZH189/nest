@@ -5,6 +5,7 @@ import * as sinon from 'sinon';
 import { RpcException } from '../../exceptions/rpc-exception';
 import { RpcExceptionsHandler } from '../../exceptions/rpc-exceptions-handler';
 
+// RpcExceptionsHandler 单元测试：验证自定义过滤器优先、否则回退默认处理的异常分发逻辑。
 describe('RpcExceptionsHandler', () => {
   let handler: RpcExceptionsHandler;
 

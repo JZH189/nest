@@ -6,6 +6,7 @@ import { BaseRpcContext } from '../../ctx-host/base-rpc.context';
 import { ServerRedis } from '../../server/server-redis';
 import { objectToMap } from './utils/object-to-map';
 
+// ServerRedis 单元测试：验证 Redis 服务器的模式订阅、消息处理与上下文包装。
 describe('ServerRedis', () => {
   let server: ServerRedis;
   let untypedServer: any;

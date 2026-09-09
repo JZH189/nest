@@ -15,6 +15,7 @@ class SampleModule implements OnApplicationBootstrap {
 
 class WithoutHookProvider {}
 
+// 验证 callModuleBootstrapHook 对模块内实现了 OnApplicationBootstrap 接口的提供者及模块自身触发钩子
 describe('OnApplicationBootstrap', () => {
   let moduleRef: Module;
   let sampleProvider: SampleProvider;

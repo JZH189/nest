@@ -1,6 +1,11 @@
 import { Type } from '../type.interface';
 import { Paramtype } from './paramtype.interface';
 
+/**
+ * 简单转换函数的类型：接收参数值与其元数据，返回转换/校验后的值。
+ * 常用于 `@Body()` 等装饰器的第二参数（如 `ParseArrayPipe` 内部），
+ * 也用于 `PipeTransform#transform` 的方法引用。
+ */
 export type Transform<T = any> = (value: T, metadata: ArgumentMetadata) => any;
 
 /**

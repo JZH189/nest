@@ -43,6 +43,14 @@ export type IEntryNestModule =
   | Promise<IEntryNestModule>;
 
 /**
+ * NestFactory 的实现类（单例），封装了所有类型 Nest 应用（HTTP 应用、微服务、
+ * 纯上下文应用）的创建与初始化逻辑。
+ *
+ * 它是整个框架的"总装车间"：负责组装依赖注入容器（NestContainer）、
+ * 依赖扫描器（DependenciesScanner）、实例加载器（InstanceLoader）、
+ * HTTP 适配器（AbstractHttpAdapter）以及应用实例（NestApplication 等），
+ * 是开发者调用 `NestFactory.create()` 时真正执行的代码。
+ *
  * @publicApi
  */
 export class NestFactoryStatic {
@@ -203,6 +211,14 @@ export class NestFactoryStatic {
     return context.init();
   }
 
+  /**
+   * 包装应用实例：为其创建一个异常捕获代理。
+   * 之后对实例上所有方法的调用都会经由 `ExceptionsZone` 执行，
+   * 保证未捕获异常被统一记录，并根据 abortOnError 策略决定是否终止进程。
+   *
+   * @param instance 待包装的应用实例
+   * @returns 经过 Proxy 包装、具备异常捕获能力的同一实例
+   */
   private createNestInstance<T>(instance: T): T {
     return this.createProxy(instance);
   }
@@ -278,6 +294,13 @@ export class NestFactoryStatic {
     }
   }
 
+  /**
+   * 初始化失败时的统一处理：
+   * - abortOnError 为 true（默认）时直接 `process.abort()` 终止进程，避免应用处于半初始化状态；
+   * - 否则将异常重新抛出，交由调用方处理。
+   *
+   * @param err 初始化过程中抛出的异常
+   */
   private handleInitializationError(err: unknown) {
     if (this.abortOnError) {
       process.abort();
@@ -285,6 +308,13 @@ export class NestFactoryStatic {
     rethrow(err);
   }
 
+  /**
+   * 为目标对象创建 Proxy，拦截其 get/set 操作：
+   * 访问到的每个函数属性都会被包装进异常区域（ExceptionsZone）中执行。
+   *
+   * @param target 待代理的应用实例
+   * @returns 包装后的 Proxy 对象
+   */
   private createProxy(target: any) {
     const proxy = this.createExceptionProxy();
     return new Proxy(target, {
@@ -293,6 +323,12 @@ export class NestFactoryStatic {
     });
   }
 
+  /**
+   * 生成 Proxy 的 get/set 拦截器：
+   * - 属性不存在时直接返回 undefined；
+   * - 属性为函数时返回包裹了 ExceptionsZone 的代理函数；
+   * - 普通属性原样返回。
+   */
   private createExceptionProxy() {
     return (receiver: Record<string, any>, prop: string) => {
       if (!(prop in receiver)) {
@@ -305,6 +341,15 @@ export class NestFactoryStatic {
     };
   }
 
+  /**
+   * 将指定对象上的某个方法包装进 `ExceptionsZone.run` 中执行：
+   * 方法抛出的异常会被统一记录，随后根据 teardown（abortOnError 策略）
+   * 决定终止进程还是重新抛出。
+   *
+   * @param receiver 方法所属的对象
+   * @param prop 方法名
+   * @returns 包装后的安全调用函数
+   */
   private createExceptionZone(
     receiver: Record<string, any>,
     prop: string,
@@ -325,6 +370,15 @@ export class NestFactoryStatic {
     };
   }
 
+  /**
+   * 根据启动选项配置全局日志系统：
+   * - `logger`：覆盖默认日志器（自定义 LoggerService 或日志级别数组）；
+   * - `forceConsole`：强制使用 Console 输出（忽略 LogBuffer）；
+   * - `bufferLogs`：开启日志缓冲，待应用就绪后统一刷新；
+   * - `autoFlushLogs`：记录是否在覆盖日志器后立即刷新缓冲日志。
+   *
+   * @param options 用户传入的应用配置项
+   */
   private registerLoggerConfiguration(
     options: NestApplicationContextOptions | undefined,
   ) {
@@ -346,6 +400,14 @@ export class NestFactoryStatic {
     this.autoFlushLogs = autoFlushLogs ?? true;
   }
 
+  /**
+   * 创建默认的 HTTP 适配器。
+   * 通过 loadAdapter 懒加载 `@nestjs/platform-express` 包，
+   * 若未安装会抛出带安装指引的错误。未显式传入适配器时使用。
+   *
+   * @param httpServer 可选的已有 HTTP 服务器实例（如 http.Server）
+   * @returns Express 适配器实例
+   */
   private createHttpAdapter<T = any>(httpServer?: T): AbstractHttpAdapter {
     const { ExpressAdapter } = loadAdapter(
       '@nestjs/platform-express',
@@ -355,6 +417,13 @@ export class NestFactoryStatic {
     return new ExpressAdapter(httpServer);
   }
 
+  /**
+   * 判断第二个参数是 HTTP 服务器（适配器）还是配置对象。
+   * 通过检测其是否具有 `patch` 方法来区分（适配器必有该方法）。
+   *
+   * @param serverOrOptions create() 的第二个参数
+   * @returns 若为 HTTP 适配器则返回 true（类型守卫）
+   */
   private isHttpServer(
     serverOrOptions: AbstractHttpAdapter | NestApplicationOptions,
   ): serverOrOptions is AbstractHttpAdapter {
@@ -363,6 +432,14 @@ export class NestFactoryStatic {
     );
   }
 
+  /**
+   * 解析 abortOnError 错误处理策略：
+   * 默认为 true（初始化失败时直接终止进程）；
+   * 当用户显式传入 `abortOnError: false` 时改为抛出异常。
+   *
+   * @param serverOrOptions create() 的第二个参数（可能是适配器）
+   * @param options 应用配置项
+   */
   private setAbortOnError(
     serverOrOptions?: AbstractHttpAdapter | NestApplicationOptions,
     options?: NestApplicationContextOptions | NestApplicationOptions,
@@ -372,6 +449,18 @@ export class NestFactoryStatic {
       : !(serverOrOptions && serverOrOptions.abortOnError === false);
   }
 
+  /**
+   * 创建"适配器代理"：这是 create() 最终返回给用户的对象。
+   * - 优先访问应用实例（NestApplication）自身的属性/方法；
+   * - 若属性不存在于应用实例但存在于底层 HTTP 适配器（如 Express 实例），
+   *   则将调用转发给适配器，并同样包裹进异常区域执行；
+   * - 这使得 `app.get()` 等方法在语义上优先匹配 Nest API，
+   *   同时用户仍可像操作 Express 实例一样操作返回值。
+   *
+   * @param app 包装后的 NestApplication 实例
+   * @param adapter 底层 HTTP 适配器
+   * @returns 融合了应用与适配器能力的 Proxy 对象
+   */
   private createAdapterProxy<T>(app: NestApplication, adapter: HttpServer): T {
     const proxy = new Proxy(app, {
       get: (receiver: Record<string, any>, prop: string) => {
@@ -401,6 +490,15 @@ export class NestFactoryStatic {
     return proxy as unknown as T;
   }
 
+  /**
+   * 根据是否开启 snapshot 模式决定使用哪种图检查器：
+   * - snapshot 模式使用真实 GraphInspector 记录完整的依赖关系图（用于可视化/分析）；
+   * - 普通模式使用 NoopGraphInspector（空实现），避免运行时开销。
+   *
+   * @param appOptions 应用配置项
+   * @param container 依赖注入容器
+   * @returns GraphInspector 实例或 NoopGraphInspector
+   */
   private createGraphInspector(
     appOptions: NestApplicationContextOptions,
     container: NestContainer,

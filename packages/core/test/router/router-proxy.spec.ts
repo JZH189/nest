@@ -6,6 +6,7 @@ import { ExecutionContextHost } from '../../helpers/execution-context-host';
 import { RouterProxy } from '../../router/router-proxy';
 import { NoopHttpAdapter } from '../utils/noop-adapter.spec';
 
+// 验证 RouterProxy 将同步/异步路由回调（含异常层代理）中的异常转交 ExceptionsHandler 处理
 describe('RouterProxy', () => {
   let routerProxy: RouterProxy;
   let handler: ExceptionsHandler;

@@ -5,6 +5,7 @@ import { NatsRecordSerializer } from '../../serializers/nats-record.serializer';
 
 const jsonCodec = nats.JSONCodec();
 
+// NatsRecordSerializer 单元测试：验证将普通负载或 NatsRecord 序列化为 NATS 消息记录（JSON 编码）。
 describe('NatsRecordSerializer', () => {
   let instance: NatsRecordSerializer;
   beforeEach(() => {

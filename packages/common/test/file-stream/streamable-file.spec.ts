@@ -4,6 +4,11 @@ import { Readable } from 'stream';
 import { StreamableFile } from '../../file-stream';
 import { HttpStatus } from '../../enums';
 
+/**
+ * StreamableFile 的单元测试：
+ * 覆盖对可读流/Buffer/Uint8Array 等不同输入的包装行为、响应头选项，
+ * 以及默认错误处理器与错误日志器（含自定义替换）。
+ */
 describe('StreamableFile', () => {
   describe('when input is a readable stream', () => {
     it('should assign it to a stream class property', () => {

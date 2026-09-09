@@ -1,6 +1,9 @@
 import { isObject, isString } from '@nestjs/common/utils/shared.utils';
 
 /**
+ * RPC 通信中抛出的统一异常类型：微服务消息处理程序抛出的所有异常
+ * 都会被序列化为该异常并通过网络回传给客户端。
+ *
  * @publicApi
  */
 export class RpcException extends Error {

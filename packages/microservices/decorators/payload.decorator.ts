@@ -3,20 +3,22 @@ import { RpcParamtype } from '../enums/rpc-paramtype.enum';
 import { createPipesRpcParamDecorator } from '../utils/param.utils';
 
 /**
- * Microservice message pattern payload parameter decorator.
+ * 微服务消息负载（payload）参数装饰器：把消息数据注入到处理器参数中。
+ * 写入 PARAM_ARGS_METADATA 元数据（RpcParamtype.PAYLOAD），
+ * 由 RpcContextCreator 在调用处理器时取值并应用管道。
  *
+ * @returns 参数装饰器
  * @publicApi
  */
 export function Payload(): ParameterDecorator;
 /**
- * Microservice message pattern payload parameter decorator.
+ * 微服务消息负载参数装饰器（可指定管道）。
  *
- * Example:
+ * 示例：
  * ```typescript
  * create(@Payload(new ValidationPipe()) createDto: CreateCatDto)
  * ```
- * @param pipes one or more pipes - either instances or classes - to apply to
- * the bound parameter.
+ * @param pipes - 应用于该参数的一个或多个管道（实例或类）
  *
  * @publicApi
  */
@@ -24,26 +26,24 @@ export function Payload(
   ...pipes: (Type<PipeTransform> | PipeTransform)[]
 ): ParameterDecorator;
 /**
- * Microservice message pattern payload parameter decorator. Extracts a property from the
- * payload object. May also apply pipes to the bound parameter.
+ * 微服务消息负载参数装饰器：从 payload 对象中提取属性，也可对参数应用管道。
  *
- * For example, extracting all params:
+ * 提取整个 payload：
  * ```typescript
  * findMany(@Payload() ids: string[])
  * ```
  *
- * For example, extracting a single param:
+ * 提取单个属性：
  * ```typescript
  * create(@Payload('data') createDto: { data: string })
  * ```
  *
- * For example, extracting a single param with pipe:
+ * 提取单个属性并应用管道：
  * ```typescript
  * create(@Payload('data', new ValidationPipe()) createDto: { data: string })
  * ```
- * @param propertyKey name of single property to extract from the message payload
- * @param pipes one or more pipes - either instances or classes - to apply to
- * the bound parameter.
+ * @param propertyKey - 要从消息负载中提取的属性名
+ * @param pipes - 应用于该参数的一个或多个管道（实例或类）
  *
  * @publicApi
  */

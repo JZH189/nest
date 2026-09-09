@@ -1,6 +1,7 @@
 import { expect } from 'chai';
 import { ExecutionContextHost } from '../../helpers/execution-context-host';
 
+// 验证 ExecutionContextHost 封装执行上下文参数，并支持切换到 HTTP/RPC/WS 各类型代理视图
 describe('ExecutionContextHost', () => {
   let contextHost: ExecutionContextHost;
 

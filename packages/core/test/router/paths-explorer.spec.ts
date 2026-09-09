@@ -9,6 +9,7 @@ import { RequestMethod } from '../../../common/enums/request-method.enum';
 import { MetadataScanner } from '../../metadata-scanner';
 import { PathsExplorer } from '../../router/paths-explorer';
 
+// 验证 PathsExplorer 扫描控制器提取路由方法及控制器/方法级路径的组合（含数组路径与版本）
 describe('PathsExplorer', () => {
   @Controller('global')
   class TestRoute {

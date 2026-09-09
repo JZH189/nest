@@ -6,6 +6,7 @@ import {
 } from '../../constants';
 import { Client } from '../../decorators/client.decorator';
 
+// @Client 属性装饰器单元测试：验证将客户端配置与实例元数据注入到类属性上。
 describe('@Client', () => {
   const pattern = { role: 'test' };
   class TestComponent {

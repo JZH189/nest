@@ -22,6 +22,11 @@ import { CustomTransportStrategy } from './custom-transport-strategy.interface';
 import { Deserializer } from './deserializer.interface';
 import { Serializer } from './serializer.interface';
 
+/**
+ * 微服务配置的联合类型：createMicroservice()/connectMicroservice()
+ * 的入参，按 transport 字段区分传输器（gRPC/TCP/Redis/NATS/MQTT/RMQ/Kafka），
+ * 或使用自定义传输策略（CustomStrategy）。
+ */
 export type MicroserviceOptions =
   | GrpcOptions
   | TcpOptions
@@ -32,19 +37,36 @@ export type MicroserviceOptions =
   | KafkaOptions
   | CustomStrategy;
 
+/**
+ * 传输器标识类型：内置传输器枚举值或自定义传输器的 Symbol 标识
+ * （用于多实例场景下区分不同的传输层实现）。
+ */
 export type TransportId = Transport | symbol;
 
+/**
+ * 异步微服务配置：通过注入令牌与工厂函数动态生成 MicroserviceOptions。
+ */
 export type AsyncMicroserviceOptions = {
+  /** 工厂函数的依赖注入令牌列表。 */
   inject: InjectionToken[];
+  /** 返回微服务配置的工厂函数。 */
   useFactory: (...args: any[]) => MicroserviceOptions;
 };
 
+/**
+ * 通用异步选项类型：通过注入令牌与工厂函数动态生成任意选项对象 T。
+ */
 export type AsyncOptions<T extends object> = {
+  /** 工厂函数的依赖注入令牌列表。 */
   inject: InjectionToken[];
+  /** 返回选项对象的工厂函数。 */
   useFactory: (...args: any[]) => T;
 };
 
 /**
+ * 自定义传输策略配置：strategy 为实现了 CustomTransportStrategy 接口的
+ * 实例（由用户自行接管监听逻辑），options 为随策略传递的选项。
+ *
  * @publicApi
  */
 export interface CustomStrategy {
@@ -53,6 +75,17 @@ export interface CustomStrategy {
 }
 
 /**
+ * gRPC 传输器配置（transport: Transport.GRPC）。
+ * 关键字段：
+ * - protoPath/package：.proto 文件路径与 proto 包名（必填 package）；
+ * - url：监听地址（默认 '0.0.0.0:5000'）；
+ * - protoLoader/protoDefinition：proto 加载器与自定义包定义；
+ * - credentials：服务端凭据（TLS 等）；
+ * - loader：透传给 proto-loader 的解析选项（keepCase/oneofs 等）；
+ * - maxSendMessageLength/maxReceiveMessageLength/maxMetadataSize：消息长度限制；
+ * - channelOptions/keepalive：gRPC 通道与 keepalive 参数；
+ * - gracefulShutdown：关闭时是否优雅等待在途请求。
+ *
  * @publicApi
  */
 export interface GrpcOptions {
@@ -96,6 +129,14 @@ export interface GrpcOptions {
 }
 
 /**
+ * TCP 传输器配置（transport: Transport.TCP，默认传输器）。
+ * 关键字段：
+ * - host/port：监听地址与端口（默认 localhost:3000）；
+ * - retryAttempts/retryDelay：意外关闭后的自动重启次数与间隔；
+ * - socketClass：自定义 socket 包装类（默认 JsonSocket）；
+ * - tlsOptions：启用 TLS 的选项；
+ * - maxBufferSize：单条消息最大缓冲（防止超大消息耗尽内存）。
+ *
  * @publicApi
  */
 export interface TcpOptions {
@@ -118,6 +159,14 @@ export interface TcpOptions {
 }
 
 /**
+ * Redis Pub/Sub 传输器配置（transport: Transport.REDIS）。
+ * 基于 Redis 频道（Pub/Sub）实现 RPC 与事件分发，
+ * 关键字段：
+ * - host/port：Redis 服务器地址（默认 localhost:6379）；
+ * - wildcards：启用 psubscribe 通配符订阅；
+ * - retryAttempts/retryDelay：断线重连次数与间隔；
+ * - 其余字段透传给 ioredis（IORedisOptions）。
+ *
  * @publicApi
  */
 export interface RedisOptions {
@@ -137,6 +186,13 @@ export interface RedisOptions {
 }
 
 /**
+ * MQTT 传输器配置（transport: Transport.MQTT）。
+ * 基于 MQTT topic 实现消息分发，关键字段：
+ * - url：broker 地址（默认 'tcp://localhost:1883'）；
+ * - subscribeOptions：订阅选项（qos、nl、rap、rh）；
+ * - userProperties：MQTT 5.0 用户属性；
+ * - 其余字段透传给 MQTT.js（MqttClientOptions）。
+ *
  * @publicApi
  */
 export interface MqttOptions {
@@ -168,6 +224,14 @@ export interface MqttOptions {
 }
 
 /**
+ * NATS 传输器配置（transport: Transport.NATS）。
+ * 基于 NATS subject 实现消息分发，关键字段：
+ * - servers：NATS 服务器地址列表；
+ * - queue：队列组名称（同一队列组的订阅者负载均衡消费）；
+ * - authenticator/user/pass/token/userJWT/userCreds/nkey：认证相关；
+ * - reconnect*：断线重连策略；gracefulShutdown/gracePeriod：优雅关闭；
+ * - serializer/deserializer：消息编解码器。
+ *
  * @publicApi
  */
 export interface NatsOptions {
@@ -217,6 +281,9 @@ export interface NatsOptions {
 }
 
 /**
+ * RabbitMQ 传输器配置（transport: Transport.RMQ）。
+ * 基于 AMQP 队列/交换机实现消息分发，字段含义见各属性注释。
+ *
  * @publicApi
  */
 export interface RmqOptions {
@@ -324,11 +391,22 @@ export interface RmqOptions {
 /**
  * @publicApi
  */
+/** Kafka 消息解析器配置：keepBinary 为 true 时保留原始二进制负载不转字符串。 */
 export interface KafkaParserConfig {
   keepBinary?: boolean;
 }
 
 /**
+/**
+ * Kafka 传输器配置（transport: Transport.KAFKA）。
+ * 基于 Kafka topic 实现消息分发，关键字段：
+ * - client：kafkajs 客户端配置（brokers、clientId、认证等）；
+ * - consumer/producer：消费者与生产者配置；
+ * - run/subscribe/send：透传给 consumer.run()、subscribe() 与 producer.send() 的选项；
+ * - postfixId：clientId/groupId 自动追加的后缀（避免客户端/服务端冲突）；
+ * - producerOnlyMode：仅作为生产者使用（不订阅消费）；
+ * - parser：消息解析器配置。
+ *
  * @publicApi
  */
 export interface KafkaOptions {

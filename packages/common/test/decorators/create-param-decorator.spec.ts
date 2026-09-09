@@ -3,6 +3,10 @@ import { ROUTE_ARGS_METADATA } from '../../constants';
 import { createParamDecorator } from '../../decorators/http/create-route-param-metadata.decorator';
 import { ParseIntPipe } from '../../index';
 
+/**
+ * createParamDecorator 工厂的单元测试：
+ * 验证自定义参数装饰器能把工厂函数、透传数据与管道写入路由参数元数据。
+ */
 describe('createParamDecorator', () => {
   let result;
 
@@ -13,7 +17,8 @@ describe('createParamDecorator', () => {
   it('should return a function as a first element', () => {
     expect(result).to.be.a('function');
   });
-  describe('returned decorator', () => {
+    // 测试 createParamDecorator 返回的装饰器
+    describe('returned decorator', () => {
     const factoryFn = (data, req) => true;
     const Decorator = createParamDecorator(factoryFn);
 
@@ -103,7 +108,8 @@ describe('createParamDecorator', () => {
     });
   });
 
-  describe('returned generic typed decorator', () => {
+    // 测试泛型版 createParamDecorator 的类型参数仅用于编译期约束，不影响运行时元数据
+    describe('returned generic typed decorator', () => {
     const factoryFn = (data, req) => true;
     interface User {
       name: string;

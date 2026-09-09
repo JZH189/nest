@@ -20,6 +20,12 @@ import {
 import { ROUTE_ARGS_METADATA } from '../../constants';
 import { RouteParamtypes } from '../../enums/route-paramtypes.enum';
 
+/**
+ * HTTP 方法路由装饰器（@Get、@Post、@Delete 等，含 WebDAV 系列）的单元测试。
+ * 各 describe 块结构相同：验证装饰器在方法上写入 path/method 元数据（支持字符串或数组路径），
+ * 且未传路径时默认为 "/"；@Get 额外验证了参数装饰器写入的路由参数元数据。
+ */
+
 describe('@Get', () => {
   const requestPath = 'test';
   const requestProps = {
@@ -396,6 +402,7 @@ describe('@Search', () => {
 });
 
 describe('Inheritance', () => {
+  // 验证子类通过原型链继承父类静态方法上的路由元数据
   const requestPath = 'test';
   const requestProps = {
     path: requestPath,

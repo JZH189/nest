@@ -3,6 +3,7 @@ import { InstanceWrapper } from '../../injector/instance-wrapper';
 import { ModulesContainer } from '../../injector/modules-container';
 import { DiscoverableMetaHostCollection } from '../../discovery/discoverable-meta-host-collection';
 
+// 验证 DiscoverableMetaHostCollection 维护"类引用 -> 元数据键"链接，并按元数据键索引/检索提供者和控制器的能力
 describe('DiscoverableMetaHostCollection', () => {
   beforeEach(() => {
     // Clear the metaHostLinks map before each test

@@ -1,6 +1,18 @@
 import { ConnectionOptions } from 'tls';
 
 /**
+ * ioredis 客户端选项接口（第三方 ioredis 的类型声明镜像，
+ * 对应其 RedisOptions）。
+ *
+ * 微服务场景中的关键字段：
+ * - retryStrategy：连接断开后的自动重试策略（返回下次重试延迟毫秒数，
+ *   返回 void/null 停止重试），Nest 的 ServerRedis/ClientRedis 会自动注入；
+ * - maxRetriesPerRequest：命令在重连队列中允许等待的最大重试次数；
+ * - autoResubscribe：重连后是否自动重新订阅之前的频道（Pub/Sub 必需）；
+ * - lazyConnect：是否延迟到首次命令/显式 connect() 时才建立连接；
+ * - keepAlive/noDelay/connectTimeout/commandTimeout：TCP 与命令超时配置；
+ * - Sentinel 相关（sentinels/name/role 等）：哨兵模式高可用配置。
+ *
  * @see https://github.dev/luin/ioredis/blob/df04dd8d87a44d3b64b385c86581915248554508/lib/redis/RedisOptions.ts#L184
  *
  * @publicApi

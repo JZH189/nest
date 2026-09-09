@@ -2,6 +2,9 @@ import { expect } from 'chai';
 import { ReplaySubject, Subject } from 'rxjs';
 import { ServerAndEventStreamsFactory } from '../../factories/server-and-event-streams-factory';
 
+/**
+ * ServerAndEventStreamsFactory 的单元测试：验证服务器宿主与事件流的创建。
+ */
 describe('ServerAndEventStreamsFactory', () => {
   describe('create', () => {
     it(`should return expected observable socket object`, () => {

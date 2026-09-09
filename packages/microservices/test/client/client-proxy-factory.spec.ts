@@ -10,6 +10,7 @@ import { ClientRMQ } from '../../client/client-rmq';
 import { ClientKafka } from '../../client/client-kafka';
 import { join } from 'path';
 
+// ClientProxyFactory 单元测试：验证根据 transport 配置创建对应类型客户端代理的工厂逻辑。
 describe('ClientProxyFactory', () => {
   describe('create', () => {
     it(`should create tcp client by default`, () => {

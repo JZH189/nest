@@ -20,6 +20,7 @@ import { RoutesResolver } from '../../router/routes-resolver';
 import { NoopHttpAdapter } from '../utils/noop-adapter.spec';
 import { createError as createFastifyError } from '@fastify/error';
 
+// 验证 RoutesResolver 遍历控制器注册路由，处理前缀、主机、版本等元数据及异常路径
 describe('RoutesResolver', () => {
   @Controller('global')
   class TestRoute {

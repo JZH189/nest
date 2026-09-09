@@ -7,6 +7,8 @@ export interface RpcDecoratorMetadata {
 }
 
 /**
+ * 当 gRPC 流式方法的装饰器元数据不完整或与 proto 定义不匹配（如缺少流式标记）时抛出。
+ *
  * @publicApi
  */
 export class InvalidGrpcDecoratorException extends RuntimeException {

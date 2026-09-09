@@ -4,6 +4,9 @@ import * as sinon from 'sinon';
 import { WsException } from '../../errors/ws-exception';
 import { WsExceptionsHandler } from '../../exceptions/ws-exceptions-handler';
 
+/**
+ * WsExceptionsHandler 的单元测试：验证自定义过滤器的匹配调用与默认异常回退行为。
+ */
 describe('WsExceptionsHandler', () => {
   let handler: WsExceptionsHandler;
   let emitStub: sinon.SinonStub;

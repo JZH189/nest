@@ -1,6 +1,10 @@
 import { expect } from 'chai';
 import { filterLogLevels } from '../../../services/utils/filter-log-levels.util';
 
+/**
+ * filterLogLevels 工具函数的单元测试：
+ * 验证对 ">warn"、">=warn"、逗号分隔列表、单一级别等字符串的解析。
+ */
 describe('filterLogLevels', () => {
   it('should correctly parse an exclusive range', () => {
     const returned = filterLogLevels('>warn');

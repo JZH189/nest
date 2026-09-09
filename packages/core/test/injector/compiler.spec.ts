@@ -2,6 +2,7 @@ import { expect } from 'chai';
 import { ModuleCompiler } from '../../injector/compiler';
 import { ByReferenceModuleOpaqueKeyFactory } from '../../injector/opaque-key-factory/by-reference-module-opaque-key-factory';
 
+// 验证 ModuleCompiler 提取模块元数据、识别动态模块并生成模块唯一标识（opaque key）
 describe('ModuleCompiler', () => {
   let compiler: ModuleCompiler;
   beforeEach(() => {

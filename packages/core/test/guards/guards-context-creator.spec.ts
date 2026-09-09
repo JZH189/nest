@@ -6,6 +6,7 @@ import { InstanceWrapper } from '../../injector/instance-wrapper';
 
 class Guard {}
 
+// 验证 GuardsContextCreator 根据方法/类元数据与全局守卫配置创建守卫实例列表
 describe('GuardsContextCreator', () => {
   let guardsContextCreator: GuardsContextCreator;
   let applicationConfig: ApplicationConfig;

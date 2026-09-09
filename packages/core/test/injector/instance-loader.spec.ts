@@ -8,6 +8,7 @@ import { InstanceLoader } from '../../injector/instance-loader';
 import { InstanceWrapper } from '../../injector/instance-wrapper';
 import { GraphInspector } from '../../inspector/graph-inspector';
 
+// 验证 InstanceLoader 触发模块内提供者与控制器的实例化流程
 describe('InstanceLoader', () => {
   @Controller('')
   class TestCtrl {}

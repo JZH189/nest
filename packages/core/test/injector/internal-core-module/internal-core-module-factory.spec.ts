@@ -8,6 +8,7 @@ import { InternalCoreModule } from '../../../injector/internal-core-module/inter
 import { InternalCoreModuleFactory } from '../../../injector/internal-core-module/internal-core-module-factory';
 import { SerializedGraph } from '../../../inspector/serialized-graph';
 
+// 验证 InternalCoreModuleFactory 创建内部核心模块，并注册 ExternalContextCreator、ModulesContainer 等内置提供者
 describe('InternalCoreModuleFactory', () => {
   it('should return the internal core module definition', () => {
     const moduleDefinition = InternalCoreModuleFactory.create(

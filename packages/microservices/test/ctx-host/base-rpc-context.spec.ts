@@ -1,6 +1,7 @@
 import { expect } from 'chai';
 import { BaseRpcContext } from '../../ctx-host/base-rpc.context';
 
+// BaseRpcContext 单元测试：验证所有 RPC 上下文基类的参数存取逻辑。
 describe('BaseRpcContext', () => {
   const args = [1, 2, 3];
   let rpcContext: BaseRpcContext;

@@ -4,6 +4,7 @@ import { SelectReplFn } from '../../../repl/native-functions';
 import { ReplContext } from '../../../repl/repl-context';
 import { NestContainer } from '../../../injector/container';
 
+// 验证 REPL 内置函数 select：按模块引用检索模块属性访问器
 describe('SelectReplFn', () => {
   let selectReplFn: SelectReplFn;
 

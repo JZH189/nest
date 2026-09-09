@@ -20,6 +20,7 @@ class GrpcService {
   test2 = null;
 }
 
+// ClientGrpcProxy 单元测试：验证 gRPC 客户端基于 proto 定义生成服务方法、错误处理及关闭行为。
 describe('ClientGrpcProxy', () => {
   let client: ClientGrpcProxy;
   let untypedClient: any;

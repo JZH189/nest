@@ -35,6 +35,10 @@ export interface ParseBoolPipeOptions {
 /**
  * 定义内置的 ParseBool 管道
  *
+ * 属于解析型（Parse）管道：把路由参数（通常来自查询字符串）转换为布尔值。
+ * 仅接受 `true`/`'true'`/`false`/`'false'`，其他值默认抛出 400 Bad Request 异常。
+ * 该管道在路由处理方法被调用之前由框架自动执行。
+ *
  * @see [内置管道](https://docs.nestjs.cn/pipes#built-in-pipes)
  *
  * @publicApi
@@ -44,8 +48,16 @@ export class ParseBoolPipe implements PipeTransform<
   string | boolean,
   Promise<boolean>
 > {
+  /**
+   * 校验失败时用于构造待抛出异常的工厂函数
+   */
   protected exceptionFactory: (error: string) => any;
 
+  /**
+   * 构造函数：初始化异常工厂（默认按 `errorHttpStatusCode` 生成对应 HTTP 异常）
+   *
+   * @param options 解析布尔管道的配置项
+   */
   constructor(@Optional() protected readonly options?: ParseBoolPipeOptions) {
     options = options || {};
     const { exceptionFactory, errorHttpStatusCode = HttpStatus.BAD_REQUEST } =

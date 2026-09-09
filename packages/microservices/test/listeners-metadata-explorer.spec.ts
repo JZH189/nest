@@ -7,6 +7,7 @@ import { MessagePattern } from '../decorators/message-pattern.decorator';
 import { Transport } from '../enums/transport.enum';
 import { ListenerMetadataExplorer } from '../listener-metadata-explorer';
 
+// ListenerMetadataExplorer 单元测试：验证从装饰器元数据中探索消息/事件监听器定义的逻辑。
 describe('ListenerMetadataExplorer', () => {
   const msgPattern = { pattern: 'testMsg' };
   const firstMultipleMsgPattern = { pattern: 'testMultipleMsg1' };

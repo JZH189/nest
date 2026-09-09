@@ -15,6 +15,7 @@ class SampleModule implements OnModuleDestroy {
 
 class WithoutHookProvider {}
 
+// 验证 callModuleDestroyHook 对模块内实现了 OnModuleDestroy 接口的提供者及模块自身触发钩子
 describe('OnModuleDestroy', () => {
   let moduleRef: Module;
   let sampleProvider: SampleProvider;

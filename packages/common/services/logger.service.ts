@@ -3,6 +3,9 @@ import { isObject } from '../utils/shared.utils';
 import { ConsoleLogger } from './console-logger.service';
 import { isLogLevelEnabled } from './utils';
 
+/**
+ * 支持的全部日志级别（按详细程度从高到低排列）
+ */
 export const LOG_LEVELS = [
   'verbose',
   'debug',
@@ -13,11 +16,16 @@ export const LOG_LEVELS = [
 ] as const satisfies string[];
 
 /**
+ * 日志级别类型（'verbose' | 'debug' | 'log' | 'warn' | 'error' | 'fatal'）
+ *
  * @publicApi
  */
 export type LogLevel = (typeof LOG_LEVELS)[number];
 
 /**
+ * NestJS 日志服务的接口契约：自定义日志器（如接入 winston、pino）
+ * 需要实现该接口才能被框架使用
+ *
  * @publicApi
  */
 export interface LoggerService {
@@ -58,6 +66,9 @@ export interface LoggerService {
   setLogLevels?(levels: LogLevel[]): any;
 }
 
+/**
+ * 日志缓冲区记录项：暂存待延迟执行的方法引用与参数
+ */
 interface LogBufferRecord {
   /**
    * 要执行的方法。
@@ -82,17 +93,45 @@ const dateTimeFormatter = new Intl.DateTimeFormat(undefined, {
 });
 
 /**
+ * NestJS 内置的日志器（Logger）
+ *
+ * 既可作为实例注入（@Injectable），也可以像 `Logger.log(...)` 一样静态调用。
+ * 实例方法会委托给"本地实例"或"全局静态实例"（默认 ConsoleLogger），
+ * 并自动补上构造时传入的上下文名称（context）。
+ * 所有方法均通过 @WrapBuffer 装饰器包裹：在应用启动阶段（attachBuffer 期间）
+ * 日志会被暂存到缓冲区，待 flush() 后统一输出。
+ * 可通过 static overrideLogger 替换为自定义的 LoggerService 实现。
+ *
  * @publicApi
  */
 @Injectable()
 export class Logger implements LoggerService {
+  /**
+   * 启动阶段暂存日志的缓冲区
+   */
   protected static logBuffer = new Array<LogBufferRecord>();
+  /**
+   * 全局静态日志器实例（默认为 ConsoleLogger）
+   */
   protected static staticInstanceRef?: LoggerService = DEFAULT_LOGGER;
+  /**
+   * 全局日志级别过滤配置
+   */
   protected static logLevels?: LogLevel[];
+  /**
+   * 是否已附加缓冲区（true 时日志写入缓冲区而非直接输出）
+   */
   private static isBufferAttached: boolean;
 
+  /**
+   * 当前实例的私有日志器（延迟创建的 ConsoleLogger）
+   */
   protected localInstanceRef?: LoggerService;
 
+  /**
+   * 方法装饰器：包裹日志方法，
+   * 缓冲区附加期间把调用（方法+参数）暂存到 logBuffer，否则直接执行原方法
+   */
   private static WrapBuffer: MethodDecorator = (
     target: object,
     propertyKey: string | symbol,
@@ -111,6 +150,12 @@ export class Logger implements LoggerService {
     };
   };
 
+  /**
+   * 构造函数（可传入上下文名称与时间戳选项）
+   *
+   * @param context 日志上下文名称（显示在日志行中，如类名）
+   * @param options 额外选项（是否在日志中附加时间戳）
+   */
   constructor();
   constructor(context: string);
   constructor(context: string, options?: { timestamp?: boolean });
@@ -119,6 +164,11 @@ export class Logger implements LoggerService {
     @Optional() protected options: { timestamp?: boolean } = {},
   ) {}
 
+  /**
+   * 获取当前实例应使用的日志器：
+   * 全局实例为默认 ConsoleLogger（或纯 Logger 实例）时，
+   * 延迟创建带本实例上下文的 ConsoleLogger；否则复用全局静态实例
+   */
   get localInstance(): LoggerService {
     if (Logger.staticInstanceRef === DEFAULT_LOGGER) {
       return this.registerLocalInstanceRef();
@@ -305,10 +355,22 @@ export class Logger implements LoggerService {
     this.isBufferAttached = false;
   }
 
+  /**
+   * 获取格式化的当前时间戳（本地时区）
+   *
+   * @returns 形如 "2024/01/02 上午10:00:00" 的时间戳字符串
+   */
   static getTimestamp() {
     return dateTimeFormatter.format(Date.now());
   }
 
+  /**
+   * 覆盖全局日志器：可传入自定义 LoggerService 实例、
+   * 日志级别数组，或 `false` 关闭日志输出
+   *
+   * @param logger 自定义日志器 / 日志级别数组 / `false`
+   * @throws 传入继承自 Logger（而非 ConsoleLogger）的实例时抛出 `Error`
+   */
   static overrideLogger(logger: LoggerService | LogLevel[] | boolean) {
     if (Array.isArray(logger)) {
       Logger.logLevels = logger;
@@ -326,11 +388,20 @@ export class Logger implements LoggerService {
     }
   }
 
+  /**
+   * 判断指定日志级别当前是否被允许输出
+   *
+   * @param level 待检查的日志级别
+   * @returns 该级别已启用（或未配置过滤）则返回 `true`
+   */
   static isLevelEnabled(level: LogLevel): boolean {
     const logLevels = Logger.logLevels;
     return isLogLevelEnabled(level, logLevels);
   }
 
+  /**
+   * 延迟创建并复用本地 ConsoleLogger 实例（携带实例上下文与全局日志级别）
+   */
   private registerLocalInstanceRef() {
     if (this.localInstanceRef) {
       return this.localInstanceRef;

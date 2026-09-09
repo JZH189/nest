@@ -2,6 +2,14 @@ import { DynamicModule } from '@nestjs/common/interfaces/modules/dynamic-module.
 import { ForwardReference } from '@nestjs/common/interfaces/modules/forward-reference.interface';
 import { Type } from '@nestjs/common/interfaces/type.interface';
 
+/**
+ * 模块不透明键工厂接口：为模块生成唯一标识 token 的策略抽象。
+ *
+ * 容器以该 token 作为模块在 ModulesContainer 中的键，
+ * 相同 token 的模块会被视为同一模块（去重/复用）。
+ * 可通过 contextOptions.moduleIdGeneratorAlgorithm 选择实现：
+ * 'reference'（默认，按对象引用缓存）或 'deep-hash'（按内容深哈希）。
+ */
 export interface ModuleOpaqueKeyFactory {
   /**
    * Creates a unique opaque key for the given static module.

@@ -1,5 +1,8 @@
 import { LogLevel } from '../logger.service';
 
+/**
+ * 各日志级别对应的严重程度数值（verbose 最低，fatal 最高）
+ */
 const LOG_LEVEL_VALUES: Record<LogLevel, number> = {
   verbose: 0,
   debug: 1,

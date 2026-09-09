@@ -7,6 +7,7 @@ import { ExternalExceptionFilterContext } from '../../exceptions/external-except
 import { NestContainer } from '../../injector/container';
 import { InstanceWrapper } from '../../injector/instance-wrapper';
 
+// 验证 ExternalExceptionFilterContext（非 HTTP 传输层）创建异常过滤器链并反射 @Catch 元数据
 describe('ExternalExceptionFilterContext', () => {
   let applicationConfig: ApplicationConfig;
   let exceptionFilter: ExternalExceptionFilterContext;

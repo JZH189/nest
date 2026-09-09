@@ -6,6 +6,7 @@ import { Module } from '../../injector/module';
 import { ModulesContainer } from '../../injector/modules-container';
 import { DiscoverableMetaHostCollection } from '../../discovery/discoverable-meta-host-collection';
 
+// 验证 DiscoveryService 创建可发现装饰器，以及按元数据键、模块范围检索提供者/控制器/模块的能力
 describe('DiscoveryService', () => {
   let discoveryService: DiscoveryService;
   let modulesContainer: ModulesContainer;

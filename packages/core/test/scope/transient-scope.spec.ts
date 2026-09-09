@@ -3,6 +3,7 @@ import { INQUIRER, ModuleRef } from '@nestjs/core';
 import { Test } from '@nestjs/testing';
 import { expect } from 'chai';
 
+// 验证 TRANSIENT 作用域行为：每次注入创建新实例、INQUIRER 注入宿主及 moduleRef.create 的使用
 describe('Transient scope', () => {
   const SOME_TOKEN = Symbol('SomeToken');
 

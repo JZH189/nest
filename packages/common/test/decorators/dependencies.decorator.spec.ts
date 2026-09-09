@@ -2,6 +2,10 @@ import { expect } from 'chai';
 import { Dependencies } from '../../decorators/core/dependencies.decorator';
 import { PARAMTYPES_METADATA } from '../../constants';
 
+/**
+ * @Dependencies 装饰器的单元测试：
+ * 验证它为类写入依赖（构造参数类型）元数据，并支持数组和散列参数两种传参方式。
+ */
 describe('@Dependencies', () => {
   const dep = 'test',
     dep2 = 'test2';

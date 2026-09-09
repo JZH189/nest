@@ -6,6 +6,7 @@ import { JsonSocket } from '../../helpers/json-socket';
 
 const MESSAGE_EVENT = 'message';
 
+// JsonSocket 消息解析测试：验证跨 chunk 到达、粘包及多包混合场景下消息的完整解析。
 describe('JsonSocket message parsing', () => {
   const socket = new JsonSocket(new Socket());
   let messages: string[] = [];

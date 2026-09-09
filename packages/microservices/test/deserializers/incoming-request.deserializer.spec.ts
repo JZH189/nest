@@ -2,6 +2,7 @@ import { expect } from 'chai';
 import { IncomingRequestDeserializer } from '../../deserializers/incoming-request.deserializer';
 import { IncomingRequest } from '../../interfaces';
 
+// IncomingRequestDeserializer 单元测试：验证将原始数据解析为标准入站请求结构（id/pattern/data）。
 describe('IncomingRequestDeserializer', () => {
   let instance: IncomingRequestDeserializer;
   beforeEach(() => {

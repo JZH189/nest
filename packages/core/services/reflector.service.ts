@@ -5,6 +5,12 @@ import { uid } from 'uid';
 /**
  * @publicApi
  */
+/**
+ * 创建自定义装饰器的可选项。
+ *
+ * @typeParam TParam - 传给装饰器的元数据值类型。
+ * @typeParam TTransformed - 经 transform 转换后的元数据值类型。
+ */
 export interface CreateDecoratorOptions<TParam = any, TTransformed = TParam> {
   /**
    * The key for the metadata.
@@ -27,6 +33,14 @@ type CreateDecoratorWithTransformOptions<
 
 /**
  * @publicApi
+ */
+/**
+ * 可反射装饰器（ReflectableDecorator）：由 Reflector.createDecorator
+ * 创建的装饰器函数类型，附带静态 KEY 属性（元数据键），
+ * 便于配合 Reflector.get/getAllAndOverride 等方法做类型安全的元数据读写。
+ *
+ * @typeParam TParam - 传给装饰器的元数据值类型。
+ * @typeParam TTransformed - 转换后的元数据值类型。
  */
 export type ReflectableDecorator<TParam, TTransformed = TParam> = ((
   opts?: TParam,

@@ -8,6 +8,7 @@ import {
 import { Module } from '../../../injector/module';
 import { stringCleaner } from '../../utils/string.cleaner';
 
+// 验证各类错误消息模板（未知依赖、未定义模块、非法导出等）在不同 token/模块场景下生成的提示文本
 describe('Error Messages', () => {
   const CatsModule = { name: 'CatsModule' };
   const AppModule = { name: 'AppModule' };

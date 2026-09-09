@@ -22,6 +22,7 @@ import { RouterExecutionContext } from '../../router/router-execution-context';
 import { HeaderStream } from '../../router/sse-stream';
 import { NoopHttpAdapter } from '../utils/noop-adapter.spec';
 
+// 验证 RouterExecutionContext 组装 HTTP 路由处理代理：参数解析、管道、守卫、拦截器与 SSE/直接响应等分支
 describe('RouterExecutionContext', () => {
   let contextCreator: RouterExecutionContext;
   let callback: any;

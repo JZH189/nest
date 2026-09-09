@@ -10,6 +10,9 @@ import { Observable, throwError as _throw } from 'rxjs';
 import { RpcException } from './rpc-exception';
 
 /**
+ * RPC 异常过滤器的基础实现：将异常转换为 RxJS 错误流并回传给调用方。
+ * 非 RpcException 类型的未知异常会被统一包装为"未知异常"消息（并记录日志）。
+ *
  * @publicApi
  */
 export class BaseRpcExceptionFilter<

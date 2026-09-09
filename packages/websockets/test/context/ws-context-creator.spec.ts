@@ -30,6 +30,9 @@ class TestPipe {
   }
 }
 
+/**
+ * WsContextCreator 的单元测试：验证消息处理方法的守卫、管道、拦截器等上下文装配流程。
+ */
 describe('WsContextCreator', () => {
   let contextCreator: WsContextCreator;
   let wsProxy: WsProxy;

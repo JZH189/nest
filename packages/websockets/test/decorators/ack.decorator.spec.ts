@@ -8,6 +8,9 @@ class AckTest {
   public test(@Ack() ack: Function) {}
 }
 
+/**
+ * @Ack 装饰器的单元测试：验证 ACK 参数元数据的写入。
+ */
 describe('@Ack', () => {
   it('should enhance class with expected request metadata', () => {
     const argsMetadata = Reflect.getMetadata(

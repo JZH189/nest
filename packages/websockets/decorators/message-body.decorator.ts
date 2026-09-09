@@ -55,6 +55,9 @@ export function MessageBody(
   propertyOrPipe?: string | (Type<PipeTransform> | PipeTransform),
   ...pipes: (Type<PipeTransform> | PipeTransform)[]
 ): ParameterDecorator {
+  // 实现签名：区分三种重载（无参/管道列表/属性名+管道列表），
+  // 统一委托给 createPipesWsParamDecorator(WsParamtype.PAYLOAD)，
+  // 即从运行时参数第 1 位（消息负载）中提取值。
   return createPipesWsParamDecorator(WsParamtype.PAYLOAD)(
     propertyOrPipe,
     ...pipes,

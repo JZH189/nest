@@ -7,6 +7,7 @@ class CtxTest {
   public test(@Ctx() ctx: any) {}
 }
 
+// @Ctx 参数装饰器单元测试：验证将 RPC 上下文注入为方法参数的元数据注册。
 describe('@Ctx', () => {
   it('should enhance class with expected request metadata', () => {
     const argsMetadata = Reflect.getMetadata(

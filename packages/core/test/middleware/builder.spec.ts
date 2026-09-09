@@ -20,6 +20,7 @@ import { RouteInfoPathExtractor } from '../../middleware/route-info-path-extract
 import { RoutesMapper } from '../../middleware/routes-mapper';
 import { NoopHttpAdapter } from './../utils/noop-adapter.spec';
 
+// 验证 MiddlewareBuilder 流式 API（apply/forRoutes/exclude/with 等）生成中间件配置
 describe('MiddlewareBuilder', () => {
   let builder: MiddlewareBuilder;
 

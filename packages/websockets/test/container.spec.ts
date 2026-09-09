@@ -3,6 +3,9 @@ import * as hash from 'object-hash';
 import * as sinon from 'sinon';
 import { SocketsContainer } from '../sockets-container';
 
+/**
+ * SocketsContainer 的单元测试：验证按配置哈希存取、清空服务器容器的行为。
+ */
 describe('SocketsContainer', () => {
   const port = 30;
 

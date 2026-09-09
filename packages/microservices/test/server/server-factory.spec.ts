@@ -9,6 +9,7 @@ import { ServerRedis } from '../../server/server-redis';
 import { ServerRMQ } from '../../server/server-rmq';
 import { ServerTCP } from '../../server/server-tcp';
 
+// ServerFactory 单元测试：验证根据 transport 配置创建对应类型服务器的工厂逻辑。
 describe('ServerFactory', () => {
   describe('create', () => {
     it(`should return tcp server by default`, () => {

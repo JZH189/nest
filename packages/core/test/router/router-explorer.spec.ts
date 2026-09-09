@@ -22,6 +22,7 @@ import { RouterExceptionFilters } from '../../router/router-exception-filters';
 import { RouterExplorer } from '../../router/router-explorer';
 import { NoopHttpAdapter } from '../utils/noop-adapter.spec';
 
+// 验证 RouterExplorer 扫描控制器并向 HTTP 适配器注册路由（路径解析、版本、异常映射等）
 describe('RouterExplorer', () => {
   @Controller('global')
   class TestRoute {

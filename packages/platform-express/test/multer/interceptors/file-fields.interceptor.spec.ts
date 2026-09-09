@@ -5,6 +5,7 @@ import { of } from 'rxjs';
 import * as sinon from 'sinon';
 import { FileFieldsInterceptor } from '../../../multer/interceptors/file-fields.interceptor';
 
+// 验证 FileFieldsInterceptor（按字段名接收多个文件）的拦截行为
 describe('FileFieldsInterceptor', () => {
   it('should return metatype with expected structure', async () => {
     const targetClass = FileFieldsInterceptor([

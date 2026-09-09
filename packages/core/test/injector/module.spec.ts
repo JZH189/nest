@@ -10,6 +10,7 @@ import { NestContainer } from '../../injector/container';
 import { InstanceWrapper } from '../../injector/instance-wrapper';
 import { Module } from '../../injector/module';
 
+// 验证 Module 对控制器、提供者、可注入项、导入/导出关系的注册与校验逻辑
 describe('Module', () => {
   let moduleRef: Module;
   let untypedModuleRef: any;

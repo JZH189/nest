@@ -1,6 +1,7 @@
 import { expect } from 'chai';
 import { TcpContext } from '../../ctx-host';
 
+// TcpContext 单元测试：验证 TCP 上下文中的模式与套接字访问。
 describe('TcpContext', () => {
   const args = [{}, 'pattern'];
   let context: TcpContext;

@@ -1,6 +1,7 @@
 import { expect } from 'chai';
 import { MqttContext } from '../../ctx-host';
 
+// MqttContext 单元测试：验证 MQTT 上下文中消息与包（packet）的访问。
 describe('MqttContext', () => {
   const args = ['test', { test: true }];
   let context: MqttContext;

@@ -1,6 +1,11 @@
 import { expect } from 'chai';
 import { Module } from '../../decorators/modules/module.decorator';
 
+/**
+ * @Module 装饰器的单元测试：
+ * 验证它把 providers/imports/exports/controllers 写入模块元数据，
+ * 并对未知的属性键抛出异常。
+ */
 describe('@Module', () => {
   const moduleProps = {
     providers: ['Test'],

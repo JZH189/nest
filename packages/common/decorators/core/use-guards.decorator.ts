@@ -29,10 +29,13 @@ export function UseGuards(
     key?: string | symbol,
     descriptor?: TypedPropertyDescriptor<any>,
   ) => {
+    // 校验每个守卫：要么是类/可调用对象，要么实现了 canActivate 方法
     const isGuardValid = <T extends Function | Record<string, any>>(guard: T) =>
       guard && (isFunction(guard) || isFunction(guard.canActivate));
 
+    // descriptor 存在说明用在方法上（方法级守卫），否则用在类上（控制器级守卫）
     if (descriptor) {
+      // 1. 校验传入的守卫是否合法，不合法时抛出带装饰器名的错误
       validateEach(
         target.constructor,
         guards,
@@ -40,6 +43,8 @@ export function UseGuards(
         '@UseGuards',
         'guard',
       );
+      // 2. 将守卫追加到方法的守卫元数据数组中，
+      //    请求处理管道在进入拦截器之前按顺序读取并执行
       extendArrayMetadata(GUARDS_METADATA, guards, descriptor.value);
       return descriptor;
     }

@@ -1,3 +1,7 @@
+/**
+ * 测试用数据夹具：一组包含特殊字符（如多字节字符、\r\n 转义序列）的超长负载，
+ * 用于验证 JsonSocket 在传输长消息时长度前缀与 JSON 解析不会出错。
+ */
 export const longPayload = [
   {
     _id: '584f17147fce7ca0a8bacfd2',

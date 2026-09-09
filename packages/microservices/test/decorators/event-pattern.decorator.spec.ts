@@ -7,6 +7,7 @@ import {
 import { EventPattern } from '../../decorators/event-pattern.decorator';
 import { Transport } from '../../enums/transport.enum';
 
+// @EventPattern 方法装饰器单元测试：验证事件模式、传输方式及附加元数据的注册。
 describe('@EventPattern', () => {
   const pattern = { role: 'test' };
   const patternSecond = { role: 'test2' };

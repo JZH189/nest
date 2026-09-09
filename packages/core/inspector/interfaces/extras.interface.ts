@@ -15,7 +15,13 @@ export interface OrphanedEnhancerDefinition {
   ref: unknown;
 }
 
+/**
+ * 序列化图的附加信息集合（Extras）：包含孤立增强器与已附着增强器
+ * 两个列表，随 toJSON 一起序列化输出。
+ */
 export interface Extras {
+  /** 孤立增强器列表（未附着到任何类）。 */
   orphanedEnhancers: Array<OrphanedEnhancerDefinition>;
+  /** 已附着增强器列表。 */
   attachedEnhancers: Array<AttachedEnhancerDefinition>;
 }

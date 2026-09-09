@@ -3,6 +3,12 @@ import * as sinon from 'sinon';
 import { IoAdapter } from '../adapters/io-adapter';
 import { of } from 'rxjs';
 
+/**
+ * IoAdapter 的单元测试：
+ * 验证 bindMessageHandlers 对同一个 socket 多次调用时（模拟多个网关
+ * 共享同一连接），disconnect 监听器只注册一次（由 disconnectMap 缓存保证），
+ * 而消息事件监听器则按调用次数正常重复注册。
+ */
 describe('IoAdapter', () => {
   let adapter: IoAdapter;
 

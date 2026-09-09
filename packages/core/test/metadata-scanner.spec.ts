@@ -1,6 +1,7 @@
 import { expect } from 'chai';
 import { MetadataScanner } from '../metadata-scanner';
 
+// 验证 MetadataScanner 沿原型链扫描实例方法（含访问器过滤）的能力
 describe('MetadataScanner', () => {
   let scanner: MetadataScanner;
   beforeEach(() => {

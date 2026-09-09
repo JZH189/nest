@@ -17,11 +17,17 @@ import { transformException } from '../multer/multer.utils';
 type MulterInstance = any;
 
 /**
+ * 多文件上传拦截器工厂（同一字段，@publicApi）。
  *
- * @param fieldName
- * @param maxCount
- * @param localOptions
+ * 基于 mixin 模式动态创建拦截器类：实例化时把 MulterModule 全局配置与
+ * localOptions 合并后创建 multer 实例；拦截请求时调用 multer 的 array()
+ * 中间件把指定字段（可限制数量）的多个文件解析后挂到 req.files 上。
+ * 底层错误会经 transformException 转换为 NestJS HTTP 异常。
  *
+ * @param fieldName - 表单中文件字段的名称
+ * @param maxCount - 该字段允许的最大文件数量
+ * @param localOptions - 当前拦截器私有的 multer 配置（覆盖全局配置）
+ * @returns 可直接挂载到路由的拦截器类型
  * @publicApi
  */
 export function FilesInterceptor(

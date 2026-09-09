@@ -8,6 +8,7 @@ import { GraphInspector } from '../../inspector/graph-inspector';
 import { EnhancerMetadataCacheEntry } from '../../inspector/interfaces/enhancer-metadata-cache-entry.interface';
 import { SerializedGraph } from '../../inspector/serialized-graph';
 
+// 验证 GraphInspector 收集增强器（守卫/拦截器等）元数据缓存并构建依赖图节点/边的能力
 describe('GraphInspector', () => {
   let graphInspector: GraphInspector;
   let enhancersMetadataCache: Array<EnhancerMetadataCacheEntry>;

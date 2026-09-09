@@ -19,6 +19,11 @@ function Foo(a) {
   this.a = 1;
 }
 
+/**
+ * shared.utils 通用工具函数的单元测试：
+ * 覆盖各类类型守卫（isString/isPlainObject 等）与路径处理
+ * （normalizePath/addLeadingSlash/stripEndSlash）的行为。
+ */
 describe('Shared utils', () => {
   describe('isUndefined', () => {
     it('should return true when obj is undefined', () => {

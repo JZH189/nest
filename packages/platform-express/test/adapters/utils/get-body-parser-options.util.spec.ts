@@ -1,6 +1,7 @@
 import { expect } from 'chai';
 import { getBodyParserOptions } from '../../../adapters/utils/get-body-parser-options.util';
 
+// 验证 getBodyParserOptions 工具：根据 rawBody 等选项生成 body-parser 配置
 describe('getBodyParserOptions', () => {
   describe('when rawBody is false', () => {
     it('should return empty options when no options provided', () => {

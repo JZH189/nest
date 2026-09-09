@@ -1,5 +1,8 @@
 import { RuntimeException } from '@nestjs/core/errors/exceptions/runtime.exception';
 
+/**
+ * 当 TCP 服务器接收到的数据不合法（如包长度值损坏、消息格式无法解析）时抛出。
+ */
 export class InvalidTcpDataReceptionException extends RuntimeException {
   constructor(err: string | Error) {
     const errMsgStr =

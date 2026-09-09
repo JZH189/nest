@@ -40,11 +40,16 @@ function callOperator(
 }
 
 /**
- * Calls the `beforeApplicationShutdown` function on the module and its children
- * (providers / controllers).
+ * before-app-shutdown 钩子调用器：应用收到关闭信号后的第一个生命周期阶段。
  *
- * @param module The module which will be initialized
- * @param signal The signal which caused the shutdown
+ * 在框架中的角色：app.close() / 收到系统信号时，Nest 会先于
+ * onApplicationShutdown / onModuleDestroy 调用所有实现了
+ * BeforeApplicationShutdown 接口实例的 beforeApplicationShutdown(signal)，
+ * 此时尚可继续接收请求，适合做“停止接收新流量前”的准备。
+ *
+ * @param module - 待触发钩子的模块
+ * @param signal - 导致应用关闭的系统信号（如 'SIGTERM'）
+ * @returns 所有钩子执行完成后兑现的 Promise
  */
 export async function callBeforeAppShutdownHook(
   module: Module,

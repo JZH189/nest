@@ -6,6 +6,7 @@ import { ROUTE_ARGS_METADATA } from '../../../common/constants';
 import { ContextUtils } from '../../helpers/context-utils';
 import { ExecutionContextHost } from '../../helpers/execution-context-host';
 
+// 验证 ContextUtils 反射路由处理函数参数元数据、计算参数数量及合并自定义装饰器工厂等工具逻辑
 describe('ContextUtils', () => {
   let contextUtils: ContextUtils;
 

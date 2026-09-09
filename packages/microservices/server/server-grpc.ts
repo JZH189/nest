@@ -42,38 +42,79 @@ type GrpcServer = any;
 let grpcPackage = {} as any;
 let grpcProtoLoaderPackage = {} as any;
 
+/**
+ * gRPC 调用对象的抽象描述：既包含一元调用的请求与元数据，
+ * 也包含流式调用所需的 write/end/on 等流控制方法。
+ *
+ * @typeParam TRequest - 请求负载类型
+ * @typeParam TMetadata - gRPC 元数据（metadata）类型
+ */
 interface GrpcCall<TRequest = any, TMetadata = any> {
+  /** 一元调用的请求负载。 */
   request: TRequest;
+  /** 调用携带的 gRPC 元数据。 */
   metadata: TMetadata;
+  /** 发送响应元数据的函数。 */
   sendMetadata: Function;
+  /** 结束可写流的函数。 */
   end: Function;
+  /** 向流写入一个值的函数（服务端流式响应）。 */
   write: Function;
+  /** 注册流事件监听器的函数（data/error/end/cancelled 等）。 */
   on: Function;
+  /** 移除流事件监听器的函数。 */
   off: Function;
+  /** 触发流事件的函数（如 error）。 */
   emit: Function;
 }
 
 /**
+ * 基于 gRPC（@grpc/grpc-js + proto-loader）的微服务服务端实现。
+ *
+ * 工作方式：
+ * - 启动时加载 .proto 文件生成包定义，遍历 proto 中的所有 service 定义，
+ *   把每个 rpc 方法包装后通过 grpcClient.addService() 注册到底层 gRPC 服务器；
+ * - 消息模式的匹配规则：@GrpcMethod/@GrpcStreamMethod 装饰器注册的 pattern
+ *   形如 `{ service, rpc, streaming }`（JSON 字符串），gRPC 侧按
+ *   「服务名 + 方法名 + 流类型」查找对应的处理器；
+ * - 根据 proto 中 rpc 定义的 requestStream/responseStream 组合，
+ *   选择一元、服务端流、客户端流（RX 流 / 直通流）等不同的包装方式回发响应。
+ *
  * @publicApi
  */
 export class ServerGrpc extends Server<never, never> {
+  /** 传输器唯一标识：GRPC。 */
   public transportId: TransportId = Transport.GRPC;
+  /** gRPC 服务器监听地址（默认 '0.0.0.0:5000'，见 GRPC_DEFAULT_URL）。 */
   protected readonly url: string;
+  /** 底层 @grpc/grpc-js 的 Server 实例。 */
   protected grpcClient: GrpcServer;
 
+  /**
+   * gRPC 传输不支持状态流，访问即抛错。
+   * @throws 始终抛出不支持错误
+   */
   get status(): never {
     throw new Error(
       'The "status" attribute is not supported by the gRPC transport',
     );
   }
 
+  /**
+   * @param options gRPC 传输选项，包括 protoPath/package/url/protoLoader、
+   * credentials、channelOptions、keepalive、maxSendMessageLength、
+   * maxReceiveMessageLength、maxMetadataSize、gracefulShutdown、
+   * onLoadPackageDefinition 等
+   */
   constructor(private readonly options: Readonly<GrpcOptions>['options']) {
     super();
+    // 1. 读取监听地址与 proto 加载器（默认 @grpc/proto-loader）
     this.url = this.getOptionsProp(options, 'url') || GRPC_DEFAULT_URL;
 
     const protoLoader =
       this.getOptionsProp(options, 'protoLoader') || GRPC_DEFAULT_PROTO_LOADER;
 
+    // 2. 按需加载 @grpc/grpc-js 与 proto 加载器依赖
     grpcPackage = this.loadPackage('@grpc/grpc-js', ServerGrpc.name, () =>
       require('@grpc/grpc-js'),
     );
@@ -87,29 +128,46 @@ export class ServerGrpc extends Server<never, never> {
     );
   }
 
+  /**
+   * 启动 gRPC 服务器：创建底层服务器并绑定所有 proto 服务。
+   * @param callback 启动完成或失败后调用的回调
+   */
   public async listen(
     callback: (err?: unknown, ...optionalParams: unknown[]) => void,
   ) {
     try {
+      // 1. 创建 gRPC 服务器实例（绑定端口）
       this.grpcClient = await this.createClient();
+      // 2. 加载 proto 并把所有服务方法注册到服务器
       await this.start(callback);
     } catch (err) {
       callback(err);
     }
   }
 
+  /**
+   * 启动流程第二步：绑定 proto 中定义的所有服务。
+   * @param callback 启动完成后调用的回调
+   */
   public async start(callback?: () => void) {
     await this.bindEvents();
     callback?.();
   }
 
+  /**
+   * 加载 proto 定义，并为配置中每个 package 找到对应的包对象，
+   * 将其中的 service 与处理器绑定。
+   */
   public async bindEvents() {
+    // 1. 加载 .proto 文件生成 gRPC 包定义对象
     const grpcContext = this.loadProto();
+    // 2. package 选项可以是单个名称或名称数组，统一处理为数组
     const packageOption = this.getOptionsProp(this.options, 'package');
     const packageNames = Array.isArray(packageOption)
       ? packageOption
       : [packageOption];
 
+    // 3. 逐个包查找包对象并把其中的服务注册到 gRPC 服务器
     for (const packageName of packageNames) {
       const grpcPkg = this.lookupPackage(grpcContext, packageName);
       await this.createServices(grpcPkg, packageName);
@@ -129,6 +187,11 @@ export class ServerGrpc extends Server<never, never> {
     return services;
   }
 
+  /**
+   * 把 options.keepalive 中的驼峰命名选项转换为 gRPC 所需的
+   * `grpc.*` 通道参数键值对。
+   * @returns 转换后的 keepalive 通道选项；未配置时返回空对象
+   */
   public getKeepaliveOptions() {
     if (!isObject(this.options.keepalive)) {
       return {};
@@ -222,15 +285,30 @@ export class ServerGrpc extends Server<never, never> {
     return service;
   }
 
+  /**
+   * 按/proto 方法签名查找消息处理器：pattern 形如
+   * `{ service, rpc, streaming }` 的 JSON 字符串；
+   * 优先用「包名.服务名」匹配，找不到时回退到 proto 方法
+   * 路径中的服务名再匹配一次。
+   *
+   * @param serviceName 服务全名（如 "Bundle.FirstService"）
+   * @param methodName rpc 方法名
+   * @param streaming 流类型（NO_STREAMING / RX_STREAMING / PT_STREAMING）
+   * @param grpcMethod proto 方法描述对象（含 path，用于提取服务名）
+   * @returns 匹配到的处理器；未注册时返回 undefined
+   */
   public getMessageHandler(
     serviceName: string,
     methodName: string,
     streaming: GrpcMethodStreamingType,
     grpcMethod: { path?: string },
   ): MessageHandler {
+    // 1. 先按传入的服务名构造 pattern 查找
     let pattern = this.createPattern(serviceName, methodName, streaming);
     let methodHandler = this.messageHandlers.get(pattern)!;
     if (!methodHandler) {
+      // 2. 找不到时，从 proto 方法路径（/package.Service/Method）中
+      //    提取服务名重新构造 pattern 再查找
       const packageServiceName = grpcMethod.path?.split?.('/')[1];
       pattern = this.createPattern(packageServiceName!, methodName, streaming);
       methodHandler = this.messageHandlers.get(pattern)!;
@@ -294,13 +372,21 @@ export class ServerGrpc extends Server<never, never> {
       : this.createUnaryServiceMethod(methodHandler);
   }
 
+  /**
+   * 为一元调用（非流式）创建 gRPC 方法包装：执行处理器并把
+   * 返回值通过 gRPC 回调 callback(err, data) 回传。
+   * @param methodHandler 注册的 @GrpcMethod 处理器
+   * @returns 可注册到 gRPC 服务的处理函数
+   */
   public createUnaryServiceMethod(methodHandler: Function): Function {
     return async (call: GrpcCall, callback: Function) => {
       return this.onProcessingStartHook(
         this.transportId,
         { ...call, operationId: methodHandler.name } as any,
         async () => {
+          // 1. 执行处理器（入参：请求、元数据、调用对象）
           const handler = methodHandler(call.request, call.metadata, call);
+          // 2. 结果统一转为 Observable，逐值回调，出错时回调错误，完成时触发结束钩子
           this.transformToObservable(await handler).subscribe({
             next: async data => callback(null, await data),
             error: (err: any) => callback(err),
@@ -313,14 +399,22 @@ export class ServerGrpc extends Server<never, never> {
     };
   }
 
+  /**
+   * 为服务端流式调用（responseStream=true）创建方法包装：
+   * 把处理器返回的 Observable 逐值写入 gRPC call（自动处理背压）。
+   * @param methodHandler 注册的 @GrpcMethod 处理器
+   * @returns 可注册到 gRPC 服务的处理函数
+   */
   public createStreamServiceMethod(methodHandler: Function): Function {
     return async (call: GrpcCall, callback: Function) => {
       return this.onProcessingStartHook(
         this.transportId,
         { ...call, operationId: methodHandler.name } as any,
         async () => {
+          // 1. 执行处理器并把结果统一转为 Observable
           const handler = methodHandler(call.request, call.metadata, call);
           const result$ = this.transformToObservable(await handler);
+          // 2. 逐值写入 gRPC call（writeObservableToGrpc 内部处理背压与错误）
           await this.writeObservableToGrpc(result$, call);
 
           this.onProcessingEndHook?.(this.transportId, call.request);
@@ -329,10 +423,18 @@ export class ServerGrpc extends Server<never, never> {
     };
   }
 
+  /**
+   * gRPC 传输不支持暴露底层实例，调用即抛错。
+   * @throws 始终抛出不支持错误
+   */
   public unwrap<T>(): T {
     throw new Error('Method is not supported for gRPC transport');
   }
 
+  /**
+   * gRPC 传输不支持注册通用事件监听器，调用即抛错。
+   * @throws 始终抛出不支持错误
+   */
   public on<
     EventKey extends string | number | symbol = string | number | symbol,
     EventCallback = any,
@@ -448,6 +550,15 @@ export class ServerGrpc extends Server<never, never> {
     });
   }
 
+  /**
+   * 为「客户端流 + @GrpcStreamMethod（RX 流式）」创建方法包装：
+   * 把 gRPC call 收到的每条消息推入一个 Subject，把该 Subject 的
+   * Observable 交给处理器；响应按需写回流或通过回调回传。
+   *
+   * @param methodHandler 注册的 @GrpcStreamMethod 处理器
+   * @param isResponseStream proto 中 responseStream 是否为 true
+   * @returns 可注册到 gRPC 服务的处理函数
+   */
   public createRequestStreamMethod(
     methodHandler: Function,
     isResponseStream: boolean,
@@ -463,8 +574,11 @@ export class ServerGrpc extends Server<never, never> {
           // Needs to be a Proxy in order to buffer messages that come before handler is executed
           // This could happen if handler has any async guards or interceptors registered that would delay
           // the execution.
+          // 1. 创建带缓冲的流主体：在处理器真正执行前（存在异步守卫/拦截器时）
+          //    先把到达的消息缓存起来，避免丢失
           const { subject, next, error, complete, cleanup } =
             this.bufferUntilDrained();
+          // 2. 把 gRPC 流的 data/error/end 事件接入流主体
           call.on('data', (m: any) => next(m));
           call.on('error', (e: any) => {
             // Check if error means that stream ended on other end
@@ -473,19 +587,23 @@ export class ServerGrpc extends Server<never, never> {
               .indexOf('cancelled');
 
             if (isCancelledError !== -1) {
+              // 3. 客户端取消：结束流即可，无需传播错误
               call.end();
               return;
             }
             // If another error then just pass it along
+            // 4. 其他错误：透传到流主体
             error(e);
           });
           call.on('end', () => {
+            // 5. 客户端发送完毕：关闭流主体并触发结束钩子
             complete();
             cleanup();
 
             this.onProcessingEndHook?.(this.transportId, call.request);
           });
 
+          // 6. 把流主体的 Observable 交给处理器
           const handler = methodHandler(
             subject.asObservable(),
             call.metadata,
@@ -493,8 +611,10 @@ export class ServerGrpc extends Server<never, never> {
           );
           const res = this.transformToObservable(await handler);
           if (isResponseStream) {
+            // 7. 服务端也是流式响应：逐值写回 gRPC call
             await this.writeObservableToGrpc(res, call);
           } else {
+            // 8. 服务端一元响应：取响应流最后一个值（客户端取消时提前终止）
             const response = await lastValueFrom(
               res.pipe(
                 takeUntil(fromEvent(call as any, CANCELLED_EVENT)),
@@ -515,6 +635,14 @@ export class ServerGrpc extends Server<never, never> {
     };
   }
 
+  /**
+   * 为「双向流 + @GrpcStreamCall（直通式）」创建方法包装：
+   * 直接把原始 gRPC call 对象交给处理器，由处理器自行读写流事件。
+   *
+   * @param methodHandler 注册的 @GrpcStreamCall 处理器
+   * @param isResponseStream proto 中 responseStream 是否为 true
+   * @returns 可注册到 gRPC 服务的处理函数
+   */
   public createStreamCallMethod(
     methodHandler: Function,
     isResponseStream: boolean,
@@ -527,6 +655,7 @@ export class ServerGrpc extends Server<never, never> {
         this.transportId,
         { ...call, operationId: methodHandler.name } as any,
         async () => {
+          // 1. responseStream 为 true 时只传 call；否则额外传 callback 供处理器回传结果
           let handlerStream: Observable<any>;
           if (isResponseStream) {
             handlerStream = this.transformToObservable(
@@ -537,6 +666,7 @@ export class ServerGrpc extends Server<never, never> {
               await methodHandler(call, callback),
             );
           }
+          // 2. 等待处理器流完成后再触发结束钩子
           await lastValueFrom(handlerStream).finally(() => {
             this.onProcessingEndHook?.(this.transportId, call.request);
           });
@@ -545,10 +675,15 @@ export class ServerGrpc extends Server<never, never> {
     };
   }
 
+  /**
+   * 关闭 gRPC 服务器：配置 gracefulShutdown 时优雅等待在途请求
+   * （tryShutdown），否则强制关闭（forceShutdown）。
+   */
   public async close(): Promise<void> {
     if (this.grpcClient) {
       const graceful = this.getOptionsProp(this.options, 'gracefulShutdown');
       if (graceful) {
+        // 1. 优雅关闭：等待所有在途请求完成后关闭
         await new Promise<void>((resolve, reject) => {
           this.grpcClient.tryShutdown((error: Error) => {
             if (error) reject(error);
@@ -556,12 +691,18 @@ export class ServerGrpc extends Server<never, never> {
           });
         });
       } else {
+        // 2. 立即强制关闭
         this.grpcClient.forceShutdown();
       }
     }
     this.grpcClient = null;
   }
 
+  /**
+   * 反序列化工具：尝试把字符串解析为 JSON，失败时原样返回。
+   * @param obj 待解析的值
+   * @returns 解析后的 JSON 对象或原值
+   */
   public deserialize(obj: any): any {
     try {
       return JSON.parse(obj);
@@ -570,6 +711,13 @@ export class ServerGrpc extends Server<never, never> {
     }
   }
 
+  /**
+   * gRPC 覆盖版本的处理器注册：pattern 直接按字符串（或 JSON 序列化）
+   * 存入注册表（不走基类的 normalizePattern 逻辑）。
+   * @param pattern 消息模式（{ service, rpc, streaming } 对象或字符串）
+   * @param callback 消息处理器
+   * @param isEventHandler 是否为事件处理器
+   */
   public addHandler(
     pattern: unknown,
     callback: MessageHandler,
@@ -580,7 +728,13 @@ export class ServerGrpc extends Server<never, never> {
     this.messageHandlers.set(route, callback);
   }
 
+  /**
+   * 创建底层 gRPC 服务器实例并绑定端口：合并 channelOptions、
+   * 消息长度限制、keepalive 等选项，然后绑定监听地址与凭据。
+   * @returns 已完成端口绑定的 gRPC 服务器实例
+   */
   public async createClient() {
+    // 1. 汇集通道选项：用户配置 + 最大发送/接收消息长度 + 元数据大小限制
     const channelOptions: ChannelOptions =
       this.options && this.options.channelOptions
         ? this.options.channelOptions
@@ -597,6 +751,7 @@ export class ServerGrpc extends Server<never, never> {
       channelOptions['grpc.max_metadata_size'] = this.options.maxMetadataSize;
     }
 
+    // 2. 转换并合并 keepalive 选项
     const keepaliveOptions = this.getKeepaliveOptions();
     const options: Record<string, string | number> = {
       ...channelOptions,
@@ -604,9 +759,11 @@ export class ServerGrpc extends Server<never, never> {
     };
 
     // Use merged options instead of just channelOptions
+    // 3. 创建服务器实例（使用合并后的完整选项）
     const server = new grpcPackage.Server(options);
     const credentials = this.getOptionsProp(this.options, 'credentials');
 
+    // 4. 绑定监听地址：未配置凭据时使用不安全（无 TLS）凭据
     await new Promise((resolve, reject) => {
       server.bindAsync(
         this.url,
@@ -619,6 +776,12 @@ export class ServerGrpc extends Server<never, never> {
     return server;
   }
 
+  /**
+   * 按点分路径从 proto 包定义根对象中查找指定包（命名空间）对象。
+   * @param root 包定义根对象
+   * @param packageName 点分命名空间（如 "Bundle.FirstService"）
+   * @returns 对应的包对象；任一层不存在时返回 undefined
+   */
   public lookupPackage(root: any, packageName: string) {
     /** Reference: https://github.com/kondi/rxjs-grpc */
     let pkg = root;
@@ -628,13 +791,22 @@ export class ServerGrpc extends Server<never, never> {
     return pkg;
   }
 
+  /**
+   * 加载 .proto 文件并生成 gRPC 包定义：
+   * 借助 proto-loader 生成 packageDefinition，回调
+   * onLoadPackageDefinition 钩子后转换为运行时包对象。
+   * @returns 加载后的 gRPC 包对象
+   * @throws proto 定义无效时抛出 InvalidProtoDefinitionException
+   */
   public loadProto(): any {
     try {
+      // 1. 根据 protoPath/loaderOptions/package 生成包定义
       const packageDefinition = getGrpcPackageDefinition(
         this.options,
         grpcProtoLoaderPackage,
       );
 
+      // 2. 用户自定义钩子：允许在加载后对包定义做额外处理
       if (this.options.onLoadPackageDefinition) {
         this.options.onLoadPackageDefinition(
           packageDefinition,
@@ -642,8 +814,10 @@ export class ServerGrpc extends Server<never, never> {
         );
       }
 
+      // 3. 转换为 gRPC 运行时包对象
       return grpcPackage.loadPackageDefinition(packageDefinition);
     } catch (err) {
+      // 4. proto 定义错误：包装为 InvalidProtoDefinitionException 并抛出
       const invalidProtoError = new InvalidProtoDefinitionException(err.path);
       const message =
         err && err.message ? err.message : invalidProtoError.message;
@@ -713,8 +887,16 @@ export class ServerGrpc extends Server<never, never> {
     return name + '.' + key;
   }
 
+  /**
+   * 把 proto 包中定义的所有 service 注册到底层 gRPC 服务器：
+   * 递归收集服务定义，然后为每个服务绑定控制器中声明的处理器。
+   * @param grpcPkg proto 包对象
+   * @param packageName 包名（用于错误提示）
+   * @throws 包不存在时抛出 InvalidGrpcPackageException
+   */
   private async createServices(grpcPkg: any, packageName: string) {
     if (!grpcPkg) {
+      // 1. 配置的 package 在 proto 中不存在：抛出错误
       const invalidPackageError = new InvalidGrpcPackageException(packageName);
       this.logger.error(invalidPackageError);
       throw invalidPackageError;
@@ -722,6 +904,8 @@ export class ServerGrpc extends Server<never, never> {
 
     // Take all of the services defined in grpcPkg and assign them to
     // method handlers defined in Controllers
+    // 2. 遍历包内所有服务定义，逐个注册：第一个参数为 proto 服务定义，
+    //    第二个参数为由处理器包装而成的方法实现集合
     for (const definition of this.getServiceNames(grpcPkg)) {
       this.grpcClient.addService(
         // First parameter requires exact service definition from proto
@@ -732,6 +916,15 @@ export class ServerGrpc extends Server<never, never> {
     }
   }
 
+  /**
+   * 创建「可延迟排空」的流主体：底层是 Subject + ReplaySubject 缓冲区。
+   * 在处理器尚未开始消费（drainBuffer 未被调用）前，所有 next/error/complete
+   * 都会先记录到 ReplaySubject；调用 drainBuffer 后缓冲内容回放给真实 Subject，
+   * 保证异步守卫/拦截器执行期间到达的消息不丢失。
+   *
+   * @typeParam T - 流元素类型
+   * @returns 包含 Proxy 包装的 subject 与 next/error/complete/cleanup 控制函数的对象
+   */
   private bufferUntilDrained<T>() {
     type DrainableSubject<T> = Subject<T> & { drainBuffer: () => void };
 

@@ -15,6 +15,7 @@ class TestServer extends Server {
   public close() {}
 }
 
+// Server 抽象基类单元测试：通过 TestServer 桩实现验证模式归一化、消息处理程序注册等通用逻辑。
 describe('Server', () => {
   const server = new TestServer();
   const untypedServer = server as any;

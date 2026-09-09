@@ -15,6 +15,7 @@ class SampleModule implements OnModuleInit {
 
 class WithoutHookProvider {}
 
+// 验证 callModuleInitHook 对模块内实现了 OnModuleInit 接口的提供者及模块自身触发初始化钩子
 describe('OnModuleInit', () => {
   let moduleRef: Module;
   let sampleProvider: SampleProvider;

@@ -9,6 +9,11 @@ class CustomTestError extends HttpException {
   }
 }
 
+/**
+ * ParseEnumPipe 的单元测试：
+ * 验证枚举值校验、自定义 exceptionFactory、optional 行为，
+ * 以及构造时必须传入 enumType。
+ */
 describe('ParseEnumPipe', () => {
   enum Direction {
     Up = 'UP',

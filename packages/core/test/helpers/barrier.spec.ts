@@ -6,6 +6,7 @@ import * as chaiAsPromised from 'chai-as-promised';
 import { setTimeout } from 'timers/promises';
 chai.use(chaiAsPromised);
 
+// 验证 Barrier 计数栅栏在达到目标计数后放行等待者（signal/wait/signalAndWait）
 describe('Barrier', () => {
   const targetCount = 3;
   let barrier: Barrier;

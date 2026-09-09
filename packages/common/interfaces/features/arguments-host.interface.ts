@@ -1,3 +1,7 @@
+/**
+ * 执行上下文的类型标识，由 `ArgumentsHost#getType()` 返回，
+ * 用于在守卫、拦截器、过滤器等组件中区分当前请求来自哪种传输协议。
+ */
 export type ContextType = 'http' | 'ws' | 'rpc';
 
 /**

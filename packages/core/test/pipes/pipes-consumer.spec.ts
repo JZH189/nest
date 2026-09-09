@@ -5,6 +5,7 @@ import { PipesConsumer } from '../../pipes/pipes-consumer';
 
 const createPipe = (transform: Function) => ({ transform });
 
+// 验证 PipesConsumer 依次执行管道转换（含同步/异步管道）并返回最终转换结果
 describe('PipesConsumer', () => {
   let consumer: PipesConsumer;
   beforeEach(() => {

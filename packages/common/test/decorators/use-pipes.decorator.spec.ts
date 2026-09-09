@@ -7,6 +7,10 @@ class Pipe {
   transform() {}
 }
 
+/**
+ * @UsePipes 装饰器的单元测试：
+ * 验证它在类/方法上写入管道元数据，并对非法参数抛出异常。
+ */
 describe('@UsePipes', () => {
   const pipes = [new Pipe(), new Pipe()];
 

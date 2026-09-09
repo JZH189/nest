@@ -2,6 +2,7 @@ import { expect } from 'chai';
 import { RmqRecordBuilder } from '../../record-builders';
 import { RmqRecordSerializer } from '../../serializers/rmq-record.serializer';
 
+// RmqRecordSerializer 单元测试：验证将普通负载或 RmqRecord 序列化为 RabbitMQ 消息记录。
 describe('RmqRecordSerializer', () => {
   const pattern = 'test';
 

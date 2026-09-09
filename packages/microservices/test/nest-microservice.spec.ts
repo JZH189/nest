@@ -31,6 +31,7 @@ const mockContainer = {
   getHttpAdapterHost: () => undefined,
 } as any;
 
+// NestMicroservice 单元测试：验证微服务实例的初始化、监听启动/关闭及全局过滤器/管道/拦截器配置。
 describe('NestMicroservice', () => {
   let mockGraphInspector: GraphInspector;
   let mockAppConfig: ApplicationConfig;

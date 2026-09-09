@@ -2,6 +2,7 @@ import { expect } from 'chai';
 import * as sinon from 'sinon';
 import { ByReferenceModuleOpaqueKeyFactory } from '../../../injector/opaque-key-factory/by-reference-module-opaque-key-factory';
 
+// 验证 ByReferenceModuleOpaqueKeyFactory 基于模块引用生成静态/动态模块的不透明 token
 describe('ByReferenceModuleOpaqueKeyFactory', () => {
   const moduleId = 'constId';
   let factory: ByReferenceModuleOpaqueKeyFactory;

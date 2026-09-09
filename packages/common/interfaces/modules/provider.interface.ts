@@ -4,6 +4,9 @@ import { InjectionToken } from './injection-token.interface';
 import { OptionalFactoryDependency } from './optional-factory-dependency.interface';
 
 /**
+ * 提供者（Provider）的联合类型：Nest DI 容器中"如何创建实例"的各种声明方式的统称，
+ * 可直接写类（Type），或使用 useClass/useValue/useFactory/useExisting 四种对象形式。
+ * 由 IoC 容器在实例化模块时解析。
  *
  * @publicApi
  */

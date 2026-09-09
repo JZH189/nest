@@ -32,6 +32,14 @@ import { RouterExceptionFilters } from './router-exception-filters';
 import { RouterExplorer } from './router-explorer';
 import { RouterProxy } from './router-proxy';
 
+/**
+ * 路由解析器：应用启动时把所有控制器的路由注册到 HTTP 适配器的总入口。
+ *
+ * 在框架中的角色：NestApplication#init 会依次调用 registerExceptionHandler、
+ * registerNotFoundHandler 与 resolve。resolve 遍历容器中的所有模块与控制器，
+ * 委托 RouterExplorer 扫描方法并注册；同时负责 404 兜底处理器与
+ * 外部异常（适配器层抛出的错误）兜底处理器的注册。
+ */
 export class RoutesResolver implements Resolver {
   private readonly logger = new Logger(RoutesResolver.name, {
     timestamp: true,
@@ -68,13 +76,22 @@ export class RoutesResolver implements Resolver {
     );
   }
 
+  /**
+   * 解析并注册容器中所有模块下的所有控制器路由。
+   *
+   * @param applicationRef - HTTP 适配器。
+   * @param globalPrefix - 通过 setGlobalPrefix 设置的全局路由前缀。
+   */
   public resolve<T extends HttpServer>(
     applicationRef: T,
     globalPrefix: string,
   ) {
+    // 1. 遍历容器中所有模块
     const modules = this.container.getModules();
     modules.forEach(({ controllers, metatype }, moduleName) => {
+      // 2. 读取模块路径元数据（RouterModule 注册的 MODULE_PATH）
       const modulePath = this.getModulePathMetadata(metatype)!;
+      // 3. 为该模块下的所有控制器注册路由
       this.registerRouters(
         controllers,
         moduleName,
@@ -85,6 +102,15 @@ export class RoutesResolver implements Resolver {
     });
   }
 
+  /**
+   * 注册指定模块下所有控制器的路由。
+   *
+   * @param routes - 模块内控制器实例表（key -> InstanceWrapper）。
+   * @param moduleName - 模块名。
+   * @param globalPrefix - 全局路由前缀。
+   * @param modulePath - 模块路径前缀。
+   * @param applicationRef - HTTP 适配器。
+   */
   public registerRouters(
     routes: Map<string | symbol | Function, InstanceWrapper<Controller>>,
     moduleName: string,
@@ -95,6 +121,7 @@ export class RoutesResolver implements Resolver {
     routes.forEach(instanceWrapper => {
       const { metatype } = instanceWrapper;
 
+      // 1. 读取控制器级元数据：主机过滤、路径、版本
       const host = this.getHostMetadata(metatype!);
       const routerPaths = this.routerExplorer.extractRouterPath(
         metatype as Type<any>,
@@ -103,6 +130,7 @@ export class RoutesResolver implements Resolver {
       const controllerName = metatype!.name;
 
       routerPaths.forEach(path => {
+        // 2. 计算用于日志展示的控制器路径并打印"控制器已映射"日志
         const pathsToLog = this.routePathFactory.create({
           ctrlPath: path,
           modulePath,
@@ -124,6 +152,7 @@ export class RoutesResolver implements Resolver {
           });
         }
 
+        // 3. 组装控制器级路径元数据，交给 RouterExplorer 扫描并注册所有方法路由
         const versioningOptions = this.applicationConfig.getVersioning();
         const routePathMetadata: RoutePathMetadata = {
           ctrlPath: path,
@@ -143,6 +172,10 @@ export class RoutesResolver implements Resolver {
     });
   }
 
+  /**
+   * 注册 404 兜底处理器：请求未命中任何路由时抛出 NotFoundException
+   * （"Cannot GET /url"），并交由异常过滤器链转换为响应。
+   */
   public registerNotFoundHandler() {
     const applicationRef = this.container.getHttpAdapterRef();
     const callback = <TRequest, TResponse>(req: TRequest, res: TResponse) => {
@@ -159,6 +192,10 @@ export class RoutesResolver implements Resolver {
       );
   }
 
+  /**
+   * 注册全局错误处理兜底：适配器中间件/错误层抛出的异常先经 mapExternalException
+   * 映射为 NestJS 异常，再交由异常层代理与异常过滤器链处理。
+   */
   public registerExceptionHandler() {
     const callback = <TError, TRequest, TResponse>(
       err: TError,
@@ -182,6 +219,13 @@ export class RoutesResolver implements Resolver {
       );
   }
 
+  /**
+   * 把适配器层抛出的"外部异常"映射为 NestJS 的 HttpException。
+   *
+   * @param err - 原始异常。
+   * @returns 映射后的异常：JSON 语法错误/URI 编码错误 -> BadRequestException；
+   *          Fastify 错误 -> 按其 statusCode 构造 HttpException；其余原样返回。
+   */
   public mapExternalException(err: any) {
     switch (true) {
       // SyntaxError is thrown by Express body-parser when given invalid JSON (#422, #430)
@@ -196,6 +240,7 @@ export class RoutesResolver implements Resolver {
     }
   }
 
+  /** 判断异常是否为 Fastify 的 FastifyError（带 statusCode 属性的 Error）。 */
   private isHttpFastifyError(
     error: any,
   ): error is Error & { statusCode: number } {
@@ -207,6 +252,7 @@ export class RoutesResolver implements Resolver {
     );
   }
 
+  /** 读取模块上由 RouterModule 写入的路径元数据（兼容应用级/全局两种 key）。 */
   private getModulePathMetadata(metatype: Type<unknown>): string | undefined {
     const modulesContainer = this.container.getModules();
     const modulePath = Reflect.getMetadata(
@@ -216,12 +262,14 @@ export class RoutesResolver implements Resolver {
     return modulePath ?? Reflect.getMetadata(MODULE_PATH, metatype);
   }
 
+  /** 读取控制器上由 @Controller({ host }) 写入的主机过滤元数据。 */
   private getHostMetadata(
     metatype: Type<unknown> | Function,
   ): string | string[] | undefined {
     return Reflect.getMetadata(HOST_METADATA, metatype);
   }
 
+  /** 读取控制器版本元数据（@Controller({ version })），启用版本控制时回退到默认版本。 */
   private getVersionMetadata(
     metatype: Type<unknown> | Function,
   ): VersionValue | undefined {

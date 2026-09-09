@@ -23,6 +23,11 @@ class AlwaysInvalidValidator extends FileValidator {
   }
 }
 
+/**
+ * ParseFilePipe 的单元测试：
+ * 验证文件校验流程：无校验器时原样放行、校验失败时抛错（支持自定义状态码）、
+ * 以及 fileIsRequired 对缺失文件的处理。
+ */
 describe('ParseFilePipe', () => {
   let parseFilePipe: ParseFilePipe;
   describe('transform', () => {

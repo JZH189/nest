@@ -3,6 +3,7 @@ import { expect } from 'chai';
 import * as express from 'express';
 import * as sinon from 'sinon';
 
+// 验证 ExpressAdapter 适配器：中间件注册、响应处理、CORS 等适配行为
 describe('ExpressAdapter', () => {
   afterEach(() => sinon.restore());
 

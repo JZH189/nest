@@ -4,6 +4,7 @@ import { mapToExcludeRoute } from '@nestjs/core/middleware/utils';
 import { expect } from 'chai';
 import { RouteInfoPathExtractor } from './../../middleware/route-info-path-extractor';
 
+// 验证 RouteInfoPathExtractor 从路由信息中提取中间件生效的路径集合（含通配符与版本前缀）
 describe('RouteInfoPathExtractor', () => {
   describe('extractPathsFrom', () => {
     let appConfig: ApplicationConfig;

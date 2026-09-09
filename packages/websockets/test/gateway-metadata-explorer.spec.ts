@@ -7,6 +7,9 @@ import { SubscribeMessage } from '../decorators/subscribe-message.decorator';
 import { Ack } from '../decorators/ack.decorator';
 import { GatewayMetadataExplorer } from '../gateway-metadata-explorer';
 
+/**
+ * GatewayMetadataExplorer 的单元测试：验证对消息处理方法与服务器注入属性的元数据探测。
+ */
 describe('GatewayMetadataExplorer', () => {
   const message = 'test';
   const secMessage = 'test2';

@@ -22,6 +22,10 @@ import {
 } from '../exceptions';
 import { Type } from '../interfaces';
 
+/**
+ * 可映射为内置 HTTP 异常类的一组 HTTP 状态码类型。
+ * 仅包含 Nest 提供了对应内置异常类的状态码。
+ */
 export type ErrorHttpStatusCode =
   | HttpStatus.BAD_GATEWAY
   | HttpStatus.BAD_REQUEST
@@ -43,6 +47,12 @@ export type ErrorHttpStatusCode =
   | HttpStatus.UNPROCESSABLE_ENTITY
   | HttpStatus.UNSUPPORTED_MEDIA_TYPE;
 
+/**
+ * HTTP 状态码 -> 内置异常类的映射表。
+ * 主要供 @HttpCode 场景之外的内部工具使用，例如 @Sse/@EventPattern 的
+ * RpcException 处理、路由工厂根据状态码抛出对应异常等，
+ * 让框架能按状态码快速实例化语义正确的 HTTP 异常。
+ */
 export const HttpErrorByCode: Record<ErrorHttpStatusCode, Type<unknown>> = {
   [HttpStatus.BAD_GATEWAY]: BadGatewayException,
   [HttpStatus.BAD_REQUEST]: BadRequestException,

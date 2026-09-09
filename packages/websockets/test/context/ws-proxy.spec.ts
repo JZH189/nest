@@ -5,6 +5,9 @@ import { WsProxy } from '../../context/ws-proxy';
 import { WsException } from '../../errors/ws-exception';
 import { WsExceptionsHandler } from '../../exceptions/ws-exceptions-handler';
 
+/**
+ * WsProxy 的单元测试：验证代理函数对同步/流内异常的捕获并转交异常处理器。
+ */
 describe('WsProxy', () => {
   let routerProxy: WsProxy;
   let handlerMock: sinon.SinonMock;

@@ -2,6 +2,10 @@ import { expect } from 'chai';
 import { ArgumentMetadata } from '../../interfaces';
 import { ParseBoolPipe } from '../../pipes/parse-bool.pipe';
 
+/**
+ * ParseBoolPipe 的单元测试：
+ * 验证字符串/布尔值到布尔的转换、optional 行为以及非法值时报错。
+ */
 describe('ParseBoolPipe', () => {
   let target: ParseBoolPipe;
   beforeEach(() => {

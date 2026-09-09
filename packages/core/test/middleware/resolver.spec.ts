@@ -7,6 +7,7 @@ import { Injector } from '../../injector/injector';
 import { MiddlewareContainer } from '../../middleware/container';
 import { MiddlewareResolver } from '../../middleware/resolver';
 
+// 验证 MiddlewareResolver 从容器解析中间件实例并注入依赖
 describe('MiddlewareResolver', () => {
   @Injectable()
   class TestMiddleware implements NestMiddleware {

@@ -80,6 +80,12 @@ export interface NestExpressApplication<
    */
   disable(...args: any[]): this;
 
+  /**
+   * 以 ServeStaticOptions 配置对象的方式托管静态资源。
+   *
+   * @param options - 静态资源配置（含资源目录、URL 前缀等）
+   * @returns {this}
+   */
   useStaticAssets(options: ServeStaticOptions): this;
   /**
    * 设置公共资源的基本目录。
@@ -90,6 +96,12 @@ export interface NestExpressApplication<
    */
   useStaticAssets(path: string, options?: ServeStaticOptions): this;
 
+  /**
+   * 启用 CORS 跨域资源共享。
+   *
+   * @param options - CORS 配置对象或按请求返回配置的委托函数
+   * @returns {void}
+   */
   enableCors(options?: CorsOptions | CorsOptionsDelegate<any>): void;
 
   /**

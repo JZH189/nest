@@ -32,6 +32,17 @@ const { SocketModule } = optionalRequire(
 type CompleteMicroserviceOptions = NestMicroserviceOptions &
   (MicroserviceOptions | AsyncMicroserviceOptions);
 
+/**
+ * 微服务应用实例：由 `NestFactory.createMicroservice()` 创建，是微服务的启动入口。
+ * 继承自 NestApplicationContext（IoC 容器上下文），并实现 INestMicroservice 接口。
+ *
+ * 主要职责：
+ * 1. 根据配置（transport 或自定义 strategy）通过 ServerFactory 创建底层服务端（Server）；
+ * 2. 初始化阶段扫描所有控制器上的 @EventPattern / @MessagePattern，
+ *    将消息处理器注册到服务端（见 ListenersController）；
+ * 3. 扫描所有实例属性上的 @Client，创建并注入 ClientProxy 客户端；
+ * 4. 提供 listen()（启动监听）与 close()（优雅关闭）等生命周期方法。
+ */
 export class NestMicroservice
   extends NestApplicationContext<NestMicroserviceOptions>
   implements INestMicroservice
@@ -81,6 +92,13 @@ export class NestMicroservice
     modulesContainer.addRpcTarget(this.serverInstance);
   }
 
+  /**
+   * 根据传入配置创建底层服务端（Server）实例。
+   * 1. 若配置为异步工厂（含 useFactory），先解析注入的依赖并调用工厂得到最终配置；
+   * 2. 若配置中显式提供了自定义 strategy，则直接使用该策略作为服务端；
+   * 3. 否则通过 ServerFactory 按传输层类型（TCP/Kafka/NATS 等）创建内置服务端。
+   * @param config - 微服务配置（同步或异步工厂形式）
+   */
   public createServer(config: CompleteMicroserviceOptions) {
     try {
       if ('useFactory' in config) {
@@ -113,6 +131,10 @@ export class NestMicroservice
     }
   }
 
+  /**
+   * 注册模块：初始化 SocketModule（若安装了 @nestjs/websockets）、
+   * 绑定 @Client 客户端、注册消息监听器，并触发 onModuleInit / onApplicationBootstrap 生命周期钩子。
+   */
   public async registerModules(): Promise<any> {
     this.socketModule &&
       this.socketModule.register(
@@ -135,6 +157,10 @@ export class NestMicroservice
     }
   }
 
+  /**
+   * 将所有控制器中的 @EventPattern / @MessagePattern 处理器
+   * 绑定到底层服务端实例上（由 MicroservicesModule 遍历各模块的控制器完成）。
+   */
   public registerListeners() {
     this.microservicesModule.setupListeners(
       this.container,
@@ -234,6 +260,10 @@ export class NestMicroservice
     return this;
   }
 
+  /**
+   * 为微服务注册全局 Guard（对所有消息处理器生效）。
+   * @param {...CanActivate} guards - 全局 Guard 实例列表
+   */
   public useGlobalGuards(...guards: CanActivate[]): this {
     if (this.isInitialized) {
       this.logger.warn(
@@ -252,6 +282,10 @@ export class NestMicroservice
     return this;
   }
 
+  /**
+   * 初始化应用：先执行父类的初始化（调用模块初始化钩子），再注册模块与监听器。
+   * @returns 初始化后的应用实例（this）
+   */
   public async init(): Promise<this> {
     if (this.isInitialized) {
       return this;
@@ -288,6 +322,11 @@ export class NestMicroservice
    * Terminates the application.
    *
    * @returns {Promise<void>}
+   */
+  /**
+   * 关闭应用：先关闭底层服务端（断开 broker 连接、停止监听），
+   * 再触发应用级关闭流程（销毁所有 provider、调用关闭钩子）。幂等，重复调用无副作用。
+   * @returns 关闭完成后的 Promise
    */
   public async close(): Promise<any> {
     await this.serverInstance.close();
@@ -345,6 +384,10 @@ export class NestMicroservice
     throw new Error('"unwrap" method not supported by the underlying server');
   }
 
+  /**
+   * 应用级关闭流程：依次关闭 WebSocket 模块、微服务模块（关闭所有 ClientProxy），
+   * 最后调用父类 close() 完成容器销毁与生命周期钩子调用。
+   */
   protected async closeApplication(): Promise<any> {
     this.socketModule && (await this.socketModule.close());
     this.microservicesModule && (await this.microservicesModule.close());
@@ -353,6 +396,10 @@ export class NestMicroservice
     this.setIsTerminated(true);
   }
 
+  /**
+   * 释放资源（在 enableShutdownHooks 的信号处理路径中调用）：
+   * 仅关闭服务端与各模块，不走完整的 closeApplication 流程。幂等。
+   */
   protected async dispose(): Promise<void> {
     if (this.isTerminated) {
       return;
@@ -362,6 +409,11 @@ export class NestMicroservice
     this.microservicesModule && (await this.microservicesModule.close());
   }
 
+  /**
+   * 解析异步配置：按 inject 声明从容器中获取依赖实例，调用 useFactory 工厂生成最终配置。
+   * @param config - 异步微服务配置（含 useFactory / inject）
+   * @returns 解析后的同步微服务配置
+   */
   protected resolveAsyncOptions(config: AsyncMicroserviceOptions) {
     const args = config.inject?.map(token =>
       this.get(token, { strict: false }),

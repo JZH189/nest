@@ -38,6 +38,7 @@ class Sink extends Writable implements HeaderStream {
   }
 }
 
+// 验证 SseStream 以 Server-Sent Events 格式写入多行消息、事件名、id 及处理背压
 describe('SseStream', () => {
   it('writes multiple multiline messages', async () => {
     const sse = new SseStream();

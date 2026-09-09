@@ -13,6 +13,7 @@ import {
 } from '../../middleware/utils';
 import { NoopHttpAdapter } from '../utils/noop-adapter.spec';
 
+// 验证 middleware 工具函数：中间件类/函数映射、排除路由元数据生成及过滤校验
 describe('middleware utils', () => {
   const noopAdapter = new NoopHttpAdapter({});
 

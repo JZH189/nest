@@ -8,6 +8,9 @@ import { BaseRpcExceptionFilter } from './base-rpc-exception-filter';
 import { RpcException } from './rpc-exception';
 
 /**
+ * RPC 异常处理器：维护注册的自定义异常过滤器列表，
+ * 按优先级匹配并调用过滤器处理异常；未命中时回退到默认的 BaseRpcExceptionFilter。
+ *
  * @publicApi
  */
 export class RpcExceptionsHandler extends BaseRpcExceptionFilter {

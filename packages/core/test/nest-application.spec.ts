@@ -9,6 +9,7 @@ import { NoopHttpAdapter } from './utils/noop-adapter.spec';
 import { MicroserviceOptions } from '@nestjs/microservices';
 import * as sinon from 'sinon';
 
+// 验证 NestApplication 的 HTTP 应用能力：全局增强器、微服务连接配置隔离、路由排除与监听关闭流程
 describe('NestApplication', () => {
   describe('Hybrid Application', () => {
     class Interceptor {

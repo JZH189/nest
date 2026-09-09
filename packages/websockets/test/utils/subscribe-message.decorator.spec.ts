@@ -2,6 +2,9 @@ import { expect } from 'chai';
 import { MESSAGE_MAPPING_METADATA } from '../../constants';
 import { SubscribeMessage } from '../../decorators/subscribe-message.decorator';
 
+/**
+ * @SubscribeMessage 装饰器的单元测试：验证消息映射元数据的写入。
+ */
 describe('@SubscribeMessage', () => {
   class TestGateway {
     @SubscribeMessage('filter')

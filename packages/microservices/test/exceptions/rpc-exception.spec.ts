@@ -1,6 +1,7 @@
 import { expect } from 'chai';
 import { RpcException } from '../../exceptions/rpc-exception';
 
+// RpcException 单元测试：验证异常对不同错误载荷（字符串/对象）的 message 与 error 处理。
 describe('RpcException', () => {
   describe('when string passed', () => {
     const error = 'test';

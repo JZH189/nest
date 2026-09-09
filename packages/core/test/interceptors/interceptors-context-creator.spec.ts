@@ -7,6 +7,7 @@ import { InterceptorsContextCreator } from '../../interceptors/interceptors-cont
 
 class Interceptor {}
 
+// 验证 InterceptorsContextCreator 根据方法/类元数据与全局配置创建拦截器实例列表
 describe('InterceptorsContextCreator', () => {
   let interceptorsContextCreator: InterceptorsContextCreator;
   let interceptors: any[];

@@ -12,6 +12,7 @@ import { GraphInspector } from '../../../inspector/graph-inspector';
 import { MetadataScanner } from '../../../metadata-scanner';
 import { DependenciesScanner } from '../../../scanner';
 
+// 验证 LazyModuleLoader 在运行时按需加载模块并注入容器的行为
 describe('LazyModuleLoader', () => {
   let lazyModuleLoader: LazyModuleLoader;
   let dependenciesScanner: DependenciesScanner;

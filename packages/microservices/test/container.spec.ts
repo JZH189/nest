@@ -1,6 +1,7 @@
 import { expect } from 'chai';
 import { ClientsContainer } from '../container';
 
+// ClientsContainer 单元测试：验证客户端实例的注册、获取与替换逻辑。
 describe('ClientsContainer', () => {
   let instance: ClientsContainer;
   beforeEach(() => {

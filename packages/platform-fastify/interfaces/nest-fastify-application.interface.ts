@@ -22,21 +22,26 @@ import { FastifyStaticOptions, FastifyViewOptions } from './external';
 import { NestFastifyBodyParserOptions } from './nest-fastify-body-parser-options.interface';
 
 /**
+ * 描述 NestFastifyApplication 上方法的接口。
+ *
  * @publicApi
  */
 export interface NestFastifyApplication<
   TServer extends RawServerBase = RawServerDefault,
 > extends INestApplication<TServer> {
   /**
-   * Returns the underlying HTTP adapter bounded to a Fastify app.
+   * 返回绑定到 Fastify 应用程序的底层 HTTP 适配器。
    *
    * @returns {HttpServer}
    */
   getHttpAdapter(): HttpServer<FastifyRequest, FastifyReply, FastifyInstance>;
 
   /**
-   * A wrapper function around native `fastify.register()` method.
-   * Example `app.register(require('@fastify/formbody'))
+   * 原生 `fastify.register()` 方法的包装函数，用于注册 Fastify 插件。
+   * 示例：`app.register(require('@fastify/formbody'))`
+   *
+   * @param plugin - Fastify 插件（回调或异步形式，或其动态导入结果）
+   * @param opts - 插件注册选项
    * @returns {Promise<FastifyInstance>}
    */
   register<Options extends FastifyPluginOptions = any>(
@@ -49,8 +54,7 @@ export interface NestFastifyApplication<
   ): Promise<FastifyInstance>;
 
   /**
-   * Register Fastify body parsers on the fly. Will respect
-   * the application's `rawBody` option.
+   * 动态注册 Fastify body 解析器。将遵守应用程序的 `rawBody` 选项。
    *
    * @example
    * const app = await NestFactory.create<NestFastifyApplication>(
@@ -58,9 +62,12 @@ export interface NestFastifyApplication<
    *   new FastifyAdapter(),
    *   { rawBody: true }
    * );
-   * // enable the json parser with a parser limit of 50mb
+   * // 启用 json 解析器并把大小限制设为 50mb
    * app.useBodyParser('application/json', { bodyLimit: 50 * 1000 * 1024 });
    *
+   * @param type - 匹配的 Content-Type（字符串、数组或正则）
+   * @param options - 解析器选项（如 bodyLimit）
+   * @param parser - 可选的自定义解析函数
    * @returns {this}
    */
   useBodyParser<TServer extends RawServerBase = RawServerBase>(
@@ -70,37 +77,47 @@ export interface NestFastifyApplication<
   ): this;
 
   /**
-   * Sets a base directory for public assets.
-   * Example `app.useStaticAssets({ root: 'public' })`
+   * 以 @fastify/static 配置对象的方式托管静态资源。
+   * 示例：`app.useStaticAssets({ root: 'public' })`
+   *
+   * @param options - @fastify/static 配置（root 必填）
    * @returns {this}
    */
   useStaticAssets(options: FastifyStaticOptions): this;
 
   /**
-   * Enables CORS (Cross-Origin Resource Sharing)
+   * 启用 CORS（跨域资源共享）。
    *
+   * @param options - @fastify/cors 配置对象
    * @returns {void}
    */
   enableCors(options?: FastifyCorsOptions): void;
 
   /**
-   * Sets a view engine for templates (views), for example: `pug`, `handlebars`, or `ejs`.
+   * 为模板（视图）设置视图引擎，例如 `pug`、`handlebars` 或 `ejs`。
    *
-   * Don't pass in a string. The string type in the argument is for compatibility reason and will cause an exception.
+   * 不要传入字符串。参数中的字符串类型仅为兼容性保留，传入会抛出异常。
+   * @param options - @fastify/view 配置对象
    * @returns {this}
    */
   setViewEngine(options: FastifyViewOptions | string): this;
 
   /**
-   * A wrapper function around native `fastify.inject()` method.
+   * 原生 `fastify.inject()` 方法的包装函数：
+   * 不经过网络即可向应用发起模拟请求（常用于测试）。
+   *
+   * @param opts - 注入的请求选项（方法、URL、载荷等）
    * @returns {void}
    */
   inject(): LightMyRequestChain;
   inject(opts: InjectOptions | string): Promise<LightMyRequestResponse>;
 
   /**
-   * Starts the application.
-   * @returns A Promise that, when resolved, is a reference to the underlying HttpServer.
+   * 启动应用程序。
+   *
+   * @param opts - Fastify 监听选项（port/host/path 等）
+   * @param callback - 监听完成后的回调函数
+   * @returns 一个 Promise，解析后是对底层 HttpServer 的引用。
    */
   listen(
     opts: FastifyListenOptions,

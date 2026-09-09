@@ -2,18 +2,31 @@ import { RequestMethod } from '../../enums';
 import { NestApplicationOptions } from '../../interfaces/nest-application-options.interface';
 import { VersionValue, VersioningOptions } from '../version-options.interface';
 
+/**
+ * 底层 HTTP 平台（Express/Fastify 等）错误处理函数的类型，
+ * 由 HTTP 适配器统一封装，处理路由执行过程中的错误。
+ */
 export type ErrorHandler<TRequest = any, TResponse = any> = (
   error: any,
   req: TRequest,
   res: TResponse,
   next?: Function,
 ) => any;
+/**
+ * 底层 HTTP 平台请求处理函数的类型，即 Express/Fastify 风格的
+ * `(req, res, next)` 中间件/处理程序签名。
+ */
 export type RequestHandler<TRequest = any, TResponse = any> = (
   req: TRequest,
   res: TResponse,
   next?: Function,
 ) => any;
 
+/**
+ * HTTP 服务器的抽象契约。Nest 通过该接口屏蔽 Express 与 Fastify 的差异：
+ * `@nestjs/platform-express`、`@nestjs/platform-fastify` 等平台适配器包分别实现它，
+ * 路由注册、响应处理、静态资源、CORS 等能力都经由该接口调用。
+ */
 export interface HttpServer<
   TRequest = any,
   TResponse = any,

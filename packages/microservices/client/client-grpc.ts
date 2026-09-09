@@ -26,6 +26,12 @@ let grpcPackage = {} as any;
 let grpcProtoLoaderPackage = {} as any;
 
 /**
+ * 基于 gRPC（@grpc/grpc-js）的客户端代理实现（ClientProxy 的子类）。
+ * 与其他客户端不同，gRPC 模式下不使用 send()/emit()，
+ * 而是通过 getService() 按 proto 定义生成强类型服务客户端，
+ * 方法调用直接映射为 gRPC 的 unary/stream 调用（返回 Observable）。
+ * 依赖 @grpc/grpc-js 与 proto 加载器（默认 @grpc/proto-loader），首次使用时动态加载。
+ *
  * @publicApi
  */
 export class ClientGrpcProxy
@@ -33,16 +39,25 @@ export class ClientGrpcProxy
   implements ClientGrpc
 {
   protected readonly logger = new Logger(ClientProxy.name);
+  /** 已创建的 gRPC 客户端缓存（service name -> grpc client） */
   protected readonly clients = new Map<string, any>();
+  /** gRPC 服务端地址 */
   protected readonly url: string;
+  /** 从 proto 文件加载出的包定义（按 package 声明加载） */
   protected grpcClients: GrpcClient[] = [];
 
+  /**
+   * gRPC 传输不支持 status 状态流，访问即抛错。
+   */
   get status(): never {
     throw new Error(
       'The "status" attribute is not supported by the gRPC transport',
     );
   }
 
+  /**
+   * @param options - gRPC 客户端选项（protoPath、package、url、credentials、channelOptions、keepalive 等）
+   */
   constructor(protected readonly options: Required<GrpcOptions>['options']) {
     super();
     this.url = this.getOptionsProp(options, 'url') || GRPC_DEFAULT_URL;
@@ -65,6 +80,14 @@ export class ClientGrpcProxy
     this.grpcClients = this.createClients();
   }
 
+  /**
+   * 获取指定名称的 gRPC 服务客户端：
+   * 1. 找到 proto 中对应 service 的客户端构造器；
+   * 2. 遍历其原型上的所有方法；
+   * 3. 为每个方法创建响应式包装（unary 或 stream），组装成可注入使用的服务对象。
+   * @param name - proto 中定义的服务名
+   * @returns 方法返回 Observable 的服务客户端对象
+   */
   public getService<T extends object>(name: string): T {
     const grpcClient = this.getClientByServiceName(name);
     const clientRef = this.getClient(name);
@@ -81,10 +104,23 @@ export class ClientGrpcProxy
     return grpcService;
   }
 
+  /**
+   * 按服务名获取（或首次创建并缓存）底层 gRPC 客户端实例。
+   * @param name - 服务名
+   * @returns gRPC 客户端实例
+   */
   public getClientByServiceName<T = unknown>(name: string): T {
     return this.clients.get(name) || this.createClientByServiceName(name);
   }
 
+  /**
+   * 为指定服务创建底层 gRPC 客户端：
+   * 1. 组装 channel 选项（最大消息长度、元数据大小等）与 keepalive 选项；
+   * 2. 使用用户提供的 credentials，否则创建不安全的（insecure）凭据；
+   * 3. 实例化 gRPC 客户端（url + credentials + options）并缓存。
+   * @param name - 服务名
+   * @returns gRPC 客户端实例
+   */
   public createClientByServiceName(name: string) {
     const clientRef = this.getClient(name);
     if (!clientRef) {
@@ -121,6 +157,11 @@ export class ClientGrpcProxy
     return grpcClient;
   }
 
+  /**
+   * 把 keepalive 配置对象映射为 gRPC 的 channel 参数键名
+   * （如 keepaliveTimeMs -> grpc.keepalive_time_ms），未识别的键会被跳过。
+   * @returns gRPC keepalive channel 选项
+   */
   public getKeepaliveOptions() {
     if (!isObject(this.options.keepalive)) {
       return {};
@@ -152,6 +193,14 @@ export class ClientGrpcProxy
     return keepaliveOptions;
   }
 
+  /**
+   * 为单个 proto 方法创建响应式调用包装：
+   * 响应为流（responseStream）的方法走 createStreamServiceMethod，
+   * 否则走 createUnaryServiceMethod。
+   * @param client - 底层 gRPC 客户端
+   * @param methodName - 方法名
+   * @returns 返回 Observable 的方法包装
+   */
   public createServiceMethod(
     client: any,
     methodName: string,
@@ -161,6 +210,16 @@ export class ClientGrpcProxy
       : this.createUnaryServiceMethod(client, methodName);
   }
 
+  /**
+   * 创建“服务端流式”方法的 Observable 包装：
+   * 1. 请求为流且第一个参数是 Observable 时，先建立 call，再订阅上游 Observable 逐条写入；
+   * 2. 监听 call 的 data/error/end 事件分别对应 observer.next/error/complete；
+   * 3. "Cancelled" 错误且为客户端主动取消时不重复抛错；
+   * 4. 取消订阅（teardown）时退订上游并取消未完成的 call。
+   * @param client - 底层 gRPC 客户端
+   * @param methodName - 方法名
+   * @returns 返回 Observable 的流式方法
+   */
   public createStreamServiceMethod(
     client: unknown,
     methodName: string,
@@ -224,6 +283,16 @@ export class ClientGrpcProxy
     };
   }
 
+  /**
+   * 创建“一元（unary）”方法的 Observable 包装：
+   * 1. 请求为流且第一个参数是 Observable 时，建立 call 并订阅上游逐条写入，
+   *    通过回调把单次响应转为 observer.next + complete；
+   * 2. 普通一元调用：直接调用 gRPC 方法并把回调结果转为 Observable；
+   * 3. teardown 时取消未完成的 call。
+   * @param client - 底层 gRPC 客户端
+   * @param methodName - 方法名
+   * @returns 返回 Observable 的一元方法
+   */
   public createUnaryServiceMethod(
     client: any,
     methodName: string,
@@ -292,6 +361,13 @@ export class ClientGrpcProxy
     };
   }
 
+  /**
+   * 加载 proto 定义并取出各 package 的服务客户端构造器：
+   * 1. 加载 proto 得到 grpc 上下文；
+   * 2. 按 options.package（字符串或数组）逐个查找包；
+   * 3. 查找失败时抛出 InvalidGrpcPackageException。
+   * @returns 各 package 的 gRPC 客户端构造器数组
+   */
   public createClients(): any[] {
     const grpcContext = this.loadProto();
     const packageOption = this.getOptionsProp(this.options, 'package');
@@ -318,6 +394,12 @@ export class ClientGrpcProxy
     return grpcPackages;
   }
 
+  /**
+   * 加载 proto 文件：
+   * 1. 通过 getGrpcPackageDefinition 由 protoPath/loader 生成包定义；
+   * 2. 用 grpc.loadPackageDefinition 加载；出错时包装为 InvalidProtoDefinitionException 抛出。
+   * @returns 加载后的 grpc 包上下文
+   */
   public loadProto(): any {
     try {
       const packageDefinition = getGrpcPackageDefinition(
@@ -335,6 +417,12 @@ export class ClientGrpcProxy
     }
   }
 
+  /**
+   * 按“.”逐级在 proto 上下文中查找指定包（如 'a.b.Service' -> root['a']['b']['Service']）。
+   * @param root - proto 加载结果根对象
+   * @param packageName - 包名（点分隔路径）
+   * @returns 找到的包对象，找不到为 undefined
+   */
   public lookupPackage(root: any, packageName: string) {
     /** Reference: https://github.com/kondi/rxjs-grpc */
     let pkg = root;
@@ -348,6 +436,9 @@ export class ClientGrpcProxy
     return pkg;
   }
 
+  /**
+   * 关闭所有已创建的 gRPC 客户端并清空缓存。
+   */
   public close() {
     this.clients.forEach(client => {
       if (client && isFunction(client.close)) {
@@ -358,10 +449,16 @@ export class ClientGrpcProxy
     this.grpcClients = [];
   }
 
+  /**
+   * gRPC 模式不支持显式 connect（gRPC 客户端自带懒连接），调用即抛错。
+   */
   public async connect(): Promise<any> {
     throw new Error('The "connect()" method is not supported in gRPC mode.');
   }
 
+  /**
+   * gRPC 模式不支持 send()，应使用 getService()，调用即抛错。
+   */
   public send<TResult = any, TInput = any>(
     pattern: any,
     data: TInput,
@@ -371,24 +468,38 @@ export class ClientGrpcProxy
     );
   }
 
+  /**
+   * 在已加载的包定义中查找包含指定服务名的包。
+   * @param name - 服务名
+   * @returns 包含该服务的包对象
+   */
   protected getClient(name: string): any {
     return this.grpcClients.find(client =>
       Object.hasOwnProperty.call(client, name),
     );
   }
 
+  /**
+   * gRPC 模式不支持 publish()，调用即抛错。
+   */
   protected publish(packet: any, callback: (packet: any) => any): any {
     throw new Error(
       'Method is not supported in gRPC mode. Use ClientGrpc instead (learn more in the documentation).',
     );
   }
 
+  /**
+   * gRPC 模式不支持 dispatchEvent()，调用即抛错。
+   */
   protected async dispatchEvent(packet: any): Promise<any> {
     throw new Error(
       'Method is not supported in gRPC mode. Use ClientGrpc instead (learn more in the documentation).',
     );
   }
 
+  /**
+   * gRPC 模式不支持 on() 事件监听，调用即抛错。
+   */
   public on<EventKey extends never = never, EventCallback = any>(
     event: EventKey,
     callback: EventCallback,
@@ -396,6 +507,9 @@ export class ClientGrpcProxy
     throw new Error('Method is not supported in gRPC mode.');
   }
 
+  /**
+   * gRPC 模式不支持 unwrap()，调用即抛错。
+   */
   public unwrap<T>(): T {
     throw new Error('Method is not supported in gRPC mode.');
   }

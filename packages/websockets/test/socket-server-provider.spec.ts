@@ -10,6 +10,9 @@ class NoopAdapter extends AbstractWsAdapter {
   public bindMessageHandlers(client: any, handlers) {}
 }
 
+/**
+ * SocketServerProvider 的单元测试：验证服务器的创建、复用与命名空间派生逻辑。
+ */
 describe('SocketServerProvider', () => {
   let instance: SocketServerProvider;
   let socketsContainer: SocketsContainer, mockContainer: sinon.SinonMock;

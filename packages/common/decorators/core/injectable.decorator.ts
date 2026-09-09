@@ -37,12 +37,22 @@ export type InjectableOptions = ScopeOptions;
  */
 export function Injectable(options?: InjectableOptions): ClassDecorator {
   return (target: object) => {
+    // INJECTABLE_WATERMARK：标记该类可被 DI 容器实例化，用于反射/诊断
     Reflect.defineMetadata(INJECTABLE_WATERMARK, true, target);
+    // SCOPE_OPTIONS_METADATA：注入作用域（单例/请求/瞬态），实例化时读取
     Reflect.defineMetadata(SCOPE_OPTIONS_METADATA, options, target);
   };
 }
 
 /**
+ * 将普通类快速标记为可注入提供者的辅助函数，常用于 mixin 模式
+ * （动态创建继承自基类的类并使其可被依赖注入）。
+ *
+ * 为避免不同 mixin 实例类名冲突，会为其生成一个唯一的随机类名。
+ *
+ * @param mixinClass - 待标记为可注入的 mixin 类
+ * @returns 已应用 `@Injectable()` 装饰的同一个类
+ *
  * @publicApi
  */
 export function mixin<T>(mixinClass: Type<T>) {

@@ -19,6 +19,7 @@ function frame(obj: unknown): string {
   return `${json.length}#${json}`;
 }
 
+// JsonSocket 单元测试：验证"长度前缀 + JSON"帧协议的编码、解码及损坏包/超长包的处理。
 describe('JsonSocket', () => {
   let socketStub: any;
   let jsonSocket: JsonSocket;

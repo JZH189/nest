@@ -5,6 +5,7 @@ import { NestContainer } from '../../../injector/container';
 import { DebugReplFn } from '../../../repl/native-functions';
 import { ReplContext } from '../../../repl/repl-context';
 
+// 验证 REPL 内置函数 debug：按模块筛选输入 token 的调试信息
 describe('DebugReplFn', () => {
   let debugReplFn: DebugReplFn;
 

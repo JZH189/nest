@@ -11,6 +11,7 @@ import { Transport } from '../../enums';
 import { ClientOptions } from '../../interfaces';
 import { ClientsModule, ClientsModuleOptionsFactory } from '../../module';
 
+// ClientsModule 单元测试：验证动态模块注册及基于工厂的客户端配置提供者生成。
 describe('ClientsModule', () => {
   let dynamicModule: DynamicModule;
   describe('register', () => {

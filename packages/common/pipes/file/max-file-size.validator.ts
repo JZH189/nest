@@ -6,6 +6,9 @@ type MaxFileSizeValidatorContext = FileValidatorContext<
   Omit<MaxFileSizeValidatorOptions, 'errorMessage' | 'message'>
 >;
 
+/**
+ * MaxFileSizeValidator 的配置选项
+ */
 export type MaxFileSizeValidatorOptions = {
   /**
    * 允许的最大文件大小（字节）。
@@ -47,6 +50,14 @@ export class MaxFileSizeValidator extends FileValidator<
   MaxFileSizeValidatorOptions,
   IFile
 > {
+  /**
+   * 构建文件大小校验失败时的错误消息：
+   * 优先使用自定义 `errorMessage`（或已废弃的 `message`），
+   * 否则拼装包含实际文件大小与最大限制的默认消息
+   *
+   * @param file 请求对象中的文件
+   * @returns 校验失败时显示的错误消息
+   */
   buildErrorMessage(file?: IFile): string {
     const { errorMessage, message, ...config } = this.validationOptions;
 
@@ -68,6 +79,12 @@ export class MaxFileSizeValidator extends FileValidator<
     return `Validation failed (expected size is less than ${this.validationOptions.maxSize})`;
   }
 
+  /**
+   * 校验上传文件大小是否小于 `maxSize` 限制
+   *
+   * @param file 请求对象中的文件
+   * @returns 文件大小有效（或未传文件/未配置选项）则返回 `true`
+   */
   public isValid(file?: IFile): boolean {
     if (!this.validationOptions || !file) {
       return true;

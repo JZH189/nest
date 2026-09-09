@@ -10,6 +10,11 @@ class TestException extends HttpException {
   }
 }
 
+/**
+ * ParseUUIDPipe 的单元测试：
+ * 验证 UUID 格式校验（支持 v3/v4/v5 及指定单一版本）、optional 行为，
+ * 以及版本不匹配或非法值时报错。
+ */
 describe('ParseUUIDPipe', () => {
   let target: ParseUUIDPipe;
   const exceptionFactory = (error: any) => new TestException();

@@ -6,6 +6,7 @@ import { BaseRpcContext } from '../../ctx-host/base-rpc.context';
 import { ServerMqtt } from '../../server/server-mqtt';
 import { objectToMap } from './utils/object-to-map';
 
+// ServerMqtt 单元测试：验证 MQTT 服务器的消息订阅、模式匹配与上下文包装。
 describe('ServerMqtt', () => {
   let server: ServerMqtt;
   let untypedServer: any;

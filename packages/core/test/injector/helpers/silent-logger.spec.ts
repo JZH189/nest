@@ -2,6 +2,7 @@ import { expect } from 'chai';
 import { Logger } from '@nestjs/common';
 import { SilentLogger } from '../../../injector/helpers/silent-logger';
 
+// 验证 SilentLogger 继承 Logger 但所有日志方法均为静默空实现
 describe('SilentLogger', () => {
   let silentLogger: SilentLogger;
 

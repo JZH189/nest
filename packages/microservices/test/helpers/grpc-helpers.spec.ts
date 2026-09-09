@@ -5,6 +5,7 @@ import { getGrpcPackageDefinition } from '../../helpers/grpc-helpers';
 
 const grpcProtoLoaderPackage = { loadSync: (a, b) => 'withLoader' };
 
+// getGrpcPackageDefinition 辅助函数单元测试：验证 protoPath 与 packageDefinition 的互斥校验及加载逻辑。
 describe('getGrpcPackageDefinition', () => {
   describe('when missing both protoPath and packageDefinition', () => {
     it('should throw InvalidGrpcPackageDefinitionMissingPackageDefinitionException', () => {

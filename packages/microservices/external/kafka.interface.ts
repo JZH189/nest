@@ -16,6 +16,11 @@ type XOR<T, U> = T | U extends object
   ? (Without<T, U> & U) | (Without<U, T> & T)
   : T | U;
 
+/**
+ * kafkajs 客户端类：Nest 微服务的 ServerKafka/ClientKafka 通过它创建
+ * Kafka 实例，进而派生 producer（生产者）、consumer（消费者）与 admin
+ * （管理端）。
+ */
 export declare class Kafka {
   constructor(config: KafkaConfig);
   producer(config?: ProducerConfig): Producer;
@@ -24,6 +29,9 @@ export declare class Kafka {
   logger(): Logger;
 }
 
+/**
+ * 返回 broker 地址列表（或其 Promise）的函数，用于服务发现场景。
+ */
 export type BrokersFunction = () => string[] | Promise<string[]>;
 
 type SaslAuthenticationRequest = {
@@ -57,6 +65,14 @@ type Mechanism = {
   authenticationProvider: (args: AuthenticationProviderArgs) => Authenticator;
 };
 
+/**
+ * Kafka 客户端根配置（KafkaOptions.client 的类型）：
+ * - brokers：broker 地址列表或地址解析函数（必填）；
+ * - clientId：客户端标识（Nest 会自动追加后缀避免冲突）；
+ * - ssl/sasl：TLS 与 SASL 认证配置；
+ * - connectionTimeout/authenticationTimeout/requestTimeout：各类超时（毫秒）；
+ * - retry：请求失败重试策略；logLevel/logCreator：日志级别与自定义日志器。
+ */
 export interface KafkaConfig {
   brokers: string[] | BrokersFunction;
   ssl?: tls.ConnectionOptions | boolean;
@@ -73,6 +89,9 @@ export interface KafkaConfig {
   logCreator?: logCreator;
 }
 
+/**
+ * 自定义 socket 工厂参数：目标主机/端口、TLS 选项与连接成功回调。
+ */
 export interface ISocketFactoryArgs {
   host: string;
   port: number;
@@ -80,12 +99,19 @@ export interface ISocketFactoryArgs {
   onConnect: () => void;
 }
 
+/**
+ * 自定义 socket 工厂类型：用于完全接管 Kafka 的底层连接创建（如代理场景）。
+ */
 export type ISocketFactory = (args: ISocketFactoryArgs) => net.Socket;
 
 export interface OauthbearerProviderResponse {
   value: string;
 }
 
+/**
+ * SASL 支持的认证机制集合：plain、scram-sha-256/512、aws（MSK IAM）、
+ * oauthbearer（OAuth 2.0 Bearer Token）。
+ */
 type SASLMechanismOptionsMap = {
   plain: { username: string; password: string };
   'scram-sha-256': { username: string; password: string };
@@ -101,12 +127,22 @@ type SASLMechanismOptionsMap = {
   };
 };
 
+/** SASL 认证机制名称字面量联合类型。 */
 export type SASLMechanism = keyof SASLMechanismOptionsMap;
 type SASLMechanismOptions<T> = T extends SASLMechanism
   ? { mechanism: T } & SASLMechanismOptionsMap[T]
   : never;
+/** 按机制名关联对应凭据的 SASL 配置类型（用于 KafkaConfig.sasl）。 */
 export type SASLOptions = SASLMechanismOptions<SASLMechanism>;
 
+/**
+ * 生产者配置（KafkaOptions.producer 的类型）：
+ * - createPartitioner：自定义分区器；
+ * - retry：发送失败重试策略；
+ * - idempotent：幂等生产者（防止重复写入）；
+ * - transactionalId/transactionTimeout：事务生产者配置；
+ * - allowAutoTopicCreation：生产消息时是否允许自动创建 topic。
+ */
 export interface ProducerConfig {
   createPartitioner?: ICustomPartitioner;
   retry?: RetryOptions;
@@ -118,6 +154,11 @@ export interface ProducerConfig {
   maxInFlightRequests?: number;
 }
 
+/**
+ * 单条 Kafka 消息：key（分区键，决定消息进入哪个分区）、value（消息体）、
+ * partition（指定分区）、headers（消息头，Nest 用它传递 correlationId、
+ * replyTopic 与错误信息）、timestamp（时间戳）。
+ */
 export interface Message {
   key?: Buffer | string | null;
   value: Buffer | string | null;
@@ -126,12 +167,16 @@ export interface Message {
   timestamp?: string;
 }
 
+/**
+ * 自定义分区器的入参：目标 topic、分区元数据与待发送消息。
+ */
 export interface PartitionerArgs {
   topic: string;
   partitionMetadata: PartitionMetadata[];
   message: Message;
 }
 
+/** 自定义分区器类型：返回消息应写入的分区号。 */
 export type ICustomPartitioner = () => (args: PartitionerArgs) => number;
 export type DefaultPartitioner = ICustomPartitioner;
 export type LegacyPartitioner = ICustomPartitioner;
@@ -148,6 +193,9 @@ export let Partitioners: {
   JavaCompatiblePartitioner: DefaultPartitioner;
 };
 
+/**
+ * 单个分区的元数据：分区号、错误码、leader 与副本（replicas/isr）所在 broker。
+ */
 export type PartitionMetadata = {
   partitionErrorCode: number;
   partitionId: number;
@@ -157,10 +205,22 @@ export type PartitionMetadata = {
   offlineReplicas?: number[];
 };
 
+/**
+ * Kafka 消息头集合：键到 Buffer/字符串（或其数组）的映射。
+ * Nest 微服务通过它传递 correlationId、replyTopic、错误标记等元信息。
+ */
 export interface IHeaders {
   [key: string]: Buffer | string | (Buffer | string)[] | undefined;
 }
 
+/**
+ * 消费者配置（KafkaOptions.consumer 的类型）：
+ * - groupId：消费者组 ID（Nest 会自动追加后缀避免与客户端冲突）；
+ * - sessionTimeout/heartbeatInterval/rebalanceTimeout：组会话与再均衡参数；
+ * - minBytes/maxBytes/maxWaitTimeInMs：拉取批量与等待参数；
+ * - retry：消费失败重试策略（restartOnFailure 决定崩溃后是否重启消费）；
+ * - readUncommitted：是否读取未提交（事务）消息。
+ */
 export interface ConsumerConfig {
   groupId: string;
   partitionAssigners?: PartitionAssigner[];
@@ -181,6 +241,9 @@ export interface ConsumerConfig {
   rackId?: string;
 }
 
+/**
+ * 分区分配器工厂类型：根据集群信息、消费者组与日志器生成分配策略。
+ */
 export type PartitionAssigner = (config: {
   cluster: Cluster;
   groupId: string;
@@ -250,6 +313,10 @@ export type Assigner = {
   protocol(subscription: { topics: string[] }): GroupState;
 };
 
+/**
+ * 请求重试策略：maxRetryTime（总重试时长上限）、initialRetryTime/factor/multiplier
+ * （退避算法参数）、retries（最大重试次数）等。
+ */
 export interface RetryOptions {
   maxRetryTime?: number;
   initialRetryTime?: number;
@@ -259,10 +326,12 @@ export interface RetryOptions {
   restartOnFailure?: (e: Error) => Promise<boolean>;
 }
 
+/** Kafka 管理端（Admin）配置：目前仅支持 retry 重试策略。 */
 export interface AdminConfig {
   retry?: RetryOptions;
 }
 
+/** 创建 topic 时的配置：分区数、副本因子、副本分配与配置项。 */
 export interface ITopicConfig {
   topic: string;
   numPartitions?: number;
@@ -282,6 +351,7 @@ export interface ITopicMetadata {
   partitions: PartitionMetadata[];
 }
 
+/** ACL 资源类型枚举（Admin 管理访问控制列表时使用）。 */
 export enum AclResourceTypes {
   UNKNOWN = 0,
   ANY = 1,
@@ -292,6 +362,7 @@ export enum AclResourceTypes {
   DELEGATION_TOKEN = 6,
 }
 
+/** 配置资源类型枚举（topic/broker 等可配置对象）。 */
 export enum ConfigResourceTypes {
   UNKNOWN = 0,
   TOPIC = 2,
@@ -299,6 +370,7 @@ export enum ConfigResourceTypes {
   BROKER_LOGGER = 8,
 }
 
+/** 配置来源枚举（默认配置/动态 broker 配置/静态 broker 配置等）。 */
 export enum ConfigSource {
   UNKNOWN = 0,
   TOPIC_CONFIG = 1,
@@ -309,6 +381,7 @@ export enum ConfigSource {
   DYNAMIC_BROKER_LOGGER_CONFIG = 6,
 }
 
+/** ACL 权限类型枚举（DENY/ALLOW）。 */
 export enum AclPermissionTypes {
   UNKNOWN = 0,
   ANY = 1,
@@ -316,6 +389,7 @@ export enum AclPermissionTypes {
   ALLOW = 3,
 }
 
+/** ACL 操作类型枚举（READ/WRITE/CREATE/DELETE 等）。 */
 export enum AclOperationTypes {
   UNKNOWN = 0,
   ANY = 1,
@@ -332,6 +406,7 @@ export enum AclOperationTypes {
   IDEMPOTENT_WRITE = 12,
 }
 
+/** ACL 资源模式类型枚举（LITERAL 字面量/PREFIXED 前缀匹配等）。 */
 export enum ResourcePatternTypes {
   UNKNOWN = 0,
   ANY = 1,
@@ -499,6 +574,10 @@ export interface DeleteAclResponse {
   filterResponses: DeleteAclFilterResponses[];
 }
 
+/**
+ * Kafka 管理端实例类型：提供 topic/分区/偏移量/消费者组/ACL 等运维操作
+ * （createTopics、fetchOffsets、describeConfigs 等）。
+ */
 export type Admin = {
   connect(): Promise<void>;
   disconnect(): Promise<void>;
@@ -591,30 +670,40 @@ export type Admin = {
   readonly events: AdminEvents;
 };
 
+/** 内置分区分配器集合（roundRobin 轮询分配）。 */
 export let PartitionAssigners: { roundRobin: PartitionAssigner };
 
+/** 通用编解码器接口：encode 序列化、decode 反序列化。 */
 export interface ISerializer<T> {
   encode(value: T): Buffer;
   decode(buffer: Buffer): T | null;
 }
 
+/**
+ * 消费者组成员元数据：协议版本、订阅的 topic 列表与自定义数据。
+ */
 export type MemberMetadata = {
   version: number;
   topics: string[];
   userData: Buffer;
 };
 
+/**
+ * 消费者组成员分配结果：协议版本、topic 分区分配表与自定义数据。
+ */
 export type MemberAssignment = {
   version: number;
   assignment: Assignment;
   userData: Buffer;
 };
 
+/** 消费者组协议（成员元数据/分配结果的序列化器集合）。 */
 export let AssignerProtocol: {
   MemberMetadata: ISerializer<MemberMetadata>;
   MemberAssignment: ISerializer<MemberAssignment>;
 };
 
+/** kafkajs 日志级别枚举（NOTHING/ERROR/WARN/INFO/DEBUG）。 */
 export enum logLevel {
   NOTHING = 0,
   ERROR = 1,
@@ -623,6 +712,7 @@ export enum logLevel {
   DEBUG = 5,
 }
 
+/** 单条日志条目：命名空间、级别、标签与内容。 */
 export interface LogEntry {
   namespace: string;
   level: logLevel;
@@ -630,14 +720,17 @@ export interface LogEntry {
   log: LoggerEntryContent;
 }
 
+/** 日志内容：时间戳与消息文本。 */
 export interface LoggerEntryContent {
   readonly timestamp: string;
   readonly message: string;
   [key: string]: any;
 }
 
+/** 自定义日志器工厂类型：根据日志级别返回实际写日志的函数（Nest 的 KafkaLogger 即基于它）。 */
 export type logCreator = (logLevel: logLevel) => (entry: LogEntry) => void;
 
+/** kafkajs 日志器接口（info/error/warn/debug 及命名空间/级别控制）。 */
 export type Logger = {
   info: (message: string, extra?: object) => void;
   error: (message: string, extra?: object) => void;
@@ -648,6 +741,7 @@ export type Logger = {
   setLogLevel: (logLevel: logLevel) => void;
 };
 
+/** broker 节点与 topic 分区的元数据查询结果。 */
 export interface BrokerMetadata {
   brokers: Array<{ nodeId: number; host: string; port: number; rack?: string }>;
   topicMetadata: Array<{
@@ -657,6 +751,7 @@ export interface BrokerMetadata {
   }>;
 }
 
+/** broker 支持的 API 版本表：apiKey 到最小/最大版本的映射。 */
 export interface ApiVersions {
   [apiKey: number]: {
     minVersion: number;
@@ -664,6 +759,7 @@ export interface ApiVersions {
   };
 }
 
+/** Kafka broker 节点类型：提供元数据查询、拉取（fetch）与生产（produce）等底层请求。 */
 export type Broker = {
   isConnected(): boolean;
   connect(): Promise<void>;
@@ -735,8 +831,16 @@ interface RecordBatchEntry {
   size?: never;
 }
 
+/**
+ * 从 broker 读取到的单条 Kafka 消息（含 offset、时间戳、headers 等），
+ * 对应旧消息格式（MessageSetEntry）与新版批量格式（RecordBatchEntry）两种形态。
+ */
 export type KafkaMessage = MessageSetEntry | RecordBatchEntry;
 
+/**
+ * 生产者发送记录：目标 topic 与消息列表，以及可选的确认级别（acks）、
+ * 超时与压缩算法。
+ */
 export interface ProducerRecord {
   topic: string;
   messages: Message[];
@@ -745,6 +849,10 @@ export interface ProducerRecord {
   compression?: CompressionTypes;
 }
 
+/**
+ * 消息写入 broker 后的确认元数据：topic、分区、offset、时间戳等
+ * （ServerKafka 回发响应时用它确认写入结果）。
+ */
 export type RecordMetadata = {
   topicName: string;
   partition: number;
@@ -756,11 +864,13 @@ export type RecordMetadata = {
   logStartOffset?: string;
 };
 
+/** 批量发送中的单个 topic 条目：目标 topic 与消息列表。 */
 export interface TopicMessages {
   topic: string;
   messages: Message[];
 }
 
+/** 生产者批量发送请求（sendBatch 的入参）。 */
 export interface ProducerBatch {
   acks?: number;
   timeout?: number;
@@ -768,25 +878,30 @@ export interface ProducerBatch {
   topicMessages?: TopicMessages[];
 }
 
+/** 单个分区的偏移量信息。 */
 export interface PartitionOffset {
   partition: number;
   offset: string;
 }
 
+/** 单个 topic 各分区的偏移量信息。 */
 export interface TopicOffsets {
   topic: string;
   partitions: PartitionOffset[];
 }
 
+/** 按 topic 组织的偏移量集合。 */
 export interface Offsets {
   topics: TopicOffsets[];
 }
 
+/** 消息发送者的公共能力：单条发送（send）与批量发送（sendBatch）。 */
 type Sender = {
   send(record: ProducerRecord): Promise<RecordMetadata[]>;
   sendBatch(batch: ProducerBatch): Promise<RecordMetadata[]>;
 };
 
+/** 生产者事件名集合（连接/断开/请求/超时/队列大小）。 */
 export type ProducerEvents = {
   CONNECT: 'producer.connect';
   DISCONNECT: 'producer.disconnect';
@@ -795,6 +910,10 @@ export type ProducerEvents = {
   REQUEST_QUEUE_SIZE: 'producer.network.request_queue_size';
 };
 
+/**
+ * Kafka 生产者类型：向 broker 发送消息（Nest 服务端用它向 replyTopic
+ * 回发 RPC 响应）。支持事务（transaction()）与事件监听（on()）。
+ */
 export type Producer = Sender & {
   connect(): Promise<void>;
   disconnect(): Promise<void>;
@@ -828,6 +947,7 @@ export type Producer = Sender & {
   logger(): Logger;
 };
 
+/** Kafka 事务句柄：发送消息与偏移量、提交或中止事务。 */
 export type Transaction = Sender & {
   sendOffsets(offsets: Offsets & { consumerGroupId: string }): Promise<void>;
   commit(): Promise<void>;
@@ -884,6 +1004,7 @@ export type TopicPartitionOffsetAndMetadata = TopicPartitionOffset & {
   metadata?: string | null;
 };
 
+/** 一次拉取到的消息批次：topic/分区、高水位偏移量与消息列表。 */
 export type Batch = {
   topic: string;
   partition: number;
@@ -991,6 +1112,11 @@ export interface OffsetsByTopicPartition {
   topics: TopicOffsets[];
 }
 
+/**
+ * eachMessage 消费回调的负载：topic、分区、消息体，以及 heartbeat()
+ * （保持组会话）与 pause()（暂停分区消费）控制函数。
+ * Nest 的 ServerKafka.handleMessage 即接收该负载。
+ */
 export interface EachMessagePayload {
   topic: string;
   partition: number;
@@ -999,6 +1125,10 @@ export interface EachMessagePayload {
   pause(): () => void;
 }
 
+/**
+ * eachBatch 消费回调的负载：整批消息及偏移量确认、心跳、暂停等控制函数，
+ * 适合高吞吐的批量处理场景。
+ */
 export interface EachBatchPayload {
   batch: Batch;
   resolveOffset(offset: string): void;
@@ -1025,6 +1155,7 @@ export type ConsumerEachBatchPayload = EachBatchPayload;
 export type EachBatchHandler = (payload: EachBatchPayload) => Promise<void>;
 export type EachMessageHandler = (payload: EachMessagePayload) => Promise<void>;
 
+/** 消费循环运行配置（Consumer.run 的入参）：自动提交策略与 eachMessage/eachBatch 处理器。 */
 export type ConsumerRunConfig = {
   autoCommit?: boolean;
   autoCommitInterval?: number | null;
@@ -1035,11 +1166,18 @@ export type ConsumerRunConfig = {
   eachMessage?: EachMessageHandler;
 };
 
+/** topic 订阅配置（Consumer.subscribe 的入参）：topic 列表与是否从头消费。 */
 export type ConsumerSubscribeTopics = {
   topics: (string | RegExp)[];
   fromBeginning?: boolean;
 };
 
+/**
+ * Kafka 消费者类型：订阅 topic（subscribe）、启动消费循环（run，
+ * 通过 eachMessage/eachBatch 回调处理消息）、提交偏移量（commitOffsets）
+ * 等，并暴露组会话/再均衡/心跳等事件。Nest 服务端把每个 pattern
+ * 当作 topic 订阅，由 eachMessage 驱动消息分发。
+ */
 export type Consumer = {
   connect(): Promise<void>;
   disconnect(): Promise<void>;
@@ -1126,6 +1264,7 @@ export type Consumer = {
   readonly events: ConsumerEvents;
 };
 
+/** 压缩算法类型枚举（None/GZIP/Snappy/LZ4/ZSTD）。 */
 export enum CompressionTypes {
   None = 0,
   GZIP = 1,
@@ -1141,6 +1280,11 @@ export let CompressionCodecs: {
   [CompressionTypes.ZSTD]: () => any;
 };
 
+/**
+ * kafkajs 错误基类：携带 retriable（是否可重试）标记。
+ * Nest 的 KafkaRetriableException 语义即来源于此——可重试错误会触发
+ * 消息重新投递。
+ */
 export declare class KafkaJSError extends Error {
   readonly message: Error['message'];
   readonly name: string;
@@ -1151,22 +1295,26 @@ export declare class KafkaJSError extends Error {
   constructor(e: Error | string, metadata?: KafkaJSErrorMetadata);
 }
 
+/** 不可重试的 kafkajs 错误（抛出后不会自动重试）。 */
 export declare class KafkaJSNonRetriableError extends KafkaJSError {
   constructor(e: Error | string);
 }
 
+/** Kafka 协议层错误（携带 broker 协议错误码 code 与类型 type）。 */
 export declare class KafkaJSProtocolError extends KafkaJSError {
   readonly code: number;
   readonly type: string;
   constructor(e: Error | string);
 }
 
+/** 偏移量越界错误（请求的 offset 已被清理或尚未生成）。 */
 export declare class KafkaJSOffsetOutOfRange extends KafkaJSProtocolError {
   readonly topic: string;
   readonly partition: number;
   constructor(e: Error | string, metadata?: KafkaJSOffsetOutOfRangeMetadata);
 }
 
+/** 重试次数超限错误（携带 retryCount/retryTime 信息）。 */
 export declare class KafkaJSNumberOfRetriesExceeded extends KafkaJSNonRetriableError {
   readonly stack: string;
   readonly retryCount: number;
@@ -1177,11 +1325,13 @@ export declare class KafkaJSNumberOfRetriesExceeded extends KafkaJSNonRetriableE
   );
 }
 
+/** broker 连接错误（携带 broker 地址信息）。 */
 export declare class KafkaJSConnectionError extends KafkaJSError {
   readonly broker: string;
   constructor(e: Error | string, metadata?: KafkaJSConnectionErrorMetadata);
 }
 
+/** 请求超时错误（携带 broker 与请求时间线信息）。 */
 export declare class KafkaJSRequestTimeoutError extends KafkaJSError {
   readonly broker: string;
   readonly correlationId: number;
@@ -1262,12 +1412,14 @@ export declare class KafkaJSDeleteTopicRecordsError extends KafkaJSError {
   constructor(metadata: KafkaJSDeleteTopicRecordsErrorTopic);
 }
 
+/** 删除消费者组失败的错误结果（按组携带错误码）。 */
 export interface KafkaJSDeleteGroupsErrorGroups {
   groupId: string;
   errorCode: number;
   error: KafkaJSError;
 }
 
+/** 删除记录失败时按 topic/分区细分的错误元数据。 */
 export interface KafkaJSDeleteTopicRecordsErrorTopic {
   topic: string;
   partitions: KafkaJSDeleteTopicRecordsErrorPartition[];
@@ -1279,6 +1431,7 @@ export interface KafkaJSDeleteTopicRecordsErrorPartition {
   error: KafkaJSError;
 }
 
+/** 各类 kafkajs 错误的通用元数据（是否可重试、topic、分区等）。 */
 export interface KafkaJSErrorMetadata {
   retriable?: boolean;
   topic?: string;

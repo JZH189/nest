@@ -42,6 +42,16 @@ import {
 import { ServerGrpc } from './server';
 import { Server } from './server/server';
 
+/**
+ * 监听器控制器：微服务消息处理器注册的核心协调者。
+ *
+ * 职责：
+ * 1. registerPatternHandlers()：借助 ListenerMetadataExplorer 扫描控制器中的
+ *    @EventPattern / @MessagePattern 方法，包装后注册到服务端（Server.addHandler）；
+ * 2. assignClientsToProperties()：为 @Client 属性创建 ClientProxy 并注入；
+ * 3. 处理请求作用域（request-scoped）控制器：每次消息到达时按需创建实例并解析其依赖；
+ * 4. 在处理器抛出异常时调用 RPC 异常过滤器兜底处理。
+ */
 export class ListenersController {
   private readonly metadataExplorer = new ListenerMetadataExplorer(
     new MetadataScanner(),
@@ -58,6 +68,19 @@ export class ListenersController {
     private readonly graphInspector: GraphInspector,
   ) {}
 
+  /**
+   * 将一个控制器的所有模式处理器注册到服务端，核心注册流程：
+   * 1. 通过元数据探索器扫描实例上所有 @EventPattern / @MessagePattern 方法；
+   * 2. 过滤出与当前服务端传输层匹配的处理器（未指定 transport 或 transportId 一致）；
+   * 3. 将多个 pattern 的定义拆成单 pattern 定义，逐个注册；
+   * 4. 静态（非请求作用域）控制器：通过 RpcContextCreator 创建带管道/Guard/拦截器的代理，
+   *    事件处理器再包一层以支持“同一 pattern 多处理器串联（forkJoin）”；
+   * 5. 请求作用域控制器：创建按请求实例化的 asyncHandler；
+   * 6. 最终调用 serverInstance.addHandler(pattern, handler, isEventHandler, extras) 完成注册。
+   * @param instanceWrapper - 控制器的实例包装
+   * @param serverInstance - 底层服务端实例
+   * @param moduleKey - 控制器所属模块的 key
+   */
   public registerPatternHandlers(
     instanceWrapper: InstanceWrapper<Controller>,
     serverInstance: Server,
@@ -158,6 +181,12 @@ export class ListenersController {
       });
   }
 
+  /**
+   * 向依赖图检查器（GraphInspector）登记入口点元数据，用于可视化/审计。
+   * @param instanceWrapper - 控制器实例包装
+   * @param definition - 监听器定义
+   * @param transportId - 传输层标识
+   */
   public insertEntrypointDefinition(
     instanceWrapper: InstanceWrapper,
     definition: EventOrMessageListenerDefinition,
@@ -184,6 +213,14 @@ export class ListenersController {
     );
   }
 
+  /**
+   * 若该 pattern 上还“链式”挂接了其他处理器（handlerRef.next 存在），
+   * 则用 forkJoin 并行执行当前处理器与后续处理器，合并两者的返回值。
+   * @param currentReturnValue - 当前处理器的返回值
+   * @param originalArgs - 原始消息参数
+   * @param handlerRef - 当前已注册的处理器引用（通过 next 链接到后续处理器）
+   * @returns 合并后的结果（Promise 或 Observable）
+   */
   public forkJoinHandlersIfAttached(
     currentReturnValue: Promise<unknown> | Observable<unknown>,
     originalArgs: unknown[],
@@ -201,6 +238,14 @@ export class ListenersController {
     return currentReturnValue;
   }
 
+  /**
+   * 为实例上所有 @Client 属性创建客户端并完成注入：
+   * 1. 扫描出被 @Client 标记的属性；
+   * 2. 通过 ClientProxyFactory.create 按配置创建客户端；
+   * 3. 登记到 ClientsContainer（应用关闭时统一 close）；
+   * 4. 将客户端实例赋值到实例属性上。
+   * @param instance - 控制器或 provider 实例
+   */
   public assignClientsToProperties(instance: Controller) {
     for (const {
       property,
@@ -213,6 +258,12 @@ export class ListenersController {
     }
   }
 
+  /**
+   * 将客户端实例赋值到实例的指定属性上（相当于 `instance[property] = client`）。
+   * @param instance - 目标实例
+   * @param property - 属性名
+   * @param client - 要注入的客户端实例
+   */
   public assignClientToInstance<T = any>(
     instance: Controller,
     property: string,
@@ -221,6 +272,23 @@ export class ListenersController {
     Reflect.set(instance, property, client);
   }
 
+  /**
+   * 创建“请求作用域”处理器：控制器（或其依赖树）为请求作用域时，
+   * 每条消息到达都要创建新的控制器实例，注册流程如下：
+   * 1. 收到消息后，将参数包装为 RequestContextHost（携带 pattern、数据与 RPC 上下文）；
+   * 2. 根据请求生成 contextId，并注册请求级 provider（REQUEST 对象）；
+   * 3. 通过 injector.loadPerContext 在该上下文中实例化控制器及其依赖；
+   * 4. 创建代理（含管道/Guard/拦截器）并调用目标方法；
+   * 5. 任一步骤抛错时，用缓存的 RPC 异常过滤器统一处理异常。
+   * @param wrapper - 控制器实例包装
+   * @param pattern - 消息模式
+   * @param moduleRef - 控制器所属模块
+   * @param moduleKey - 模块 key
+   * @param methodKey - 处理器方法名
+   * @param defaultCallMetadata - 默认的增强器（enhancer）元数据
+   * @param isEventHandler - 是否为事件处理器
+   * @returns 每次调用都创建新实例作用域的异步消息处理器
+   */
   public createRequestScopedHandler(
     wrapper: InstanceWrapper,
     pattern: PatternMetadata,
@@ -299,6 +367,12 @@ export class ListenersController {
     return requestScopedHandler;
   }
 
+  /**
+   * 获取（或首次生成并缓存）请求上下文 ID，并向容器注册请求级 provider。
+   * @param request - RequestContextHost 请求宿主对象
+   * @param isTreeDurable - 依赖树是否为 durable（持久缓存）模式
+   * @returns 当前请求的 ContextId
+   */
   private getContextId<T extends RequestContext = any>(
     request: T,
     isTreeDurable: boolean,
@@ -320,6 +394,12 @@ export class ListenersController {
     return contextId;
   }
 
+  /**
+   * 将处理器返回值统一转换为 Observable：
+   * Promise -> 转 Observable；已是 Observable -> 原样返回；普通值 -> of(value) 包装。
+   * @param resultOrDeferred - 处理器返回的任意值
+   * @returns 观察结果的 Observable
+   */
   public transformToObservable<T>(
     resultOrDeferred: Observable<T> | Promise<T>,
   ): Observable<T>;

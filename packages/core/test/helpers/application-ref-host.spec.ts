@@ -1,6 +1,7 @@
 import { expect } from 'chai';
 import { HttpAdapterHost } from '../../helpers/http-adapter-host';
 
+// 验证 HttpAdapterHost 承载 HTTP 适配器引用，并在监听状态变更时发出 listen 事件
 describe('HttpAdapterHost', () => {
   let applicationRefHost: HttpAdapterHost;
   beforeEach(() => {
