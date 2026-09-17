@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Header,
+  Param,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 import { Roles } from '../common/decorators/roles.decorator';
 import { RolesGuard } from '../common/guards/roles.guard';
 import { ParseIntPipe } from '../common/pipes/parse-int.pipe';
@@ -18,6 +26,7 @@ export class CatsController {
   }
 
   @Get()
+  @Header('Cache-Control', 'no-store')
   async findAll(): Promise<Cat[]> {
     return this.catsService.findAll();
   }

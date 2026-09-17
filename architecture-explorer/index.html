@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NestJS 源码架构探索 · 入口：01-cats-app</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="mode-home">
+
+<!-- ========== 首页（v2） ========== -->
+<div id="home">
+  <div class="home-inner">
+    <div class="home-brand"><span class="logo">⬡</span> NestJS 源码跟读</div>
+    <div class="home-sub">入口 · sample/01-cats-app ｜ 基线 · packages/* @ 11.1.19</div>
+    <div class="home-cards">
+      <button class="home-card" data-journey="bootstrap">
+        <div class="hc-icon">🚀</div>
+        <div class="hc-title">启动旅程</div>
+        <div class="hc-desc">main.ts 的 3 行代码背后<br>从 NestFactory.create 到 app.listen<br><b>16 步</b> · 图随步长</div>
+      </button>
+      <button class="home-card" data-journey="request">
+        <div class="hc-icon">🌐</div>
+        <div class="hc-title">请求旅程</div>
+        <div class="hc-desc">GET /cats/1 的完整旅程<br>从中间件到响应写出<br><b>13 步</b> · 含异常支线</div>
+      </button>
+      <button class="home-card" data-map>
+        <div class="hc-icon">🗺</div>
+        <div class="hc-title">架构地图</div>
+        <div class="hc-desc">9 张子系统全图 · 110 个类详情<br>搜索 / 目录 / 协作关系<br>读完旅程再来查</div>
+      </button>
+    </div>
+    <div class="home-tip">键盘 ←/→ 翻步 ｜ 点击图中任意类可看详情</div>
+  </div>
+</div>
+
+<!-- ========== 旅程模式浮层（叠加在画布上） ========== -->
+<div id="journey-topbar" class="hidden">
+  <button id="j-home-btn" title="返回首页 (Esc)">‹ 首页</button>
+  <div id="j-title"></div>
+  <div id="j-progress"></div>
+  <button id="j-map-btn" title="查看该类所属的全图">🗺 架构地图</button>
+</div>
+<nav id="journey-nav" class="hidden"></nav>
+<div id="journey-card" class="hidden">
+  <div class="jc-head"><span class="jc-step"></span><span class="jc-title"></span></div>
+  <div class="jc-text"></div>
+  <div class="jc-snippet hidden"><div class="jc-snippet-path"></div><pre></pre></div>
+  <div class="jc-cats hidden"></div>
+  <div class="jc-foot">
+    <span class="jc-path"></span>
+    <span class="jc-spacer"></span>
+    <button id="jc-play" class="hidden">▶ 连播本次旅程</button>
+    <button id="jc-prev">← 上一步</button>
+    <button id="jc-next">下一步 →</button>
+  </div>
+</div>
+<div id="journey-modal" class="hidden">
+  <div id="journey-modal-box">
+    <button id="jm-close">✕ 关闭</button>
+    <div id="jm-inner"></div>
+  </div>
+</div>
+
+<header id="topbar">
+  <div id="brand"><span class="logo">⬡</span><span class="brand-text">NestJS 源码架构探索</span><span class="sub">入口 · sample/01-cats-app</span></div>
+  <nav id="stage-tabs"></nav>
+  <div id="search-wrap">
+    <input id="search" type="text" placeholder="搜索类名 / 职责 / 路径（按 / 聚焦）" autocomplete="off" spellcheck="false">
+    <div id="search-results" class="hidden"></div>
+  </div>
+  <button id="theme-toggle" title="切换深/浅色主题">◐</button>
+</header>
+
+<div id="layout">
+  <aside id="sidebar">
+    <div class="sidebar-title">包 / 目录 / 类</div>
+    <div id="tree"></div>
+  </aside>
+
+  <main id="canvas-wrap">
+    <div id="stage-header">
+      <div class="stage-title-row">
+        <h2 id="stage-title"></h2>
+        <button id="play-btn" class="hidden" title="沿请求管道播放动画">▶ 播放一次 GET /cats/1</button>
+      </div>
+      <p id="stage-question"></p>
+      <p id="stage-narrative"></p>
+      <p id="stage-catshint" class="hidden"></p>
+      <div id="legend"></div>
+    </div>
+    <div id="svg-scroll">
+      <svg id="canvas">
+        <g id="viewport">
+          <g id="edges"></g>
+          <g id="nodes"></g>
+          <g id="anim"></g>
+        </g>
+      </svg>
+      <div id="zoom-hud">
+        <button id="zoom-in" title="放大">＋</button>
+        <button id="zoom-out" title="缩小">－</button>
+        <button id="zoom-fit" title="复位视图">⛶</button>
+        <button id="label-toggle" title="显示/隐藏连线标签" class="on">🏷 标签</button>
+      </div>
+      <div id="zoom-hint">滚轮缩放 · 空白处拖拽平移 · 双击复位</div>
+    </div>  </main>
+
+  <aside id="detail">
+    <div id="detail-inner"></div>
+  </aside>
+</div>
+
+<footer id="narrative-bar">
+  <button id="prev-stage">⟵ 上一步</button>
+  <div id="narrative-text"></div>
+  <button id="next-stage">下一步 ⟶</button>
+</footer>
+
+<div id="toast" class="hidden"></div>
+<script>window.__errs=[];window.addEventListener('error',e=>__errs.push(e.message+' @'+e.filename?.split('/').pop()+':'+e.lineno+':'+e.colno));</script>
+<script src="data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
